@@ -3,42 +3,110 @@ import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 
 const BlogsPage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Demo blog data
+  const demoBlogs = [
+    {
+      _id: '1',
+      title: 'राहु-केतु का जीवन पर प्रभाव - Understanding Rahu-Ketu Effects',
+      slug: 'rahu-ketu-effects-on-life',
+      excerpt: 'राहु और केतु ग्रहों के जीवन पर प्रभाव को समझें। जानें कि कैसे ये छाया ग्रह आपके करियर, रिश्ते और स्वास्थ्य को प्रभावित करते हैं। Learn how shadow planets Rahu and Ketu influence your life, career, relationships, and health.',
+      category: 'astrology',
+      publishedAt: '2024-01-15T10:30:00Z',
+      views: 1245,
+      featuredImage: null,
+      content: 'राहु और केतु के प्रभाव पर विस्तृत जानकारी...'
+    },
+    {
+      _id: '2',
+      title: 'मकर संक्रांति 2024 - Astrological Significance and Remedies',
+      slug: 'makar-sankranti-2024-significance',
+      excerpt: 'मकर संक्रांति का ज्योतिषीय महत्व और उपाय जानें। इस पवित्र दिन सूर्य देव मकर राशि में प्रवेश करते हैं। Discover the astrological importance of Makar Sankranti and powerful remedies for prosperity.',
+      category: 'spirituality',
+      publishedAt: '2024-01-10T08:15:00Z',
+      views: 892,
+      featuredImage: null,
+      content: 'मकर संक्रांति के ज्योतिषीय महत्व पर विस्तार...'
+    },
+    {
+      _id: '3',
+      title: 'Weekly Horoscope - साप्ताहिक राशिफल (January 2024)',
+      slug: 'weekly-horoscope-january-2024',
+      excerpt: 'जनवरी 2024 का साप्ताहिक राशिफल। जानें इस सप्ताह आपकी राशि के लिए क्या है खास। Get detailed weekly predictions for all zodiac signs with career, love, and health insights.',
+      category: 'horoscope',
+      publishedAt: '2024-01-08T06:00:00Z',
+      views: 2156,
+      featuredImage: null,
+      content: 'इस सप्ताह के सभी राशियों का विस्तृत राशिफल...'
+    },
+    {
+      _id: '4',
+      title: 'Gemstone Remedies - रत्न चिकित्सा के फायदे',
+      slug: 'gemstone-remedies-benefits',
+      excerpt: 'रत्न चिकित्सा के अद्भुत फायदे जानें। सही रत्न पहनने से कैसे बदल सकती है आपकी किस्मत। Explore the incredible benefits of gemstone therapy and how the right gems can transform your destiny.',
+      category: 'remedies',
+      publishedAt: '2024-01-05T14:20:00Z',
+      views: 756,
+      featuredImage: null,
+      content: 'रत्न चिकित्सा और इसके लाभों का विस्तार...'
+    },
+    {
+      _id: '5',
+      title: 'Mercury Retrograde Effects - बुध वक्री का प्रभाव',
+      slug: 'mercury-retrograde-effects-2024',
+      excerpt: 'बुध वक्री के दौरान क्या सावधानियां बरतें। जानें इस समय कौन से काम करें और कौन से न करें। Learn about Mercury retrograde effects and essential precautions to take during this period.',
+      category: 'astrology',
+      publishedAt: '2024-01-03T11:45:00Z',
+      views: 634,
+      featuredImage: null,
+      content: 'बुध वक्री के प्रभाव और सावधानियों का विवरण...'
+    },
+    {
+      _id: '6',
+      title: 'Meditation and Astrology - ध्यान और ज्योतिष',
+      slug: 'meditation-astrology-connection',
+      excerpt: 'ध्यान और ज्योतिष के बीच गहरा संबंध है। जानें कैसे आपकी राशि के अनुसार ध्यान करने से मिलते हैं बेहतर परिणाम। Discover the deep connection between meditation and astrology for better spiritual growth.',
+      category: 'meditation',
+      publishedAt: '2024-01-01T09:30:00Z',
+      views: 445,
+      featuredImage: null,
+      content: 'ध्यान और ज्योतिष के संबंध का विस्तृत विवरण...'
+    }
+  ];
+
+  const [blogs, setBlogs] = useState(demoBlogs);
+  const [loading, setLoading] = useState(false);
   const [categories] = useState(['all', 'astrology', 'horoscope', 'spirituality', 'meditation', 'remedies', 'general']);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const [filteredBlogs, setFilteredBlogs] = useState(demoBlogs);
 
   useEffect(() => {
-    fetchBlogs();
-  }, [selectedCategory]);
+    filterBlogs();
+  }, [selectedCategory, searchTerm]);
 
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      const queryParams = new URLSearchParams({
-        ...(selectedCategory !== 'all' && { category: selectedCategory }),
-        ...(searchTerm && { search: searchTerm })
-      });
+  const filterBlogs = () => {
+    let filtered = demoBlogs;
 
-      const response = await fetch(`${BACKEND_URL}/api/blogs/published?${queryParams.toString()}`);
-      const data = await response.json();
-
-      if (data.success) {
-        setBlogs(data.blogs);
-      }
-    } catch (error) {
-      console.error('Error fetching blogs:', error);
-    } finally {
-      setLoading(false);
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(blog => blog.category === selectedCategory);
     }
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(blog => 
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredBlogs(filtered);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchBlogs();
+    filterBlogs();
   };
 
   const formatDate = (dateString) => {
@@ -60,11 +128,6 @@ const BlogsPage = () => {
     });
   };
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null;
-    if (imagePath.startsWith('http')) return imagePath;
-    return `${BACKEND_URL}${imagePath}`;
-  };
 
   const getCategoryColor = (category) => {
     switch(category) {
@@ -185,7 +248,7 @@ const BlogsPage = () => {
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
             </div>
-          ) : blogs.length === 0 ? (
+          ) : filteredBlogs.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-gray-400 text-6xl mb-4">🔮</div>
               <h3 className="text-2xl font-semibold text-gray-700 mb-2">No articles found</h3>
@@ -193,7 +256,7 @@ const BlogsPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {blogs.map((blog) => (
+              {filteredBlogs.map((blog) => (
                 <Link 
                   key={blog._id} 
                   to={`/blog/${blog.slug}`}
@@ -202,22 +265,12 @@ const BlogsPage = () => {
                   <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer">
                     {/* Blog Image */}
                     <div className="h-56 lg:h-64 bg-gradient-to-br from-indigo-100 to-purple-100" style={{ aspectRatio: '16/9' }}>
-                      {blog.featuredImage ? (
-                        <img
-                          src={getImageUrl(blog.featuredImage)}
-                          alt={blog.featuredImageAlt || blog.title}
-                          className="w-full h-full object-cover"
-                          width="1200"
-                          height="675"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-4xl mb-2">🔮</div>
-                            <p className="text-indigo-700 font-medium text-sm">Astrology Insights</p>
-                          </div>
+                      <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-4xl mb-2">🔮</div>
+                          <p className="text-indigo-700 font-medium text-sm">Astrology Insights</p>
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     {/* Blog Content */}

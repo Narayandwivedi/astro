@@ -3,49 +3,43 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
     { name: 'Services', path: '/services' },
+    { name: 'Shop', path: '/shop' },
     { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' }
   ];
 
   const isActive = (path) => location.pathname === path;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location]);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 shadow-lg ${
-      isScrolled 
-        ? 'bg-white py-3 shadow-xl' 
-        : 'bg-white py-6 shadow-lg'
-    }`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white py-4 shadow-lg">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex justify-between items-center">
           
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="text-3xl lg:text-4xl">🕉️</div>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-display font-bold text-orange-600 font-devanagari">
-                आस्त्रो सत्य
+          <Link to="/" className="flex items-center space-x-4 group">
+            <div className="relative">
+              <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 rounded-2xl shadow-xl flex items-center justify-center border-3 border-orange-300/50 group-hover:border-orange-400 transition-all duration-300 group-hover:shadow-2xl group-hover:scale-105">
+                <span className="text-2xl lg:text-3xl text-white drop-shadow-lg filter">🕉️</span>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/30 to-yellow-400/30 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-2xl lg:text-3xl xl:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-700 via-amber-600 to-yellow-600 tracking-tight leading-tight">
+                ASTRO SATYA
               </h1>
-              <p className="text-xs text-gray-600 font-medium tracking-widest uppercase">
-                Astro Satya
+              <p className="text-xs lg:text-sm text-orange-600/80 font-semibold tracking-widest uppercase -mt-1">
+                Vedic Astrology
               </p>
             </div>
           </Link>

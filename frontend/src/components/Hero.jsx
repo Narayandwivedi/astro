@@ -1,7 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
+import ConsultationModal from './ConsultationModal'
 
 const Hero = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
+    <>
     <section className="relative w-full h-[90vh] sm:h-[75vh] md:h-[70vh] pt-32 sm:pt-24 md:pt-20 pb-6 sm:pb-0 bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-950 overflow-hidden">
       
       {/* Astro Chart Background */}
@@ -40,12 +52,18 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center lg:justify-start px-4 lg:px-0">
-              <button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all text-sm sm:text-base">
+              <button 
+                onClick={openModal}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all text-sm sm:text-base text-center inline-flex items-center justify-center"
+              >
                 Get Free Consultation
               </button>
-              <button className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all text-sm sm:text-base">
-                Call Now
-              </button>
+              <a 
+                href="tel:+91883945431"
+                className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all text-sm sm:text-base text-center inline-flex items-center justify-center"
+              >
+                📞 Call Now
+              </a>
             </div>
           </div>
           
@@ -67,6 +85,10 @@ const Hero = () => {
         </div>
       </div>
     </section>
+
+    {/* Consultation Modal */}
+    <ConsultationModal isOpen={isModalOpen} onClose={closeModal} />
+    </>
   )
 }
 
