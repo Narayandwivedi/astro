@@ -1,0 +1,24 @@
+/* Mobile Bottom Navigation Spacing */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Add bottom padding to content when mobile bottom nav is present */
+@media (max-width: 768px) {
+  .App {
+    padding-bottom: 5rem; /* Increased for new professional nav */
+  }
+  
+  /* Ensure content doesn't get hidden behind bottom nav */
+  main, section:last-child {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Smooth transitions for mobile interactions */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}

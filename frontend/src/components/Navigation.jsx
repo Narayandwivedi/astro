@@ -27,7 +27,7 @@ const Navigation = () => {
         <div className="flex justify-between items-center">
           
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-4 group">
+          <Link to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center space-x-4 group">
             <div className="relative">
               <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 rounded-2xl shadow-xl flex items-center justify-center border-3 border-orange-300/50 group-hover:border-orange-400 transition-all duration-300 group-hover:shadow-2xl group-hover:scale-105">
                 <span className="text-2xl lg:text-3xl text-white drop-shadow-lg filter">🕉️</span>
@@ -50,6 +50,7 @@ const Navigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => window.scrollTo(0, 0)}
                 className={`relative px-1 py-2 font-medium transition-all duration-300 ${
                   isActive(item.path)
                     ? 'text-orange-600'
@@ -87,7 +88,7 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
         }`}>
           <div className="py-6 mt-4 border-t border-gray-300">
             <div className="flex flex-col space-y-4">
@@ -100,7 +101,10 @@ const Navigation = () => {
                       ? 'text-orange-600 bg-orange-50'
                       : 'text-gray-700 hover:text-orange-600 hover:bg-gray-50'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    window.scrollTo(0, 0);
+                  }}
                 >
                   {item.name}
                 </Link>

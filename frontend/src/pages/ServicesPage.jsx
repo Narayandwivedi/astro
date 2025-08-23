@@ -202,47 +202,16 @@ const ServicesPage = () => {
       <div className="w-full">
         <Navigation />
         
-        {/* Hero Section */}
-        <section className="pt-32 pb-20 bg-gradient-to-br from-red-900 via-orange-800 to-amber-700 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="w-full h-full" style={{
-              backgroundImage: `
-                repeating-linear-gradient(45deg, rgba(255,215,0,0.1) 0px, rgba(255,215,0,0.1) 2px, transparent 2px, transparent 20px),
-                repeating-linear-gradient(-45deg, rgba(255,140,0,0.1) 0px, rgba(255,140,0,0.1) 2px, transparent 2px, transparent 20px)
-              `
-            }}></div>
-          </div>
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="container mx-auto px-4 lg:px-6 relative z-10">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center bg-gradient-to-r from-yellow-500/30 to-orange-500/30 backdrop-blur-sm border border-yellow-400/40 rounded-full px-8 py-3 mb-8 shadow-2xl">
-                <span className="text-yellow-200 text-sm font-semibold">🕉️ Premium Vedic Astrology Services</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-2xl">
-                Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300">Services</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-orange-100 mb-8 font-medium drop-shadow-lg">
-                हमारी सेवाएं - Complete Astrological Solutions
-              </p>
-              <p className="text-lg text-orange-200 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-                Get expert guidance from Pandit Satya Prakash Tripathi for all your life problems. 
-                With 25+ years of experience in Vedic astrology, we provide authentic solutions 
-                for every aspect of your life.
-              </p>
-            </div>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent shadow-lg"></div>
-        </section>
 
         {/* Category Filter */}
-        <section className="py-16 bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
+        <section className="pt-32 py-16 bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
           <div className="container mx-auto px-4 lg:px-6">
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="grid grid-cols-3 md:flex md:flex-wrap md:justify-center gap-2 md:gap-4">
               {categories.map((category) => (
                 <button
                   key={category.value}
                   onClick={() => setSelectedCategory(category.value)}
-                  className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                  className={`px-3 py-2 md:px-8 md:py-4 rounded-lg md:rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg text-xs md:text-base ${
                     selectedCategory === category.value
                       ? 'bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 text-white shadow-xl shadow-orange-500/30 border-2 border-yellow-400'
                       : 'bg-white/90 backdrop-blur-sm text-orange-800 hover:bg-white hover:shadow-xl border-2 border-orange-200/60 hover:border-orange-300'
@@ -258,66 +227,38 @@ const ServicesPage = () => {
         {/* Services Grid */}
         <section className="py-20 bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
           <div className="container mx-auto px-4 lg:px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {filteredServices.map((service) => (
-                <div key={service.id} className="group bg-white rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-3">
+                <div key={service.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
                   
                   {/* Service Header */}
-                  <div className="bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-700 text-white p-4 md:p-8 relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-15" style={{
-                      backgroundImage: `
-                        repeating-linear-gradient(45deg, rgba(139,69,19,0.2) 0px, rgba(139,69,19,0.2) 2px, transparent 2px, transparent 15px),
-                        repeating-linear-gradient(-45deg, rgba(160,82,45,0.15) 0px, rgba(160,82,45,0.15) 2px, transparent 2px, transparent 15px)
-                      `
-                    }}></div>
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-yellow-600/30 to-transparent rounded-full -translate-y-12 translate-x-12"></div>
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between mb-3 md:mb-4">
-                        <div className="w-12 h-12 md:w-18 md:h-18 bg-amber-950/40 rounded-xl md:rounded-2xl flex items-center justify-center backdrop-blur-sm border-2 border-yellow-700/60 shadow-lg">
-                          <span className="text-2xl md:text-4xl filter drop-shadow-lg">{service.icon}</span>
-                        </div>
-                        <span className="bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-700 px-2 py-1 md:px-4 md:py-2 rounded-full text-[10px] md:text-xs font-bold tracking-wider uppercase shadow-lg border border-amber-300/50">
-                          {service.category}
-                        </span>
+                  <div className="bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-700 text-white p-4 relative overflow-hidden">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-amber-950/40 rounded-xl flex items-center justify-center backdrop-blur-sm border-2 border-yellow-700/60 shadow-lg mx-auto mb-3">
+                        <span className="text-2xl filter drop-shadow-lg">{service.icon}</span>
                       </div>
-                      <h3 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.title}</h3>
-                      <p className="text-yellow-100 text-xs md:text-sm font-semibold drop-shadow-md">{service.hindi}</p>
+                      <h3 className="text-sm md:text-base font-bold mb-1 group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.title}</h3>
+                      <p className="text-yellow-100 text-xs font-semibold drop-shadow-md">{service.hindi}</p>
                     </div>
                   </div>
 
                   {/* Service Content */}
-                  <div className="p-4 md:p-8">
-                    <p className="text-amber-950 mb-3 md:mb-5 leading-relaxed font-medium text-sm md:text-base">
-                      {service.description}
-                    </p>
-                    <p className="text-amber-900 text-xs md:text-sm mb-4 md:mb-8 font-semibold bg-gradient-to-r from-yellow-50 to-amber-50 p-3 md:p-5 rounded-xl md:rounded-2xl border-l-4 border-amber-700 shadow-md">
-                      {service.hindiDesc}
-                    </p>
-
-                    {/* Service Details */}
-                    <div className="flex justify-between items-center mb-4 md:mb-8 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 md:p-4 rounded-lg md:rounded-xl shadow-inner border border-amber-200">
-                      <div>
-                        <span className="text-xl md:text-3xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent drop-shadow-sm">{service.price}</span>
-                        <p className="text-amber-800 text-xs md:text-sm font-semibold">{service.duration}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs md:text-sm text-amber-900 font-semibold">Online/Offline</p>
-                        <div className="flex items-center justify-end mt-1">
-                          <div className="w-2 h-2 md:w-3 md:h-3 bg-green-600 rounded-full mr-2 animate-pulse shadow-md"></div>
-                          <p className="text-xs md:text-sm text-green-700 font-bold">Available Now</p>
-                        </div>
-                      </div>
+                  <div className="p-4">
+                    {/* Price */}
+                    <div className="text-center mb-4">
+                      <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent drop-shadow-sm">{service.price}</span>
+                      <p className="text-amber-800 text-xs font-semibold">{service.duration}</p>
                     </div>
 
                     {/* Book Now Button */}
                     <button
                       onClick={openModal}
-                      className="w-full bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold py-3 md:py-5 px-4 md:px-8 rounded-xl md:rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-600/60"
+                      className="w-full bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold py-2.5 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-600/60"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                       <span className="relative z-10 flex items-center justify-center drop-shadow-md">
-                        <span className="mr-2 md:mr-3 text-lg md:text-xl">📅</span>
-                        <span className="text-sm md:text-lg">Book Now - अभी बुक करें</span>
+                        <span className="mr-2 text-sm">📅</span>
+                        <span className="text-xs md:text-sm">Book Now</span>
                       </span>
                     </button>
                   </div>

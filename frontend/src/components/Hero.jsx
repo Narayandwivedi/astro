@@ -14,19 +14,32 @@ const Hero = () => {
 
   return (
     <>
-    <section className="relative w-full h-[90vh] sm:h-[75vh] md:h-[70vh] pt-32 sm:pt-24 md:pt-20 pb-6 sm:pb-0 bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-950 overflow-hidden">
+    <section className="relative w-full h-[90vh] sm:h-[75vh] md:h-[70vh] pt-32 sm:pt-24 md:pt-20 pb-6 sm:pb-0 bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-700 overflow-hidden">
       
-      {/* Astro Chart Background */}
-      <div className="absolute inset-0 opacity-15">
+      {/* Astro Chart Background with Brown Overlay */}
+      <div className="absolute inset-0 opacity-20">
         <img 
           src="/astro chart.png" 
           alt="Astrology Chart" 
           className="w-full h-full object-cover"
+          style={{
+            filter: 'sepia(100%) saturate(150%) hue-rotate(25deg) brightness(0.7) contrast(1.2)'
+          }}
         />
       </div>
       
+      {/* Traditional Pattern Overlay */}
+      <div className="absolute inset-0 opacity-8">
+        <div className="w-full h-full" style={{
+          backgroundImage: `
+            repeating-linear-gradient(45deg, rgba(139,69,19,0.15) 0px, rgba(139,69,19,0.15) 2px, transparent 2px, transparent 25px),
+            repeating-linear-gradient(-45deg, rgba(160,82,45,0.1) 0px, rgba(160,82,45,0.1) 2px, transparent 2px, transparent 25px)
+          `
+        }}></div>
+      </div>
+      
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0 bg-black/30"></div>
       
       <div className="container mx-auto px-4 lg:px-6 relative z-10 h-full flex items-center">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center w-full">
@@ -35,16 +48,16 @@ const Hero = () => {
           <div className="text-center lg:text-left text-white lg:flex-1">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 lg:mb-4 leading-tight">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 font-serif block mb-1">
-                पं. सत्य प्रकाश त्रिपाठी
+                आचार्य सत्य प्रकाश त्रिपाठी
               </span>
               <span className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 font-light">
-                Astrologer Satya Prakash Tripathi
+                Acharya Satya Prakash Tripathi
               </span>
             </h1>
             
             <div className="flex items-center justify-center lg:justify-start space-x-2 mb-3 lg:mb-4">
               <span className="text-yellow-400 text-sm sm:text-base">★★★★★</span>
-              <span className="text-gray-300 text-xs sm:text-sm">25+ Years Experience</span>
+              <span className="text-gray-300 text-xs sm:text-sm">10+ Years Experience</span>
             </div>
             
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed mb-4 lg:mb-6 px-4 lg:px-0">

@@ -6,6 +6,9 @@ import BlogDetailPage from './pages/BlogDetailPage';
 import ContactPage from './pages/ContactPage';
 import ServicesPage from './pages/ServicesPage';
 import ShopPage from './pages/ShopPage';
+import About from './pages/About';
+import MobileBottomNav from './components/MobileBottomNav';
+import Footer from './components/Footer';
 import './App.css'
 
 function App() {
@@ -15,6 +18,7 @@ function App() {
         <div className="w-full">
           <Routes>
             <Route path="/" element={<Homepage />} />
+            <Route path="/about" element={<About />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/blog" element={<BlogsPage />} />
@@ -23,6 +27,12 @@ function App() {
             {/* Other routes will be added later */}
           </Routes>
         </div>
+        
+        {/* Footer */}
+        <Footer />
+        
+        {/* Mobile Bottom Navigation - Only visible on mobile */}
+        <MobileBottomNav />
       </div>
     </Router>
   )

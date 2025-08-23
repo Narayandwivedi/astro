@@ -21,9 +21,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/astro-sat
 
 // Routes
 const blogRoutes = require('./routes/blogRoute');
+const serviceRoutes = require('./routes/serviceRoute');
+const productRoutes = require('./routes/productRoute');
 
 // API Routes
 app.use('/api/blogs', blogRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/products', productRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -41,6 +45,8 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       blogs: '/api/blogs',
+      services: '/api/services',
+      products: '/api/products',
       health: '/api/health'
     }
   });
