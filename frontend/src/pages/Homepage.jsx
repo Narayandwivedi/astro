@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import Navigation from '../components/Navigation'
@@ -6,6 +6,9 @@ import ConsultationModal from '../components/ConsultationModal'
 
 const Homepage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -15,56 +18,29 @@ const Homepage = () => {
     setIsModalOpen(false);
   };
 
-  const topServices = [
-    {
-      id: 1,
-      title: "Kundli Reading",
-      hindi: "कुंडली पाठन",
-      description: "Complete birth chart analysis with detailed predictions about your future, career, relationships.",
-      icon: "🔮",
-      price: "₹1500"
-    },
-    {
-      id: 2,
-      title: "Marriage Problems",
-      hindi: "विवाह संबंधी समस्याएं",
-      description: "Solutions for marriage delays, compatibility issues, marital discord, and finding suitable partners.",
-      icon: "💕",
-      price: "₹1800"
-    },
-    {
-      id: 3,
-      title: "Business Problems",
-      hindi: "व्यापारिक समस्याएं",
-      description: "Astrological solutions for business growth, partnership issues, and financial problems.",
-      icon: "💼",
-      price: "₹2000"
-    },
-    {
-      id: 4,
-      title: "Career Guidance",
-      hindi: "करियर मार्गदर्शन",
-      description: "Professional career consultation including job changes, promotion timing, and business opportunities.",
-      icon: "🎯",
-      price: "₹1400"
-    },
-    {
-      id: 5,
-      title: "Health Issues",
-      hindi: "स्वास्थ्य संबंधी समस्याएं",
-      description: "Astrological analysis of health problems, chronic diseases, and preventive measures.",
-      icon: "🏥",
-      price: "₹1700"
-    },
-    {
-      id: 6,
-      title: "Vastu Consultation",
-      hindi: "वास्तु परामर्श",
-      description: "Home and office Vastu analysis, corrections for existing structures, and new construction guidance.",
-      icon: "🏛️",
-      price: "₹2500"
-    }
-  ];
+  // Fetch services from API
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/services/popular?limit=6');
+        const data = await response.json();
+        
+        if (data.success) {
+          setServices(data.data);
+        } else {
+          setError('Failed to fetch services');
+        }
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        setError('Failed to load services');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   return (
     <div className="w-full">
@@ -150,42 +126,86 @@ const Homepage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {topServices.map((service) => (
-              <div key={service.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-2xl shadow-xl p-6 animate-pulse">
+                  <div className="h-4 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-8 bg-gray-300 rounded"></div>
+                </div>
+              ))
+            ) : error ? (
+              // Error state
+              <div className="col-span-full text-center py-8">
+                <div className="text-red-500 text-lg font-semibold">{error}</div>
+                <p className="text-gray-600 mt-2">Please try refreshing the page</p>
+              </div>
+            ) : services.length === 0 ? (
+              // No services state
+              <div className="col-span-full text-center py-8">
+                <div className="text-gray-500 text-lg font-semibold">No services available</div>
+                <p className="text-gray-400 mt-2">Services will appear here once they are added</p>
+              </div>
+            ) : (
+              // Services list
+              services.map((service) => (
+              <div key={service._id} className="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
                 
                 {/* Service Header */}
-                <div className="bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-700 text-white p-4 relative overflow-hidden">
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-amber-950/40 rounded-xl flex items-center justify-center backdrop-blur-sm border-2 border-yellow-700/60 shadow-lg mx-auto mb-3">
-                      <span className="text-2xl filter drop-shadow-lg">{service.icon}</span>
+                <div className="bg-gradient-to-br from-amber-800 via-yellow-700 to-orange-600 text-white p-4 relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-10" style={{
+                    backgroundImage: `
+                      repeating-linear-gradient(45deg, rgba(139,69,19,0.2) 0px, rgba(139,69,19,0.2) 2px, transparent 2px, transparent 15px),
+                      repeating-linear-gradient(-45deg, rgba(160,82,45,0.15) 0px, rgba(160,82,45,0.15) 2px, transparent 2px, transparent 15px)
+                    `
+                  }}></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="w-10 h-10 bg-amber-950/30 rounded-lg flex items-center justify-center border-2 border-yellow-600/50 shadow-lg">
+                        <span className="text-xl filter drop-shadow-lg">{service.icon}</span>
+                      </div>
+                      <h3 className="text-lg font-bold group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.titleEn}</h3>
                     </div>
-                    <h3 className="text-sm md:text-base font-bold mb-1 group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.title}</h3>
-                    <p className="text-yellow-100 text-xs font-semibold drop-shadow-md">{service.hindi}</p>
+                    <p className="text-yellow-100 text-xs font-semibold drop-shadow-md text-center -mt-0.5">{service.titleHi}</p>
                   </div>
                 </div>
 
                 {/* Service Content */}
-                <div className="p-4">
-                  {/* Price */}
-                  <div className="text-center mb-4">
-                    <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent drop-shadow-sm">{service.price}</span>
+                <div className="p-4 md:p-6">
+                  <p className="text-amber-900 mb-4 md:mb-6 leading-relaxed font-medium text-center text-sm md:text-base">
+                    {service.description}
+                  </p>
+                  
+                  <div className="flex justify-between items-center mb-4 md:mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 md:p-4 rounded-lg shadow-inner border border-amber-200">
+                    <div className="flex flex-col">
+                      <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 bg-clip-text text-transparent">₹{service.price}</span>
+                      <span className="text-xs text-gray-600">{service.duration}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 md:w-3 md:h-3 bg-green-600 rounded-full mr-2 animate-pulse shadow-md"></div>
+                      <p className="text-xs md:text-sm text-green-700 font-bold">{service.isActive ? 'Available' : 'Unavailable'}</p>
+                    </div>
                   </div>
 
                   {/* Book Now Button */}
                   <button
                     onClick={openModal}
-                    className="w-full bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold py-2.5 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-600/60"
+                    disabled={!service.isActive}
+                    className="w-full bg-gradient-to-r from-amber-700 via-yellow-600 to-orange-600 hover:from-amber-800 hover:via-yellow-700 hover:to-orange-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-500/60 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     <span className="relative z-10 flex items-center justify-center drop-shadow-md">
-                      <span className="mr-2 text-sm">📅</span>
-                      <span className="text-xs md:text-sm">Book Now</span>
+                      <span className="mr-2 text-base md:text-lg">📅</span>
+                      <span className="text-sm md:text-base">{service.isActive ? 'Book Now' : 'Unavailable'}</span>
                     </span>
                   </button>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </div>
 
           <div className="text-center mt-12">

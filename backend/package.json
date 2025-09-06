@@ -7,16 +7,26 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["astrology", "blog", "backend", "nodejs", "express"],
+  "keywords": [
+    "astrology",
+    "blog",
+    "backend",
+    "nodejs",
+    "express"
+  ],
   "author": "Naray",
   "license": "ISC",
   "description": "Backend server for Astro Satya astrology website with blog functionality",
   "dependencies": {
-    "express": "^5.1.0",
-    "mongoose": "^8.17.2",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "jsonwebtoken": "^9.0.2"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.34.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

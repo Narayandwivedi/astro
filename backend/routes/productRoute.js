@@ -9,6 +9,7 @@ const {
   toggleProductStatus,
   getFeaturedProducts,
   getProductCategories,
+  getProductsByCategory,
   trackPurchase,
   updateStock,
   updateSortOrder,
@@ -19,6 +20,7 @@ const {
 router.get('/', getAllProducts);
 router.get('/featured', getFeaturedProducts);
 router.get('/categories', getProductCategories);
+router.get('/category/:category', getProductsByCategory);
 router.get('/search', searchProducts);
 router.get('/:id', getProductById);
 router.post('/:id/purchase', trackPurchase); // When someone buys via WhatsApp

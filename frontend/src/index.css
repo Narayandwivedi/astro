@@ -1,2 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap');
+
+/* Custom animations for the logo */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Ensure all buttons have pointer cursor */
+button {
+  cursor: pointer;
+}
+
+/* Also apply to elements with button-like roles */
+[role="button"], 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Ensure disabled buttons don't show pointer */
+button:disabled,
+button[disabled] {
+  cursor: not-allowed;
+}
+

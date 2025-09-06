@@ -20,7 +20,7 @@ const getAllProducts = async (req, res) => {
     
     // Filter by enabled status
     if (enabled !== 'all') {
-      query.isEnabled = enabled === 'true';
+      query.isActive = enabled === 'true';
     }
     
     // Filter by stock status
@@ -125,8 +125,8 @@ const getProductById = async (req, res) => {
       });
     }
 
-    // Increment view count
-    await product.incrementViewCount();
+    // Increment view count (optional - you can implement this later)
+    // await product.updateOne({ $inc: { viewCount: 1 } });
 
     res.json({
       success: true,
@@ -255,7 +255,7 @@ const toggleProductStatus = async (req, res) => {
       });
     }
     
-    product.isEnabled = enabled;
+    product.isActive = enabled;
     await product.save();
     
     res.json({
@@ -295,7 +295,7 @@ const getFeaturedProducts = async (req, res) => {
 // Get product categories
 const getProductCategories = async (req, res) => {
   try {
-    const categories = await Product.distinct('category', { isEnabled: true });
+    const categories = await Product.distinct('category', { isActive: true });
     
     res.json({
       success: true,
@@ -305,6 +305,90 @@ const getProductCategories = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch categories',
+      error: error.message
+    });
+  }
+};
+
+// Get products by category
+const getProductsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const { 
+      enabled = 'true',
+      inStock = 'true',
+      page = 1,
+      limit = 20,
+      sort = 'sortOrder',
+      minPrice,
+      maxPrice
+    } = req.query;
+
+    let query = { category: category };
+    
+    // Filter by enabled status
+    if (enabled !== 'all') {
+      query.isActive = enabled === 'true';
+    }
+    
+    // Filter by stock status
+    if (inStock !== 'all') {
+      query.inStock = inStock === 'true';
+    }
+    
+    // Price range filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Sort options
+    let sortOptions = {};
+    switch (sort) {
+      case 'price-asc':
+        sortOptions = { price: 1 };
+        break;
+      case 'price-desc':
+        sortOptions = { price: -1 };
+        break;
+      case 'popular':
+        sortOptions = { salesCount: -1, rating: -1 };
+        break;
+      case 'rating':
+        sortOptions = { rating: -1, reviewCount: -1 };
+        break;
+      case 'newest':
+        sortOptions = { createdAt: -1 };
+        break;
+      default:
+        sortOptions = { sortOrder: 1, createdAt: -1 };
+    }
+
+    const products = await Product.find(query)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Product.countDocuments(query);
+    
+    res.json({
+      success: true,
+      data: products,
+      category: category,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / parseInt(limit)),
+        total
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch products by category',
       error: error.message
     });
   }
@@ -463,6 +547,7 @@ module.exports = {
   toggleProductStatus,
   getFeaturedProducts,
   getProductCategories,
+  getProductsByCategory,
   trackPurchase,
   updateStock,
   updateSortOrder,

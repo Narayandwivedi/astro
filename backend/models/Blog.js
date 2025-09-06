@@ -23,7 +23,7 @@ const blogSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["astrology", "horoscope", "spirituality", "meditation", "remedies", "general"],
+    enum: ["astrology", "spirituality", "wellness", "general"],
     default: "general",
   },
   tags: [{

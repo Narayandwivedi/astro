@@ -1,185 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
-import ConsultationModal from '../components/ConsultationModal';
+import BookingModal from '../components/BookingModal';
 
 const ServicesPage = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const openModal = () => {
+  const openModal = (service) => {
+    setSelectedService(service);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setSelectedService(null);
   };
 
-  const services = [
-    {
-      id: 1,
-      title: "Kundli Reading",
-      hindi: "कुंडली पाठन",
-      description: "Complete birth chart analysis with detailed predictions about your future, career, relationships, and life path based on planetary positions.",
-      hindiDesc: "आपकी जन्म कुंडली का संपूर्ण विश्लेषण और भविष्य की सटीक भविष्यवाणी।",
-      icon: "🔮",
-      price: "₹1500",
-      duration: "45-60 mins",
-      category: "Personal"
-    },
-    {
-      id: 2,
-      title: "Business Problems",
-      hindi: "व्यापारिक समस्याएं",
-      description: "Astrological solutions for business growth, partnership issues, financial problems, and finding auspicious timing for business ventures.",
-      hindiDesc: "व्यापार में वृद्धि, साझेदारी की समस्याओं और वित्तीय परेशानियों का समाधान।",
-      icon: "💼",
-      price: "₹2000",
-      duration: "60 mins",
-      category: "Business"
-    },
-    {
-      id: 3,
-      title: "Marriage Problems",
-      hindi: "विवाह संबंधी समस्याएं",
-      description: "Solutions for marriage delays, compatibility issues, marital discord, divorce problems, and finding suitable life partners.",
-      hindiDesc: "विवाह में देरी, वैवाहिक कलह, तलाक की समस्याओं और जीवनसाथी की तलाश का समाधान।",
-      icon: "💕",
-      price: "₹1800",
-      duration: "45 mins",
-      category: "Relationship"
-    },
-    {
-      id: 4,
-      title: "Namkaran Sanskar",
-      hindi: "नामकरण संस्कार",
-      description: "Traditional Hindu naming ceremony with astrological consultation to choose the most auspicious name for your newborn baby.",
-      hindiDesc: "नवजात शिशु के लिए ज्योतिष के अनुसार शुभ नाम का चयन और नामकरण संस्कार।",
-      icon: "👶",
-      price: "₹1200",
-      duration: "30 mins",
-      category: "Ceremonial"
-    },
-    {
-      id: 5,
-      title: "Shani Problems",
-      hindi: "शनि दोष निवारण",
-      description: "Solutions for Saturn-related problems, Sade Sati effects, Shani Dhaiya, and remedies to reduce malefic effects of Saturn.",
-      hindiDesc: "शनि की साढ़े साती, ढैया और शनि दोष के कारण होने वाली समस्याओं का निवारण।",
-      icon: "🪐",
-      price: "₹1600",
-      duration: "50 mins",
-      category: "Remedial"
-    },
-    {
-      id: 6,
-      title: "Career Guidance",
-      hindi: "करियर मार्गदर्शन",
-      description: "Professional career consultation including job changes, promotion timing, suitable career paths, and business opportunities.",
-      hindiDesc: "नौकरी में बदलाव, पदोन्नति, उपयुक्त करियर पथ और व्यापारिक अवसरों की जानकारी।",
-      icon: "🎯",
-      price: "₹1400",
-      duration: "40 mins",
-      category: "Professional"
-    },
-    {
-      id: 7,
-      title: "Health Issues",
-      hindi: "स्वास्थ्य संबंधी समस्याएं",
-      description: "Astrological analysis of health problems, chronic diseases, mental health issues, and preventive measures through planetary remedies.",
-      hindiDesc: "स्वास्थ्य की समस्याओं, पुरानी बीमारियों और मानसिक स्वास्थ्य का ज्योतिषीय विश्लेषण।",
-      icon: "🏥",
-      price: "₹1700",
-      duration: "45 mins",
-      category: "Health"
-    },
-    {
-      id: 8,
-      title: "Property & Real Estate",
-      hindi: "संपत्ति और भूमि संबंधी",
-      description: "Auspicious timing for property purchase, real estate investments, construction work, and resolving property disputes.",
-      hindiDesc: "संपत्ति खरीदने, निर्माण कार्य और भूमि विवादों के लिए शुभ समय और समाधान।",
-      icon: "🏠",
-      price: "₹1900",
-      duration: "50 mins",
-      category: "Property"
-    },
-    {
-      id: 9,
-      title: "Education Problems",
-      hindi: "शिक्षा संबंधी समस्याएं",
-      description: "Solutions for academic challenges, competitive exam success, higher education abroad, and choosing the right educational path.",
-      hindiDesc: "पढ़ाई में कमजोरी, प्रतियोगी परीक्षाओं में सफलता और उच्च शिक्षा की समस्याओं का समाधान।",
-      icon: "📚",
-      price: "₹1300",
-      duration: "35 mins",
-      category: "Education"
-    },
-    {
-      id: 10,
-      title: "Love Affairs",
-      hindi: "प्रेम संबंध",
-      description: "Guidance for love relationships, inter-caste marriage issues, convincing parents, and compatibility between partners.",
-      hindiDesc: "प्रेम विवाह, अंतर्जातीय विवाह, परिवार की सहमति और प्रेमी युगल की अनुकूलता की समस्याएं।",
-      icon: "❤️",
-      price: "₹1500",
-      duration: "40 mins",
-      category: "Relationship"
-    },
-    {
-      id: 11,
-      title: "Foreign Settlement",
-      hindi: "विदेश प्रवास",
-      description: "Astrological guidance for foreign travel, immigration, work visa, studying abroad, and permanent settlement overseas.",
-      hindiDesc: "विदेश जाने, इमिग्रेशन, वर्क वीजा, विदेशी नौकरी और विदेशी निवास की संभावनाओं का विश्लेषण।",
-      icon: "✈️",
-      price: "₹2200",
-      duration: "55 mins",
-      category: "Travel"
-    },
-    {
-      id: 12,
-      title: "Gemstone Consultation",
-      hindi: "रत्न परामर्श",
-      description: "Detailed gemstone recommendation based on your birth chart, proper wearing methods, and gemstone activation rituals.",
-      hindiDesc: "आपकी कुंडली के अनुसार उपयुक्त रत्न की सलाह, पहनने की विधि और रत्न प्राण प्रतिष्ठा।",
-      icon: "💎",
-      price: "₹1100",
-      duration: "30 mins",
-      category: "Remedial"
-    },
-    {
-      id: 13,
-      title: "Vastu Consultation",
-      hindi: "वास्तु परामर्श",
-      description: "Home and office Vastu analysis, corrections for existing structures, and guidance for new construction projects.",
-      hindiDesc: "घर और ऑफिस के वास्तु दोष, मौजूदा भवन के सुधार और नए निर्माण के लिए वास्तु सलाह।",
-      icon: "🏛️",
-      price: "₹2500",
-      duration: "70 mins",
-      category: "Vastu"
-    },
-    {
-      id: 14,
-      title: "Muhurat Consultation",
-      hindi: "मुहूर्त परामर्श",
-      description: "Finding auspicious timing for weddings, business launches, housewarming, vehicle purchase, and important life events.",
-      hindiDesc: "विवाह, व्यापार शुरुआत, गृह प्रवेश, वाहन खरीदारी और महत्वपूर्ण कार्यों के लिए शुभ मुहूर्त।",
-      icon: "📅",
-      price: "₹800",
-      duration: "20 mins",
-      category: "Timing"
-    },
-    {
-      id: 15,
-      title: "Mangal Dosha Analysis",
-      hindi: "मंगल दोष विश्लेषण",
-      description: "Complete analysis of Manglik dosha, its effects on marriage, and effective remedies to neutralize negative impacts.",
-      hindiDesc: "मंगलिक दोष का पूर्ण विश्लेषण, विवाह पर इसके प्रभाव और इसके निवारण के उपाय।",
-      icon: "🔴",
-      price: "₹1400",
-      duration: "40 mins",
-      category: "Remedial"
-    }
-  ];
+  // Fetch services from database
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/services');
+        if (!response.ok) {
+          throw new Error('Failed to fetch services');
+        }
+        const data = await response.json();
+        setServices(data.data || []);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        setError(err.message);
+        // Fallback to empty array if fetch fails
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   const categories = [
     { name: "All", value: "all" },
@@ -188,7 +53,12 @@ const ServicesPage = () => {
     { name: "Relationship", value: "Relationship" },
     { name: "Remedial", value: "Remedial" },
     { name: "Health", value: "Health" },
-    { name: "Education", value: "Education" }
+    { name: "Education", value: "Education" },
+    { name: "Property", value: "Property" },
+    { name: "Travel", value: "Travel" },
+    { name: "Vastu", value: "Vastu" },
+    { name: "Ceremonial", value: "Ceremonial" },
+    { name: "Timing", value: "Timing" }
   ];
 
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -227,18 +97,48 @@ const ServicesPage = () => {
         {/* Services Grid */}
         <section className="py-20 bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
           <div className="container mx-auto px-4 lg:px-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {filteredServices.map((service) => (
-                <div key={service.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
+            {loading ? (
+              <div className="text-center py-16">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+                <p className="mt-4 text-amber-800 font-medium">Loading services...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">⚠️</div>
+                <p className="text-red-600 font-medium mb-4">Failed to load services: {error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-700 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {filteredServices.map((service) => (
+                <div 
+                  key={service._id} 
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2 cursor-pointer"
+                  onClick={() => navigate(`/services/${service._id}`)}
+                >
                   
                   {/* Service Header */}
                   <div className="bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-700 text-white p-4 relative overflow-hidden">
+                    {/* Read More Arrow */}
+                    <div className="absolute top-3 right-3 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+                      <div className="w-8 h-8 bg-gradient-to-br from-white/30 to-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20 shadow-lg">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                    
                     <div className="text-center">
                       <div className="w-12 h-12 bg-amber-950/40 rounded-xl flex items-center justify-center backdrop-blur-sm border-2 border-yellow-700/60 shadow-lg mx-auto mb-3">
                         <span className="text-2xl filter drop-shadow-lg">{service.icon}</span>
                       </div>
-                      <h3 className="text-sm md:text-base font-bold mb-1 group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.title}</h3>
-                      <p className="text-yellow-100 text-xs font-semibold drop-shadow-md">{service.hindi}</p>
+                      <h3 className="text-sm md:text-base font-bold mb-1 group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.titleEn}</h3>
+                      <p className="text-yellow-100 text-xs font-semibold drop-shadow-md">{service.titleHi}</p>
                     </div>
                   </div>
 
@@ -246,13 +146,16 @@ const ServicesPage = () => {
                   <div className="p-4">
                     {/* Price */}
                     <div className="text-center mb-4">
-                      <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent drop-shadow-sm">{service.price}</span>
+                      <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent drop-shadow-sm">₹{service.price}</span>
                       <p className="text-amber-800 text-xs font-semibold">{service.duration}</p>
                     </div>
 
                     {/* Book Now Button */}
                     <button
-                      onClick={openModal}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal(service);
+                      }}
                       className="w-full bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold py-2.5 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-600/60"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -264,7 +167,8 @@ const ServicesPage = () => {
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
         </section>
 
@@ -358,7 +262,7 @@ const ServicesPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-8 justify-center max-w-3xl mx-auto">
                 <button
-                  onClick={openModal}
+                  onClick={() => openModal(null)}
                   className="group relative bg-white text-red-800 font-bold px-12 py-6 rounded-2xl hover:bg-yellow-50 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 overflow-hidden border-4 border-yellow-400"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -384,8 +288,8 @@ const ServicesPage = () => {
 
       </div>
 
-      {/* Consultation Modal */}
-      <ConsultationModal isOpen={isModalOpen} onClose={closeModal} />
+      {/* Booking Modal */}
+      <BookingModal isOpen={isModalOpen} onClose={closeModal} selectedService={selectedService} />
     </>
   );
 };

@@ -98,10 +98,16 @@ const About = () => {
                     <div className="w-12 h-12 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full flex items-center justify-center mr-4">
                       <span className="text-white text-xl">🎓</span>
                     </div>
-                    <h3 className="text-xl font-bold text-amber-900">Shastri Degree</h3>
+                    <div>
+                      <h3 className="text-xl font-bold text-amber-900">Shastri Degree</h3>
+                      <p className="text-amber-700 text-sm font-semibold">शास्त्री उपाधि</p>
+                    </div>
                   </div>
-                  <p className="text-amber-800 leading-relaxed">
-                    वाराणसी के प्रतिष्ठित सम्पूर्णानन्द संस्कृत विश्वविद्यालय से प्राचीन व्याकरण में शास्त्री की उपाधि प्राप्त की।
+                  <p className="text-amber-800 leading-relaxed mb-3">
+                    Shastri degree in Ancient Grammar from Sampurnanand Sanskrit University, Varanasi.
+                  </p>
+                  <p className="text-amber-700 text-sm leading-relaxed">
+                    सम्पूर्णानन्द संस्कृत विश्वविद्यालय, वाराणसी से प्राचीन व्याकरण में शास्त्री की उपाधि प्राप्त की।
                   </p>
                 </div>
 
@@ -110,9 +116,15 @@ const About = () => {
                     <div className="w-12 h-12 bg-gradient-to-r from-yellow-600 to-amber-600 rounded-full flex items-center justify-center mr-4">
                       <span className="text-white text-xl">🎯</span>
                     </div>
-                    <h3 className="text-xl font-bold text-amber-900">Acharya Degree</h3>
+                    <div>
+                      <h3 className="text-xl font-bold text-amber-900">Acharya Degree</h3>
+                      <p className="text-amber-700 text-sm font-semibold">आचार्य उपाधि</p>
+                    </div>
                   </div>
-                  <p className="text-amber-800 leading-relaxed">
+                  <p className="text-amber-800 leading-relaxed mb-3">
+                    Acharya degree in Ancient Grammar and Predictive Astrology from Lal Bahadur National Sanskrit University.
+                  </p>
+                  <p className="text-amber-700 text-sm leading-relaxed">
                     श्री लाल बहादुर राष्ट्रीय संस्कृत विश्वविद्यालय से प्राचीन व्याकरण और फलित ज्योतिष विषयों में आचार्य की उपाधि प्राप्त की।
                   </p>
                 </div>

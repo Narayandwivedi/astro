@@ -16,7 +16,7 @@ const getAllServices = async (req, res) => {
     
     // Filter by enabled status
     if (enabled !== 'all') {
-      query.isEnabled = enabled === 'true';
+      query.isActive = enabled === 'true';
     }
     
     // Filter by category
@@ -24,10 +24,7 @@ const getAllServices = async (req, res) => {
       query.category = category;
     }
     
-    // Filter by popular
-    if (popular === 'true') {
-      query.isPopular = true;
-    }
+    // Filter by popular (removed as simplified model doesn't have this)
 
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -42,13 +39,13 @@ const getAllServices = async (req, res) => {
         sortOptions = { price: -1 };
         break;
       case 'popular':
-        sortOptions = { bookingCount: -1, rating: -1 };
+        sortOptions = { createdAt: -1 };
         break;
       case 'newest':
         sortOptions = { createdAt: -1 };
         break;
       default:
-        sortOptions = { sortOrder: 1, createdAt: -1 };
+        sortOptions = { createdAt: -1 };
     }
 
     const services = await Service.find(query)
@@ -221,7 +218,7 @@ const toggleServiceStatus = async (req, res) => {
       });
     }
     
-    service.isEnabled = enabled;
+    service.isActive = enabled;
     await service.save();
     
     res.json({
@@ -243,7 +240,9 @@ const getPopularServices = async (req, res) => {
   try {
     const { limit = 6 } = req.query;
     
-    const services = await Service.getPopularServices(parseInt(limit));
+    const services = await Service.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit));
     
     res.json({
       success: true,
@@ -261,7 +260,7 @@ const getPopularServices = async (req, res) => {
 // Get service categories
 const getServiceCategories = async (req, res) => {
   try {
-    const categories = await Service.distinct('category', { isEnabled: true });
+    const categories = await Service.distinct('category', { isActive: true });
     
     res.json({
       success: true,
@@ -276,60 +275,6 @@ const getServiceCategories = async (req, res) => {
   }
 };
 
-// Increment booking count (when someone books)
-const incrementBookingCount = async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    const service = await Service.findById(id);
-    
-    if (!service) {
-      return res.status(404).json({
-        success: false,
-        message: 'Service not found'
-      });
-    }
-    
-    await service.incrementBookingCount();
-    
-    res.json({
-      success: true,
-      message: 'Booking count updated',
-      data: service
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update booking count',
-      error: error.message
-    });
-  }
-};
-
-// Bulk update sort order (Admin only)
-const updateSortOrder = async (req, res) => {
-  try {
-    const { services } = req.body; // Array of {id, sortOrder}
-    
-    const updatePromises = services.map(({ id, sortOrder }) =>
-      Service.findByIdAndUpdate(id, { sortOrder })
-    );
-    
-    await Promise.all(updatePromises);
-    
-    res.json({
-      success: true,
-      message: 'Sort order updated successfully'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update sort order',
-      error: error.message
-    });
-  }
-};
-
 module.exports = {
   getAllServices,
   getServiceById,
@@ -338,7 +283,5 @@ module.exports = {
   deleteService,
   toggleServiceStatus,
   getPopularServices,
-  getServiceCategories,
-  incrementBookingCount,
-  updateSortOrder
+  getServiceCategories
 };

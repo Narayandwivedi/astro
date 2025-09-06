@@ -5,49 +5,32 @@ const serviceSchema = new mongoose.Schema({
   titleEn: {
     type: String,
     required: true,
-    trim: true,
-    maxlength: 100
+    trim: true
   },
   titleHi: {
     type: String,
     required: true,
-    trim: true,
-    maxlength: 150
+    trim: true
   },
   
   // Descriptions
-  descriptionEn: {
+  description: {
     type: String,
     required: true,
-    trim: true,
-    maxlength: 500
+    trim: true
   },
-  descriptionHi: {
+  hindiDesc: {
     type: String,
     required: true,
-    trim: true,
-    maxlength: 750
+    trim: true
   },
   
-  // Pricing
+  // Pricing & Details
   price: {
     type: Number,
     required: true,
     min: 0
   },
-  originalPrice: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  discountPercentage: {
-    type: Number,
-    default: function() {
-      return Math.round(((this.originalPrice - this.price) / this.originalPrice) * 100);
-    }
-  },
-  
-  // Service Details
   duration: {
     type: String,
     required: true,
@@ -74,147 +57,35 @@ const serviceSchema = new mongoose.Schema({
   // Visual
   icon: {
     type: String,
-    required: true,
-    maxlength: 10
+    required: true
   },
   
-  // Service Status
-  isEnabled: {
-    type: Boolean,
-    default: true
-  },
-  isPopular: {
-    type: Boolean,
-    default: false
-  },
-  
-  // Service Features
+  // Optional Features
   features: [{
     type: String,
     trim: true
   }],
-  
-  // Booking Options
-  availableOnline: {
-    type: Boolean,
-    default: true
-  },
-  availableOffline: {
-    type: Boolean,
-    default: true
-  },
-  
-  // SEO & Metadata
-  slug: {
+  hindiFeatures: [{
     type: String,
-    unique: true,
-    lowercase: true,
     trim: true
-  },
-  metaDescription: {
-    type: String,
-    maxlength: 160
-  },
+  }],
   
-  // Statistics
-  bookingCount: {
-    type: Number,
-    default: 0
-  },
-  rating: {
-    type: Number,
-    default: 5.0,
-    min: 0,
-    max: 5
-  },
-  reviewCount: {
-    type: Number,
-    default: 0
-  },
-  
-  // Admin Notes
-  adminNotes: {
-    type: String,
-    maxlength: 500
-  },
-  
-  // Sort Order
-  sortOrder: {
-    type: Number,
-    default: 0
+  // Status
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  timestamps: true
 });
 
-// Create slug from English title before saving
-serviceSchema.pre('save', function(next) {
-  if (this.isModified('titleEn') || this.isNew) {
-    this.slug = this.titleEn
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim('-');
-  }
-  next();
-});
-
-// Virtual for formatted price
-serviceSchema.virtual('formattedPrice').get(function() {
-  return `₹${this.price.toLocaleString()}`;
-});
-
-// Virtual for formatted original price
-serviceSchema.virtual('formattedOriginalPrice').get(function() {
-  return `₹${this.originalPrice.toLocaleString()}`;
-});
-
-// Virtual for savings amount
-serviceSchema.virtual('savings').get(function() {
-  return this.originalPrice - this.price;
-});
-
-// Virtual for formatted savings
-serviceSchema.virtual('formattedSavings').get(function() {
-  return `₹${this.savings.toLocaleString()}`;
-});
-
-// Static method to get enabled services by category
-serviceSchema.statics.getEnabledByCategory = function(category = 'all') {
-  const query = { isEnabled: true };
+// Static method to get services by category
+serviceSchema.statics.getByCategory = function(category = 'all') {
+  const query = { isActive: true };
   if (category !== 'all') {
     query.category = category;
   }
-  return this.find(query).sort({ sortOrder: 1, createdAt: -1 });
-};
-
-// Static method to get popular services
-serviceSchema.statics.getPopularServices = function(limit = 6) {
-  return this.find({ 
-    isEnabled: true, 
-    isPopular: true 
-  }).sort({ sortOrder: 1, bookingCount: -1 }).limit(limit);
-};
-
-// Method to increment booking count
-serviceSchema.methods.incrementBookingCount = function() {
-  this.bookingCount += 1;
-  return this.save();
-};
-
-// Method to disable service
-serviceSchema.methods.disable = function() {
-  this.isEnabled = false;
-  return this.save();
-};
-
-// Method to enable service
-serviceSchema.methods.enable = function() {
-  this.isEnabled = true;
-  return this.save();
+  return this.find(query).sort({ createdAt: -1 });
 };
 
 const Service = mongoose.model('Service', serviceSchema);
