@@ -8,6 +8,7 @@ import ServiceManagement from './pages/ServiceManagement'
 import ProductManagement from './pages/ProductManagement'
 import ManageBlogs from './pages/BlogManagement/ManageBlogs'
 import ManageOrders from './pages/OrderManagement/ManageOrders'
+import ManageBookings from './pages/BookingManagement/ManageBookings'
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -49,13 +50,7 @@ function App() {
                     <Route path="/services" element={<ServiceManagement />} />
                     <Route path="/products" element={<ProductManagement />} />
                     <Route path="/blogs" element={<ManageBlogs />} />
-                    <Route path="/bookings" element={
-                      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-                        <div className="text-6xl mb-4">📅</div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Booking Management</h2>
-                        <p className="text-gray-600">Coming Soon - Manage service appointments and schedules</p>
-                      </div>
-                    } />
+                    <Route path="/bookings" element={<ManageBookings />} />
                     <Route path="/customers" element={
                       <div className="bg-white rounded-xl shadow-lg p-8 text-center">
                         <div className="text-6xl mb-4">👥</div>

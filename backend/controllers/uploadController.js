@@ -16,12 +16,46 @@ const PRODUCT_IMAGE_CONFIG = {
   width: 800,        // Standard ecommerce product image width
   height: 800,       // Square aspect ratio for consistency
   quality: 85,       // Good quality with reasonable file size
-  format: 'webp'     // Modern format with better compression
+  format: 'webp',    // Modern format with better compression
+  enableProcessing: false  // Set to false to skip Sharp processing
 };
 
 // Helper function to process and convert image to WebP
 const processImage = async (inputPath, outputPath) => {
+  console.log('Processing image:');
+  console.log('- Input path:', inputPath);
+  console.log('- Output path:', outputPath);
+  
   try {
+    // Ensure input and output paths are different
+    if (path.resolve(inputPath) === path.resolve(outputPath)) {
+      console.error('Path conflict: Input and output paths are the same');
+      throw new Error('Input and output paths cannot be the same');
+    }
+
+    // Check if input file exists
+    if (!fs.existsSync(inputPath)) {
+      console.error('Input file does not exist:', inputPath);
+      throw new Error('Input file does not exist');
+    }
+
+    // Get file stats for logging
+    const inputStats = fs.statSync(inputPath);
+    console.log('- Input file size:', inputStats.size, 'bytes');
+
+    // Ensure output directory exists
+    const outputDir = path.dirname(outputPath);
+    if (!fs.existsSync(outputDir)) {
+      console.log('Creating output directory:', outputDir);
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    console.log('Starting Sharp processing...');
+    
+    // First, let's get image info to see if Sharp can read the file
+    const metadata = await sharp(inputPath).metadata();
+    console.log('Input image metadata:', metadata);
+
     await sharp(inputPath)
       .resize(PRODUCT_IMAGE_CONFIG.width, PRODUCT_IMAGE_CONFIG.height, {
         fit: 'cover',        // Crop to fit dimensions
@@ -29,19 +63,47 @@ const processImage = async (inputPath, outputPath) => {
       })
       .webp({ 
         quality: PRODUCT_IMAGE_CONFIG.quality,
-        effort: 6           // Higher effort for better compression
+        effort: 3           // Reduced effort for faster processing
       })
       .toFile(outputPath);
     
-    // Delete the original file after processing
+    console.log('Sharp processing completed successfully');
+
+    // Verify output file was created
+    if (!fs.existsSync(outputPath)) {
+      throw new Error('Output file was not created');
+    }
+
+    const outputStats = fs.statSync(outputPath);
+    console.log('- Output file size:', outputStats.size, 'bytes');
+    
+    // Delete the original file after successful processing
     if (fs.existsSync(inputPath)) {
+      console.log('Removing original file:', inputPath);
       fs.unlinkSync(inputPath);
     }
     
+    console.log('Image processing completed successfully');
     return true;
   } catch (error) {
     console.error('Image processing error:', error);
-    // If processing fails, keep the original file
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      inputPath,
+      outputPath
+    });
+    
+    // Clean up output file if it was created but processing failed
+    if (fs.existsSync(outputPath)) {
+      try {
+        console.log('Cleaning up failed output file:', outputPath);
+        fs.unlinkSync(outputPath);
+      } catch (cleanupError) {
+        console.error('Error cleaning up failed output file:', cleanupError);
+      }
+    }
+    
     return false;
   }
 };
@@ -75,34 +137,128 @@ const uploadProductImage = (req, res) => {
     }
 
     try {
-      // Create WebP filename
-      const originalName = path.parse(req.file.filename).name;
-      const webpFilename = `${originalName}.webp`;
+      console.log('Upload processing started for file:', req.file);
+      console.log('File details:', {
+        originalname: req.file.originalname,
+        filename: req.file.filename,
+        path: req.file.path,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      });
+
+      // Create output filename - use original name but ensure it's different from input
+      const inputFilename = req.file.filename;
+      const baseName = path.parse(inputFilename).name;
+      const finalWebpFilename = `${baseName}.webp`; // This will be our final filename
       const inputPath = req.file.path;
-      const outputPath = path.join(productImagesDir, webpFilename);
+      
+      // If input is already .webp, we need a different temp name during processing
+      let outputPath;
+      if (inputFilename.endsWith('.webp')) {
+        // Input is webp, use temp name then rename
+        const tempFilename = `${baseName}-temp.webp`;
+        outputPath = path.join(productImagesDir, tempFilename);
+      } else {
+        // Input is not webp, can use final name directly
+        outputPath = path.join(productImagesDir, finalWebpFilename);
+      }
+
+      console.log('Path generation:');
+      console.log('- Input filename:', inputFilename);
+      console.log('- Base name:', baseName);
+      console.log('- Final WebP filename:', finalWebpFilename);
+      console.log('- Input path:', inputPath);
+      console.log('- Output path:', outputPath);
+      console.log('- Product images dir:', productImagesDir);
+
+      // Ensure the paths are different (extra safety check)
+      if (path.resolve(inputPath) === path.resolve(outputPath)) {
+        console.error('Path conflict detected!');
+        const uniqueWebpFilename = `${originalName}-${timestamp}.webp`;
+        const uniqueOutputPath = path.join(productImagesDir, uniqueWebpFilename);
+        console.log('Would use unique path:', uniqueOutputPath);
+        return res.status(500).json({
+          success: false,
+          message: 'Internal error: Input and output paths conflict. Please try again.'
+        });
+      }
+
+      // Check if processing is enabled
+      if (!PRODUCT_IMAGE_CONFIG.enableProcessing) {
+        console.log('Sharp processing disabled, using original file');
+        const stats = fs.statSync(inputPath);
+        const imageUrl = `images/products/${inputFilename}`;
+        
+        return res.json({
+          success: true,
+          message: 'Image uploaded successfully (processing disabled)',
+          data: {
+            url: imageUrl,
+            filename: inputFilename,
+            originalName: req.file.originalname,
+            size: stats.size,
+            dimensions: 'original',
+            format: path.extname(inputFilename).substring(1),
+            uploadedAt: new Date()
+          }
+        });
+      }
 
       // Process and convert image to WebP
+      console.log('About to process image with Sharp...');
       const processed = await processImage(inputPath, outputPath);
+      console.log('Sharp processing result:', processed);
       
       if (!processed) {
+        console.error('Sharp processing failed, but upload was successful');
+        // Check if original file exists and use it as fallback
+        if (fs.existsSync(inputPath)) {
+          console.log('Using original file as fallback');
+          const stats = fs.statSync(inputPath);
+          const imageUrl = `images/products/${inputFilename}`;
+          
+          return res.json({
+            success: true,
+            message: 'Image uploaded successfully (original format preserved)',
+            data: {
+              url: imageUrl,
+              filename: inputFilename,
+              originalName: req.file.originalname,
+              size: stats.size,
+              dimensions: 'original',
+              format: path.extname(inputFilename).substring(1),
+              uploadedAt: new Date()
+            }
+          });
+        }
+        
         return res.status(500).json({
           success: false,
           message: 'Failed to process image. Please try again.'
         });
       }
 
+      // If we used a temp file, rename it to the final filename
+      let finalPath = outputPath;
+      if (inputFilename.endsWith('.webp') && outputPath.includes('-temp.webp')) {
+        const finalOutputPath = path.join(productImagesDir, finalWebpFilename);
+        fs.renameSync(outputPath, finalOutputPath);
+        finalPath = finalOutputPath;
+        console.log('Renamed temp file to final path:', finalOutputPath);
+      }
+
       // Get file stats for the processed image
-      const stats = fs.statSync(outputPath);
+      const stats = fs.statSync(finalPath);
 
       // Generate reference path for the uploaded file (store relative path only)
-      const imageUrl = `images/products/${webpFilename}`;
+      const imageUrl = `images/products/${finalWebpFilename}`;
 
       res.json({
         success: true,
         message: 'Image uploaded and processed successfully',
         data: {
           url: imageUrl,
-          filename: webpFilename,
+          filename: finalWebpFilename,
           originalName: req.file.originalname,
           size: stats.size,
           dimensions: `${PRODUCT_IMAGE_CONFIG.width}x${PRODUCT_IMAGE_CONFIG.height}`,
@@ -160,9 +316,16 @@ const uploadProductImages = (req, res) => {
       // Process each uploaded image
       for (const file of req.files) {
         const originalName = path.parse(file.filename).name;
-        const webpFilename = `${originalName}.webp`;
+        const timestamp = Date.now() + Math.random(); // Add randomness for uniqueness
+        const webpFilename = `${originalName}-processed.webp`; // Add suffix to ensure different name
         const inputPath = file.path;
         const outputPath = path.join(productImagesDir, webpFilename);
+
+        // Skip if paths are the same (safety check)
+        if (path.resolve(inputPath) === path.resolve(outputPath)) {
+          console.warn('Skipping file due to path conflict:', file.filename);
+          continue;
+        }
 
         // Process and convert image to WebP
         const processed = await processImage(inputPath, outputPath);

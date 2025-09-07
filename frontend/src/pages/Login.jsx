@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import GoogleLogin from '../components/GoogleLogin'
 
 const Login = () => {
   const { login, signup, BACKEND_URL } = useContext(AppContext)
@@ -213,7 +214,20 @@ const Login = () => {
             </div>
 
             {isLogin ? (
-              <form onSubmit={handleLogin} className="space-y-6">
+              <>
+                {/* Google Login Component - Top of Login Form */}
+                <div className="mb-6">
+                  <GoogleLogin />
+                </div>
+
+                {/* Login Divider */}
+                <div className="flex items-center my-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-gray-300"></div>
+                  <span className="px-4 text-sm text-gray-500 font-medium bg-white">or sign in with email</span>
+                  <div className="flex-1 h-px bg-gradient-to-l from-transparent via-gray-300 to-gray-300"></div>
+                </div>
+
+                <form onSubmit={handleLogin} className="space-y-6">
                 <div className="relative">
                   <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
                     <span className="mr-2">📧</span>
@@ -283,7 +297,20 @@ const Login = () => {
                   </button>
                 </div>
               </form>
+              </>
             ) : (
+              <>
+                {/* Google Login Component - Top of Signup Form */}
+                <div className="mb-6">
+                  <GoogleLogin />
+                </div>
+
+                {/* Signup Divider */}
+                <div className="flex items-center my-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-gray-300"></div>
+                  <span className="px-4 text-sm text-gray-500 font-medium bg-white">or create account with email</span>
+                  <div className="flex-1 h-px bg-gradient-to-l from-transparent via-gray-300 to-gray-300"></div>
+                </div>
               <form onSubmit={handleSignup} className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-800 mb-1">
@@ -373,6 +400,7 @@ const Login = () => {
                   </button>
                 </div>
               </form>
+              </>
             )}
           </>
         ) : (

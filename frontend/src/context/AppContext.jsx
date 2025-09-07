@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
 
-const BACKEND_URL = 'http://localhost:5000'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
 export const AppContextProvider = (props) => {
   const navigate = useNavigate()

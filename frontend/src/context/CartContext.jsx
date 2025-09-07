@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { AppContext } from './AppContext';
+import axios from 'axios';
 
 // Create Cart Context
 const CartContext = createContext();
@@ -128,10 +130,36 @@ const initialCartState = {
 
 // Cart Context Provider
 export const CartProvider = ({ children }) => {
+  const { BACKEND_URL, isAuthenticated, user } = useContext(AppContext);
   const [cartState, dispatch] = useReducer(cartReducer, initialCartState);
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage or server based on authentication
   useEffect(() => {
+    if (isAuthenticated === null) return; // Wait for auth check to complete
+
+    if (isAuthenticated) {
+      // Load cart from server for authenticated users
+      loadCartFromServer();
+    } else {
+      // Load cart from localStorage for non-authenticated users
+      loadCartFromLocalStorage();
+    }
+  }, [isAuthenticated, user]);
+
+  // Save cart to appropriate storage whenever cart changes
+  useEffect(() => {
+    if (isAuthenticated === null) return; // Wait for auth check to complete
+
+    if (isAuthenticated) {
+      // Don't save to localStorage for authenticated users
+      // Cart operations will be synced with server directly
+    } else {
+      // Save to localStorage for non-authenticated users
+      saveCartToLocalStorage();
+    }
+  }, [cartState.items, isAuthenticated]);
+
+  const loadCartFromLocalStorage = () => {
     try {
       const savedCart = localStorage.getItem('astro-satya-cart');
       if (savedCart) {
@@ -141,41 +169,159 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error('Error loading cart from localStorage:', error);
     }
-  }, []);
+  };
 
-  // Save cart to localStorage whenever cart changes
-  useEffect(() => {
+  const saveCartToLocalStorage = () => {
     try {
       localStorage.setItem('astro-satya-cart', JSON.stringify(cartState.items));
     } catch (error) {
       console.error('Error saving cart to localStorage:', error);
     }
-  }, [cartState.items]);
+  };
+
+  const loadCartFromServer = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/cart`, {
+        withCredentials: true
+      });
+      
+      if (response.data.success) {
+        const serverCart = response.data.data;
+        dispatch({ 
+          type: CART_ACTIONS.LOAD_CART, 
+          payload: serverCart.items || [] 
+        });
+      }
+    } catch (error) {
+      console.error('Error loading cart from server:', error);
+      // Fallback to localStorage if server fails
+      loadCartFromLocalStorage();
+    }
+  };
 
   // Cart actions
-  const addToCart = (product, quantity = 1, specifications = '') => {
-    dispatch({
-      type: CART_ACTIONS.ADD_TO_CART,
-      payload: { product, quantity, specifications }
-    });
+  const addToCart = async (product, quantity = 1, specifications = '') => {
+    if (isAuthenticated) {
+      // Add to server cart for authenticated users
+      try {
+        const response = await axios.post(`${BACKEND_URL}/api/cart/add`, {
+          productId: product._id,
+          quantity,
+          specifications
+        }, {
+          withCredentials: true
+        });
+
+        if (response.data.success) {
+          const serverCart = response.data.data;
+          dispatch({ 
+            type: CART_ACTIONS.LOAD_CART, 
+            payload: serverCart.items || [] 
+          });
+        }
+      } catch (error) {
+        console.error('Error adding to server cart:', error);
+        // Fallback to local state
+        dispatch({
+          type: CART_ACTIONS.ADD_TO_CART,
+          payload: { product, quantity, specifications }
+        });
+      }
+    } else {
+      // Add to local cart for non-authenticated users
+      dispatch({
+        type: CART_ACTIONS.ADD_TO_CART,
+        payload: { product, quantity, specifications }
+      });
+    }
   };
 
-  const removeFromCart = (itemId) => {
-    dispatch({
-      type: CART_ACTIONS.REMOVE_FROM_CART,
-      payload: { itemId }
-    });
+  const removeFromCart = async (itemId) => {
+    if (isAuthenticated) {
+      // Remove from server cart for authenticated users
+      try {
+        const response = await axios.delete(`${BACKEND_URL}/api/cart/remove/${itemId}`, {
+          withCredentials: true
+        });
+
+        if (response.data.success) {
+          const serverCart = response.data.data;
+          dispatch({ 
+            type: CART_ACTIONS.LOAD_CART, 
+            payload: serverCart.items || [] 
+          });
+        }
+      } catch (error) {
+        console.error('Error removing from server cart:', error);
+        // Fallback to local state
+        dispatch({
+          type: CART_ACTIONS.REMOVE_FROM_CART,
+          payload: { itemId }
+        });
+      }
+    } else {
+      // Remove from local cart for non-authenticated users
+      dispatch({
+        type: CART_ACTIONS.REMOVE_FROM_CART,
+        payload: { itemId }
+      });
+    }
   };
 
-  const updateQuantity = (itemId, quantity) => {
-    dispatch({
-      type: CART_ACTIONS.UPDATE_QUANTITY,
-      payload: { itemId, quantity }
-    });
+  const updateQuantity = async (itemId, quantity) => {
+    if (isAuthenticated) {
+      // Update server cart for authenticated users
+      try {
+        const response = await axios.put(`${BACKEND_URL}/api/cart/update/${itemId}`, {
+          quantity
+        }, {
+          withCredentials: true
+        });
+
+        if (response.data.success) {
+          const serverCart = response.data.data;
+          dispatch({ 
+            type: CART_ACTIONS.LOAD_CART, 
+            payload: serverCart.items || [] 
+          });
+        }
+      } catch (error) {
+        console.error('Error updating server cart:', error);
+        // Fallback to local state
+        dispatch({
+          type: CART_ACTIONS.UPDATE_QUANTITY,
+          payload: { itemId, quantity }
+        });
+      }
+    } else {
+      // Update local cart for non-authenticated users
+      dispatch({
+        type: CART_ACTIONS.UPDATE_QUANTITY,
+        payload: { itemId, quantity }
+      });
+    }
   };
 
-  const clearCart = () => {
-    dispatch({ type: CART_ACTIONS.CLEAR_CART });
+  const clearCart = async () => {
+    if (isAuthenticated) {
+      // Clear server cart for authenticated users
+      try {
+        const response = await axios.delete(`${BACKEND_URL}/api/cart/clear`, {
+          withCredentials: true
+        });
+
+        if (response.data.success) {
+          dispatch({ type: CART_ACTIONS.CLEAR_CART });
+        }
+      } catch (error) {
+        console.error('Error clearing server cart:', error);
+        // Fallback to local state
+        dispatch({ type: CART_ACTIONS.CLEAR_CART });
+      }
+    } else {
+      // Clear local cart for non-authenticated users
+      dispatch({ type: CART_ACTIONS.CLEAR_CART });
+    }
   };
 
   // Helper functions
@@ -213,6 +359,54 @@ export const CartProvider = ({ children }) => {
     };
   };
 
+  // Handle cart migration when user logs in
+  const mergeCartOnLogin = async () => {
+    if (!isAuthenticated || cartState.items.length === 0) return;
+
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/cart/merge`, {
+        localCartItems: cartState.items
+      }, {
+        withCredentials: true
+      });
+
+      if (response.data.success) {
+        const mergedCart = response.data.data;
+        dispatch({ 
+          type: CART_ACTIONS.LOAD_CART, 
+          payload: mergedCart.items || [] 
+        });
+
+        // Clear localStorage after successful merge
+        try {
+          localStorage.removeItem('astro-satya-cart');
+        } catch (error) {
+          console.error('Error clearing localStorage after merge:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error merging cart on login:', error);
+    }
+  };
+
+  // Watch for authentication changes and merge cart when user logs in
+  useEffect(() => {
+    if (isAuthenticated === true && user) {
+      // User just logged in, check if we need to merge localStorage cart
+      const localCart = localStorage.getItem('astro-satya-cart');
+      if (localCart) {
+        try {
+          const parsedCart = JSON.parse(localCart);
+          if (parsedCart && parsedCart.length > 0) {
+            mergeCartOnLogin();
+          }
+        } catch (error) {
+          console.error('Error parsing local cart for merge:', error);
+        }
+      }
+    }
+  }, [isAuthenticated, user]);
+
   const contextValue = {
     // State
     cart: cartState,
@@ -230,7 +424,8 @@ export const CartProvider = ({ children }) => {
     getProductQuantityInCart,
     getShippingCost,
     getFinalTotal,
-    getCartSummary
+    getCartSummary,
+    mergeCartOnLogin
   };
 
   return (

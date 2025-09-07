@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Hero from '../components/Hero'
 import Navigation from '../components/Navigation'
 import ConsultationModal from '../components/ConsultationModal'
+import { useCart } from '../context/CartContext'
+import { useApi } from '../context/ApiContext'
 
 const Homepage = () => {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const api = useApi();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [servicesError, setServicesError] = useState(null);
+  const [productsError, setProductsError] = useState(null);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -18,28 +26,65 @@ const Homepage = () => {
     setIsModalOpen(false);
   };
 
+  const handleAddToCart = (product, e) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    addToCart(product, 1);
+  };
+
+  const handleBuyNow = (product, e) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    addToCart(product, 1);
+    navigate('/cart');
+  };
+
   // Fetch services from API
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        setLoading(true);
+        setServicesLoading(true);
         const response = await fetch('http://localhost:5000/api/services/popular?limit=6');
         const data = await response.json();
         
         if (data.success) {
           setServices(data.data);
         } else {
-          setError('Failed to fetch services');
+          setServicesError('Failed to fetch services');
         }
       } catch (err) {
         console.error('Error fetching services:', err);
-        setError('Failed to load services');
+        setServicesError('Failed to load services');
       } finally {
-        setLoading(false);
+        setServicesLoading(false);
       }
     };
 
     fetchServices();
+  }, []);
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setProductsLoading(true);
+        const response = await fetch('http://localhost:5000/api/products?limit=6&featured=true');
+        const data = await response.json();
+        
+        if (data.success) {
+          setProducts(data.data);
+        } else {
+          setProductsError('Failed to fetch products');
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProductsError('Failed to load products');
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -127,7 +172,7 @@ const Homepage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {loading ? (
+            {servicesLoading ? (
               // Loading skeleton
               Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-xl p-6 animate-pulse">
@@ -137,10 +182,10 @@ const Homepage = () => {
                   <div className="h-8 bg-gray-300 rounded"></div>
                 </div>
               ))
-            ) : error ? (
+            ) : servicesError ? (
               // Error state
               <div className="col-span-full text-center py-8">
-                <div className="text-red-500 text-lg font-semibold">{error}</div>
+                <div className="text-red-500 text-lg font-semibold">{servicesError}</div>
                 <p className="text-gray-600 mt-2">Please try refreshing the page</p>
               </div>
             ) : services.length === 0 ? (
@@ -236,63 +281,32 @@ const Homepage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                id: 1,
-                name: "5 Mukhi Rudraksha",
-                hindi: "पांच मुखी रुद्राक्ष",
-                description: "Powerful 5 Mukhi Rudraksha for health, wealth, and overall well-being.",
-                icon: "🌿",
-                price: "₹500",
-                originalPrice: "₹800"
-              },
-              {
-                id: 2,
-                name: "Blue Sapphire (Neelam)",
-                hindi: "नीलम रत्न",
-                description: "Original Blue Sapphire gemstone for Saturn planet and career success.",
-                icon: "💎",
-                price: "₹8,500",
-                originalPrice: "₹12,000"
-              },
-              {
-                id: 3,
-                name: "Yellow Sapphire (Pukhraj)",
-                hindi: "पुखराज रत्न",
-                description: "Natural Yellow Sapphire for Jupiter bringing wisdom and prosperity.",
-                icon: "💛",
-                price: "₹6,500",
-                originalPrice: "₹9,000"
-              },
-              {
-                id: 4,
-                name: "Sphatik Mala",
-                hindi: "स्फटिक माला",
-                description: "Pure Crystal prayer beads for meditation and spiritual practices.",
-                icon: "📿",
-                price: "₹800",
-                originalPrice: "₹1,200"
-              },
-              {
-                id: 5,
-                name: "Shree Yantra",
-                hindi: "श्री यंत्र",
-                description: "Sacred geometric yantra for wealth, prosperity and spiritual growth.",
-                icon: "🔶",
-                price: "₹2,500",
-                originalPrice: "₹3,500"
-              },
-              {
-                id: 6,
-                name: "Navgraha Yantra",
-                hindi: "नवग्रह यंत्र",
-                description: "Complete set of nine planetary yantras for cosmic harmony.",
-                icon: "⭐",
-                price: "₹4,500",
-                originalPrice: "₹6,000"
-              }
-            ].map((product) => (
-              <div key={product.id} className="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
+            {productsLoading ? (
+              // Loading skeleton
+              Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-2xl shadow-xl p-6 animate-pulse">
+                  <div className="h-4 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-8 bg-gray-300 rounded"></div>
+                </div>
+              ))
+            ) : productsError ? (
+              // Error state
+              <div className="col-span-full text-center py-8">
+                <div className="text-red-500 text-lg font-semibold">{productsError}</div>
+                <p className="text-gray-600 mt-2">Please try refreshing the page</p>
+              </div>
+            ) : products.length === 0 ? (
+              // No products state
+              <div className="col-span-full text-center py-8">
+                <div className="text-gray-500 text-lg font-semibold">No products available</div>
+                <p className="text-gray-400 mt-2">Products will appear here once they are added</p>
+              </div>
+            ) : (
+              // Products list
+              products.map((product) => (
+              <div key={product._id} className="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
                 
                 {/* Product Header */}
                 <div className="bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-700 text-white p-4 relative overflow-hidden">
@@ -305,13 +319,29 @@ const Homepage = () => {
                   <div className="relative z-10">
                     <div className="flex items-center justify-center gap-3">
                       <div className="w-10 h-10 bg-amber-950/40 rounded-lg flex items-center justify-center border-2 border-yellow-600/50 shadow-lg">
-                        <span className="text-xl filter drop-shadow-lg">{product.icon}</span>
+                        <span className="text-xl filter drop-shadow-lg">{product.icon || '🔸'}</span>
                       </div>
                       <h3 className="text-lg font-bold group-hover:text-yellow-300 transition-colors drop-shadow-lg">{product.name}</h3>
                     </div>
-                    <p className="text-yellow-100 text-xs font-semibold drop-shadow-md text-center -mt-0.5">{product.hindi}</p>
+                    <p className="text-yellow-100 text-xs font-semibold drop-shadow-md text-center -mt-0.5">{product.nameHi}</p>
                   </div>
                 </div>
+
+                {/* Product Image */}
+                {product.images && product.images.length > 0 && (
+                  <div className="h-32 overflow-hidden">
+                    <img 
+                      src={api.getImageURL(product.images[0])}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                        e.target.parentElement.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
 
                 {/* Product Content */}
                 <div className="p-4 md:p-6">
@@ -321,31 +351,66 @@ const Homepage = () => {
                   
                   <div className="flex justify-between items-center mb-4 md:mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 md:p-4 rounded-lg shadow-inner border border-amber-200">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent">{product.price}</span>
-                      <span className="text-sm text-gray-500 line-through">{product.originalPrice}</span>
+                      <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-900 via-yellow-800 to-orange-800 bg-clip-text text-transparent">₹{product.price}</span>
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+                      )}
                     </div>
                     <div className="flex items-center">
-                      <div className="w-2 h-2 md:w-3 md:h-3 bg-green-600 rounded-full mr-2 animate-pulse shadow-md"></div>
-                      <p className="text-xs md:text-sm text-green-700 font-bold">In Stock</p>
+                      <div className={`w-2 h-2 md:w-3 md:h-3 ${product.inStock ? 'bg-green-600' : 'bg-red-600'} rounded-full mr-2 animate-pulse shadow-md`}></div>
+                      <p className={`text-xs md:text-sm font-bold ${product.inStock ? 'text-green-700' : 'text-red-700'}`}>
+                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Buy Now Button */}
-                  <a
-                    href={`https://wa.me/91883945431?text=Hi,%20I%20want%20to%20buy%20${encodeURIComponent(product.name)}%20for%20${encodeURIComponent(product.price)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-600/60 inline-flex items-center justify-center"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                    <span className="relative z-10 flex items-center justify-center drop-shadow-md">
-                      <span className="mr-2 text-base md:text-lg">🛒</span>
-                      <span className="text-sm md:text-base">Buy Now</span>
-                    </span>
-                  </a>
+                  {/* Action Buttons */}
+                  {product.inStock ? (
+                    <div className="flex flex-col gap-2">
+                      {/* Add to Cart Button */}
+                      <button
+                        onClick={(e) => handleAddToCart(product, e)}
+                        className="w-full border-2 border-amber-600 text-amber-700 hover:bg-amber-600 hover:text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl transition-all duration-300 inline-flex items-center justify-center"
+                      >
+                        <span className="mr-2 text-base md:text-lg">🛒</span>
+                        <span className="text-sm md:text-base">Add to Cart</span>
+                      </button>
+
+                      {/* Buy Now Button */}
+                      <button
+                        onClick={(e) => handleBuyNow(product, e)}
+                        className="w-full bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold py-2 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-600/60 inline-flex items-center justify-center"
+                      >
+                        <span className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                        <span className="relative z-10 flex items-center justify-center drop-shadow-md">
+                          <span className="mr-2 text-base md:text-lg">⚡</span>
+                          <span className="text-sm md:text-base">Buy Now</span>
+                        </span>
+                      </button>
+
+                      {/* View Product Link */}
+                      <Link
+                        to={`/shop/product/${product._id}`}
+                        className="w-full text-amber-700 hover:text-amber-800 font-semibold py-1 md:py-2 px-4 md:px-6 text-center text-xs md:text-sm underline hover:no-underline transition-all duration-300"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  ) : (
+                    <button
+                      disabled
+                      className="w-full bg-gray-400 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl cursor-not-allowed opacity-60 inline-flex items-center justify-center"
+                    >
+                      <span className="flex items-center justify-center">
+                        <span className="mr-2 text-base md:text-lg">❌</span>
+                        <span className="text-sm md:text-base">Out of Stock</span>
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
 
           <div className="text-center mt-12">

@@ -6,6 +6,7 @@ const {
   generateResetPassOTP,
   submitResetPassOTP,
   isloggedin,
+  handleGoogleAuth,
 } = require("../controllers/authController.js");
 
 const router = express.Router();
@@ -18,5 +19,8 @@ router.post("/forgot-password", generateResetPassOTP);
 router.post("/reset-password", submitResetPassOTP);
 
 router.get("/status", isloggedin);
+
+// Google OAuth route
+router.post("/google", handleGoogleAuth);
 
 module.exports = router;

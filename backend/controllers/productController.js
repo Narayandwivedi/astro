@@ -35,7 +35,7 @@ const getAllProducts = async (req, res) => {
     
     // Filter by featured
     if (featured === 'true') {
-      query.isFeatured = true;
+      query.featured = true;
     }
     
     // Price range filter

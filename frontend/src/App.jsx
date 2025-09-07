@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ApiProvider } from './context/ApiContext';
 import { AppContextProvider } from './context/AppContext';
 import { CartProvider } from './context/CartContext';
@@ -23,9 +25,9 @@ import './App.css'
 function App() {
   return (
     <ApiProvider>
-      <CartProvider>
-        <Router>
-          <AppContextProvider>
+      <Router>
+        <AppContextProvider>
+          <CartProvider>
             <div className="App w-full">
             <div className="w-full">
               <Routes>
@@ -51,10 +53,24 @@ function App() {
             {/* Mobile Bottom Navigation - Only visible on mobile */}
             <MobileBottomNav />
           </div>
+          </CartProvider>
         </AppContextProvider>
       </Router>
-    </CartProvider>
-  </ApiProvider>
+      
+      {/* Toast Notifications */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </ApiProvider>
   )
 }
 

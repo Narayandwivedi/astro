@@ -173,22 +173,74 @@ const About = () => {
                 विस्तृत परिचय - Detailed Background
               </h2>
               
-              <div className="space-y-6 text-amber-900">
-                <p className="text-lg leading-relaxed">
-                  मेरी जीवन यात्रा का आरंभ अयोध्या की उस पावन भूमि से हुआ, जहाँ सदियों से वैदिक ज्ञान और सनातन परंपरा का प्रवाह अविरल बह रहा है। मैंने अपनी प्रारंभिक शिक्षा वहीं की गुरुकुल परंपरा के कठोर अनुशासन में प्राप्त की, जिसने मेरे भीतर वैदिक संस्कारों की गहरी नींव रखी।
-                </p>
+              <div className="space-y-8 text-amber-900">
+                {/* Early Life & Foundation */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-2xl border-l-4 border-amber-500">
+                  <h3 className="text-xl font-bold text-amber-900 mb-4 flex items-center">
+                    <span className="mr-2">🏛️</span>
+                    प्रारंभिक जीवन और आध्यात्मिक नींव - Early Life & Spiritual Foundation
+                  </h3>
+                  <p className="text-lg leading-relaxed mb-4">
+                    <strong>हिंदी:</strong> मेरी जीवन यात्रा का आरंभ अयोध्या की उस पावन भूमि से हुआ, जहाँ सदियों से वैदिक ज्ञान और सनातन परंपरा का प्रवाह अविरल बह रहा है। मैंने अपनी प्रारंभिक शिक्षा वहीं की गुरुकुल परंपरा के कठोर अनुशासन में प्राप्त की, जिसने मेरे भीतर वैदिक संस्कारों की गहरी नींव रखी।
+                  </p>
+                  <p className="text-base leading-relaxed text-amber-800">
+                    <strong>English:</strong> My life journey began in the sacred land of Ayodhya, where Vedic knowledge and eternal traditions have been flowing uninterrupted for centuries. I received my early education in the strict discipline of the traditional Gurukul system, which laid a deep foundation of Vedic values and principles within me.
+                  </p>
+                </div>
                 
-                <p className="text-lg leading-relaxed">
-                  इसके बाद, आधुनिक शिक्षा पद्धति से जुड़ने के लिए मैंने वाराणसी के प्रतिष्ठित सम्पूर्णानन्द संस्कृत विश्वविद्यालय से प्राचीन व्याकरण में शास्त्री की उपाधि प्राप्त की। ज्ञान की इस यात्रा में, श्री लाल बहादुर राष्ट्रीय संस्कृत विश्वविद्यालय से मैंने प्राचीन व्याकरण के साथ-साथ फलित ज्योतिष में आचार्य की उपाधि प्राप्त कर अपनी विशेषज्ञता को एक नई दिशा दी।
-                </p>
+                {/* Academic Pursuits */}
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 p-6 rounded-2xl border-l-4 border-yellow-500">
+                  <h3 className="text-xl font-bold text-amber-900 mb-4 flex items-center">
+                    <span className="mr-2">📚</span>
+                    शैक्षिक यात्रा और उच्च अध्ययन - Academic Journey & Higher Studies
+                  </h3>
+                  <p className="text-lg leading-relaxed mb-4">
+                    <strong>हिंदी:</strong> इसके बाद, आधुनिक शिक्षा पद्धति से जुड़ने के लिए मैंने वाराणसी के प्रतिष्ठित सम्पूर्णानन्द संस्कृत विश्वविद्यालय से प्राचीन व्याकरण में शास्त्री की उपाधि प्राप्त की। ज्ञान की इस यात्रा में, श्री लाल बहादुर राष्ट्रीय संस्कृत विश्वविद्यालय से मैंने प्राचीन व्याकरण के साथ-साथ फलित ज्योतिष में आचार्य की उपाधि प्राप्त कर अपनी विशेषज्ञता को एक नई दिशा दी।
+                  </p>
+                  <p className="text-base leading-relaxed text-amber-800">
+                    <strong>English:</strong> Subsequently, to connect with modern educational systems, I obtained my Shastri degree in Ancient Grammar from the prestigious Sampurnanand Sanskrit University, Varanasi. In this journey of knowledge, I earned my Acharya degree in Ancient Grammar and Predictive Astrology from Shri Lal Bahadur National Sanskrit University, giving a new dimension to my expertise.
+                  </p>
+                </div>
+
+                {/* Deep Study of Scriptures */}
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-2xl border-l-4 border-orange-500">
+                  <h3 className="text-xl font-bold text-amber-900 mb-4 flex items-center">
+                    <span className="mr-2">📖</span>
+                    शास्त्रों का गहन अध्ययन - Deep Study of Sacred Scriptures
+                  </h3>
+                  <p className="text-lg leading-relaxed mb-4">
+                    <strong>हिंदी:</strong> मेरे अध्ययन का विस्तार केवल पाठ्यक्रमों तक सीमित नहीं रहा, बल्कि मैंने वेद, उपनिषद, श्रीमद्भागवत महापुराण, श्री वाल्मीकि रामायण जैसे अमर ग्रंथों और ज्योतिष-वास्तु के अनेक प्राचीन सूत्रों का भी गहन मंथन किया। इन पवित्र ग्रंथों से प्राप्त ज्ञान ने मेरे जीवन दर्शन को आकार दिया और मुझे जीवन की गहरी सच्चाइयों से अवगत कराया।
+                  </p>
+                  <p className="text-base leading-relaxed text-amber-800">
+                    <strong>English:</strong> My studies were not limited to formal curriculum alone, but I also conducted deep research into immortal scriptures like the Vedas, Upanishads, Srimad Bhagavat Mahapurana, Shri Valmiki Ramayana, and numerous ancient treatises on Astrology and Vastu. The wisdom gained from these sacred texts shaped my life philosophy and provided me with deep insights into life's profound truths.
+                  </p>
+                </div>
+
+                {/* Practical Experience & Skills */}
+                <div className="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-2xl border-l-4 border-red-500">
+                  <h3 className="text-xl font-bold text-amber-900 mb-4 flex items-center">
+                    <span className="mr-2">⚡</span>
+                    व्यावहारिक अनुभव और कौशल - Practical Experience & Skills
+                  </h3>
+                  <p className="text-lg leading-relaxed mb-4">
+                    <strong>हिंदी:</strong> पिछले एक दशक से अधिक समय में, मैंने हजारों लोगों को उनकी जीवन की समस्याओं के समाधान प्रदान किए हैं। चाहे वह विवाह संबंधी चुनौतियां हों, व्यवसायिक कठिनाइयाँ हों, स्वास्थ्य संबंधी परेशानियाँ हों या वास्तु दोष - मैंने हर क्षेत्र में अपनी विशेषज्ञता का प्रयोग करके लोगों के जीवन में सकारात्मक परिवर्तन लाया है।
+                  </p>
+                  <p className="text-base leading-relaxed text-amber-800">
+                    <strong>English:</strong> Over the past decade, I have provided solutions to thousands of people for their life problems. Whether it's matrimonial challenges, business difficulties, health concerns, or Vastu defects - I have utilized my expertise in every field to bring positive transformations in people's lives. My approach combines traditional wisdom with practical solutions suitable for modern times.
+                  </p>
+                </div>
                 
-                <p className="text-lg leading-relaxed">
-                  मेरे अध्ययन का विस्तार केवल पाठ्यक्रमों तक सीमित नहीं रहा, बल्कि मैंने वेद, उपनिषद, श्रीमद्भागवत महापुराण, श्री वाल्मीकि रामायण जैसे अमर ग्रंथों और ज्योतिष-वास्तु के अनेक प्राचीन सूत्रों का भी गहन मंथन किया।
-                </p>
-                
-                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-6 rounded-2xl border-l-4 border-amber-600">
-                  <p className="text-lg leading-relaxed font-semibold">
-                    आज, अपनी इसी ज्योतिष, वास्तु और कर्मकांड की विशेषज्ञता के साथ, मैं लोगों के जीवन की चुनौतियों को समझकर उन्हें सही मार्गदर्शन देने और उनके जीवन में सकारात्मक बदलाव लाने के लिए समर्पित हूँ।
+                {/* Mission & Dedication */}
+                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-8 rounded-2xl border-2 border-amber-400 shadow-xl">
+                  <h3 className="text-2xl font-bold text-amber-900 mb-6 text-center flex items-center justify-center">
+                    <span className="mr-3">🙏</span>
+                    मेरा मिशन - My Mission
+                  </h3>
+                  <p className="text-lg leading-relaxed font-semibold mb-4 text-center">
+                    <strong>हिंदी:</strong> आज, अपनी इसी ज्योतिष, वास्तु और कर्मकांड की विशेषज्ञता के साथ, मैं लोगों के जीवन की चुनौतियों को समझकर उन्हें सही मार्गदर्शन देने और उनके जीवन में सकारात्मक बदलाव लाने के लिए समर्पित हूँ। मेरा उद्देश्य है कि हर व्यक्ति अपने जीवन में खुशी, शांति और समृद्धि प्राप्त करे।
+                  </p>
+                  <p className="text-base leading-relaxed text-amber-800 text-center">
+                    <strong>English:</strong> Today, with my expertise in Astrology, Vastu, and Vedic rituals, I am dedicated to understanding people's life challenges and providing them with proper guidance to bring positive changes in their lives. My goal is that every person achieves happiness, peace, and prosperity in their life through the ancient wisdom of our sacred traditions.
                   </p>
                 </div>
               </div>

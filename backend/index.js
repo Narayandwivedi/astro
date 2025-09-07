@@ -32,6 +32,7 @@ const orderRoutes = require('./routes/orderRoute');
 const uploadRoutes = require('./routes/uploadRoute');
 const bookingRoutes = require('./routes/bookingRoute');
 const analyticsRoutes = require('./routes/analyticsRoute');
+const cartRoutes = require('./routes/cartRoute');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -42,6 +43,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -65,6 +67,7 @@ app.get('/', (req, res) => {
       orders: '/api/orders',
       bookings: '/api/bookings',
       analytics: '/api/analytics',
+      cart: '/api/cart',
       health: '/api/health'
     }
   });

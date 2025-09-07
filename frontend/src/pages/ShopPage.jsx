@@ -281,7 +281,7 @@ const ShopPage = () => {
                             e.stopPropagation();
                             handleAddToCart(product);
                           }}
-                          className="flex-1 py-3 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+                          className="flex-1 py-3 px-4 border-2 border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white rounded-lg transition-all font-semibold"
                         >
                           🛒 Add to Cart
                         </button>

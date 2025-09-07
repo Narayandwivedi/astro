@@ -25,7 +25,8 @@
       "Bash(npm install:*)",
       "WebFetch(domain:www.easyhindityping.com)",
       "Bash(copy index.jsx index_backup.jsx)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Read(//c/Users/Naray/OneDrive/Desktop/code/**)"
     ],
     "deny": [],
     "ask": []
