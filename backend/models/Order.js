@@ -254,7 +254,7 @@ const OrderSchema = new mongoose.Schema({
 });
 
 // Indexes for better query performance
-OrderSchema.index({ orderNumber: 1 });
+// Note: orderNumber index is automatically created by unique: true
 OrderSchema.index({ 'customer.email': 1 });
 OrderSchema.index({ 'customer.phone': 1 });
 OrderSchema.index({ status: 1 });

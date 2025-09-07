@@ -6,7 +6,7 @@ const connectDB = async () => {
       process.env.MONGODB_URI || 'mongodb://localhost:27017/astro-satya',
     );
 
-    console.log(`MongoDB connected successfully: ${conn.connection.host}`);
+    console.log(`MongoDB connected successfully`);
   } catch (error) {
     console.error('MongoDB connection error:', error.message);
     process.exit(1);

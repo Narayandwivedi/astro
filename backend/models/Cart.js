@@ -60,7 +60,7 @@ const cartSchema = new mongoose.Schema({
 });
 
 // Index for efficient queries
-cartSchema.index({ user: 1 });
+// Note: user index is automatically created by unique: true
 cartSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // TTL index for auto-cleanup
 
 // Pre-save middleware to calculate totals

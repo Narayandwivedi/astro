@@ -121,9 +121,8 @@ const userSchema = new mongoose.Schema({
 },{timestamps:true});
 
 // Indexes for better performance
-userSchema.index({ email: 1 });
-userSchema.index({ mobile: 1 });
-userSchema.index({ googleId: 1 });
+// Note: email and mobile indexes are automatically created by unique: true
+// Note: googleId index seems to be automatically created (removing manual index to avoid duplicate)
 userSchema.index({ createdAt: -1 });
 
 // Virtual for user's full profile completeness
