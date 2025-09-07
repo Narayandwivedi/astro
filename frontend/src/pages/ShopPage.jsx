@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import OrderModal from '../components/OrderModal';
 import { useApi } from '../context/ApiContext';
@@ -192,119 +192,87 @@ const ShopPage = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
-                <div 
+                <Link 
                   key={product._id} 
-                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-1"
-                  onClick={() => navigate(`/shop/product/${product._id}`)}
+                  to={`/shop/product/${product._id}`}
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange-300 transform hover:-translate-y-1 cursor-pointer block"
                 >
                   
-                  {/* Product Image */}
-                  <div className="h-48 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center relative p-4">
-                    {product.images && product.images.length > 0 ? (
+                  {/* Product Image - Clean Image Only */}
+                  {product.images && product.images.length > 0 && (
+                    <div className="h-48 sm:h-56 md:h-64 overflow-hidden bg-gray-50 relative flex items-center justify-center p-4">
                       <img 
                         src={api.getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
                         alt={product.name}
-                        className="w-32 h-32 object-cover rounded-lg shadow-md"
+                        className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
+                          e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><span class="text-4xl">🔸</span></div>';
                         }}
                       />
-                    ) : (
-                      <span className="text-6xl">{product.icon || '🔮'}</span>
-                    )}
-                    {/* Fallback icon */}
-                    <div className="hidden w-32 h-32 items-center justify-center">
-                      <span className="text-6xl">{product.icon || '🔮'}</span>
                     </div>
-                    {!product.inStock && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                          Out of Stock
-                        </span>
-                      </div>
-                    )}
-                    <div className="absolute top-3 right-3">
-                      <div className="bg-white bg-opacity-90 hover:bg-opacity-100 text-orange-600 p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group-hover:scale-110">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Product Info */}
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-800 mb-1 group-hover:text-orange-600 transition-colors">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-orange-600 font-medium mb-3">{product.nameHi}</p>
-                    
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                    
-                    <p className="text-gray-700 text-xs mb-4 font-medium">
-                      {product.descriptionHi}
-                    </p>
-
-                    {/* Rating */}
-                    <div className="flex items-center mb-3">
-                      <div className="flex text-yellow-400">
-                        {"★".repeat(Math.floor(product.rating || 4.5))}
-                        {"☆".repeat(5 - Math.floor(product.rating || 4.5))}
-                      </div>
-                      <span className="text-sm text-gray-600 ml-2">
-                        {product.rating || '4.5'} ({product.reviewCount || '50+'})
-                      </span>
+                  {/* Product Info - Amazon Style */}
+                  <div className="p-3">
+                    {/* Product Name */}
+                    <div className="mb-2">
+                      <h3 className="text-gray-800 font-medium text-sm sm:text-base line-clamp-2 leading-tight">{product.name}</h3>
+                      {product.nameHi && (
+                        <p className="text-gray-600 text-xs mt-1">{product.nameHi}</p>
+                      )}
                     </div>
 
                     {/* Price */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-2xl font-bold text-orange-600">₹{product.price.toLocaleString()}</span>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="text-sm text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
-                        )}
-                      </div>
-                      <div className={`text-xs font-bold ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
-                        {product.inStock ? '✅ In Stock' : '❌ Out of Stock'}
-                      </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg sm:text-xl font-bold text-orange-600">₹{product.price.toLocaleString()}</span>
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <span className="text-sm text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
+                      )}
                     </div>
 
                     {/* Action Buttons */}
                     {product.inStock ? (
-                      <div className="flex space-x-2">
+                      <div className="flex gap-2">
+                        {/* Add to Cart Button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            e.preventDefault();
                             handleAddToCart(product);
                           }}
-                          className="flex-1 py-3 px-4 border-2 border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white rounded-lg transition-all font-semibold"
+                          className="flex-1 border border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 text-sm flex items-center justify-center"
                         >
-                          🛒 Add to Cart
+                          <span className="mr-1">🛒</span>
+                          <span>Add to Cart</span>
                         </button>
+
+                        {/* Buy Now Button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            e.preventDefault();
                             handleBuyNow(product);
                           }}
-                          className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                          className="flex-1 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm flex items-center justify-center"
                         >
-                          Buy Now
+                          <span className="mr-1">⚡</span>
+                          <span>Buy</span>
                         </button>
                       </div>
                     ) : (
                       <button
                         disabled
-                        className="w-full py-3 px-4 bg-gray-300 text-gray-500 cursor-not-allowed rounded-lg font-semibold"
+                        className="w-full bg-gray-400 text-white font-semibold py-2 px-3 rounded-lg cursor-not-allowed opacity-60 text-sm flex items-center justify-center"
                       >
-                        Out of Stock
+                        <span className="mr-1">❌</span>
+                        <span>Out of Stock</span>
                       </button>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

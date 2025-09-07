@@ -229,7 +229,7 @@ const Login = () => {
 
                 <form onSubmit={handleLogin} className="space-y-6">
                 <div className="relative">
-                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
+                  <label className=" text-sm font-bold text-gray-700 mb-2 flex items-center">
                     <span className="mr-2">📧</span>
                     Email or Mobile Number
                   </label>
@@ -244,7 +244,7 @@ const Login = () => {
                 </div>
 
                 <div className="relative">
-                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
+                  <label className=" text-sm font-bold text-gray-700 mb-2 flex items-center">
                     <span className="mr-2">🔐</span>
                     Password
                   </label>

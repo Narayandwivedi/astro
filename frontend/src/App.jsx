@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ApiProvider } from './context/ApiContext';
@@ -22,37 +22,46 @@ import MobileBottomNav from './components/MobileBottomNav';
 import Footer from './components/Footer';
 import './App.css'
 
+function AppContent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="App w-full">
+      <div className="w-full">
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:id" element={<ServiceDetailPage />} />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/shop/category/:category" element={<CategoryPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/shop/product/:id" element={<ProductDetailPage />} />
+          <Route path="/blog" element={<BlogsPage />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </div>
+      
+      {/* Footer - Hidden on login page */}
+      {!isLoginPage && <Footer />}
+      
+      {/* Mobile Bottom Navigation - Hidden on login page */}
+      {!isLoginPage && <MobileBottomNav />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <ApiProvider>
       <Router>
         <AppContextProvider>
           <CartProvider>
-            <div className="App w-full">
-            <div className="w-full">
-              <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/services/:id" element={<ServiceDetailPage />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/shop/category/:category" element={<CategoryPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/shop/product/:id" element={<ProductDetailPage />} />
-                <Route path="/blog" element={<BlogsPage />} />
-                <Route path="/blog/:slug" element={<BlogDetailPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/login" element={<Login />} />
-              </Routes>
-            </div>
-            
-            {/* Footer */}
-            <Footer />
-            
-            {/* Mobile Bottom Navigation - Only visible on mobile */}
-            <MobileBottomNav />
-          </div>
+            <AppContent />
           </CartProvider>
         </AppContextProvider>
       </Router>

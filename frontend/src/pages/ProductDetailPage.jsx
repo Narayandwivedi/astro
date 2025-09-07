@@ -135,14 +135,14 @@ const ProductDetailPage = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             
             {/* Product Images */}
-            <div className="space-y-4">
+            <div className="space-y-4 max-w-lg mx-auto lg:mx-0">
               {/* Main Image */}
-              <div className="bg-gradient-to-br from-orange-100 to-yellow-100 rounded-xl overflow-hidden aspect-square flex items-center justify-center">
+              <div className="bg-gradient-to-br from-orange-100 to-yellow-100 rounded-xl overflow-hidden aspect-square flex items-center justify-center p-8">
                 {product.images && product.images.length > 0 ? (
                   <img 
                     src={api.getImageURL(product.images[selectedImageIndex])} 
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="max-w-full max-h-full object-contain"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.style.display = 'none';
