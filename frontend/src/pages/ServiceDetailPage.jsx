@@ -6,15 +6,11 @@ import ConsultationModal from '../components/ConsultationModal';
 const ServiceDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [service, setService] = useState(null);
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const handleBookConsultation = () => {
+    setIsConsultationModalOpen(true);
   };
 
   // Fetch service from database
@@ -162,7 +158,7 @@ const ServiceDetailPage = () => {
                 </div>
                 
                 <button
-                  onClick={openModal}
+                  onClick={handleBookConsultation}
                   className="bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 hover:from-amber-900 hover:via-yellow-800 hover:to-orange-800 text-white font-bold px-12 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <span className="flex items-center justify-center">
@@ -177,7 +173,10 @@ const ServiceDetailPage = () => {
       </div>
 
       {/* Consultation Modal */}
-      <ConsultationModal isOpen={isModalOpen} onClose={closeModal} />
+      <ConsultationModal 
+        isOpen={isConsultationModalOpen} 
+        onClose={() => setIsConsultationModalOpen(false)} 
+      />
     </>
   );
 };

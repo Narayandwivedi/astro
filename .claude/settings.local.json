@@ -26,7 +26,11 @@
       "WebFetch(domain:www.easyhindityping.com)",
       "Bash(copy index.jsx index_backup.jsx)",
       "Bash(npm run dev:*)",
-      "Read(//c/Users/Naray/OneDrive/Desktop/code/**)"
+      "Read(//c/Users/Naray/OneDrive/Desktop/code/**)",
+      "Bash(node:*)",
+      "WebFetch(domain:gchub.in)",
+      "WebFetch(domain:rigskart.com)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

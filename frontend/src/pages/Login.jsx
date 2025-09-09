@@ -1,12 +1,13 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { AppContext } from '../context/AppContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import GoogleLogin from '../components/GoogleLogin'
 
 const Login = () => {
-  const { login, signup, BACKEND_URL } = useContext(AppContext)
+  const { login, signup, BACKEND_URL, isAuthenticated } = useContext(AppContext)
   const navigate = useNavigate()
+  const location = useLocation()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
@@ -34,6 +35,21 @@ const Login = () => {
 
   const [errors, setErrors] = useState({})
 
+  // Get the intended destination from location state
+  const from = location.state?.from?.pathname || '/';
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
+
+  // Don't render login page if user is authenticated
+  if (isAuthenticated) {
+    return null;
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -43,7 +59,7 @@ const Login = () => {
       const result = await login(loginData)
       
       if (result.success) {
-        navigate('/')
+        navigate(from, { replace: true })
       } else {
         setErrors({
           login: result.error
@@ -74,7 +90,7 @@ const Login = () => {
       const result = await signup(submitData)
       
       if (result.success) {
-        navigate('/')
+        navigate(from, { replace: true })
       } else {
         setErrors({
           signup: result.error

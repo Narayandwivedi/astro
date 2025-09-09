@@ -189,6 +189,42 @@ const Navigation = () => {
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
+                        navigate('/orders');
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M8 11v6a1 1 0 001 1h6a1 1 0 001-1v-6M8 11h8" />
+                      </svg>
+                      <span>Orders</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        navigate('/bookings');
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-6 0h6M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2" />
+                      </svg>
+                      <span>Bookings</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        navigate('/manage-addresses');
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                      <span>Manage Addresses</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
                         navigate('/profile');
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
@@ -294,6 +330,45 @@ const Navigation = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/orders');
+                    }}
+                    className="px-4 py-3 rounded-lg font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 transition-all duration-300 flex items-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M8 11v6a1 1 0 001 1h6a1 1 0 001-1v-6M8 11h8" />
+                    </svg>
+                    <span>Orders</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/bookings');
+                    }}
+                    className="px-4 py-3 rounded-lg font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 transition-all duration-300 flex items-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-6 0h6M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2" />
+                    </svg>
+                    <span>Bookings</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/manage-addresses');
+                    }}
+                    className="px-4 py-3 rounded-lg font-medium text-gray-700 hover:text-orange-600 hover:bg-gray-50 transition-all duration-300 flex items-center space-x-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span>Manage Addresses</span>
+                  </button>
                   
                   <button
                     onClick={() => {

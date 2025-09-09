@@ -303,6 +303,82 @@ const getCustomerOrders = async (req, res) => {
   }
 };
 
+// Get orders for authenticated user
+const getUserOrders = async (req, res) => {
+  try {
+    const userId = req.user.userId; // From auth middleware
+    const User = require('../models/User');
+    
+    // Get user details
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // Debug logging
+    console.log('=== DEBUG getUserOrders ===');
+    console.log('User ID:', userId);
+    console.log('User email:', user.email);
+    console.log('User mobile:', user.mobile);
+    
+    // Check total orders in database
+    const totalOrders = await Order.countDocuments();
+    console.log('Total orders in database:', totalOrders);
+    
+    // Sample a few orders to see structure
+    const sampleOrders = await Order.find({}).limit(3);
+    console.log('Sample orders structure:', JSON.stringify(sampleOrders.map(o => ({
+      _id: o._id,
+      customer: o.customer,
+      orderNumber: o.orderNumber
+    })), null, 2));
+    
+    // Find orders by user's email or mobile
+    let query = {};
+    if (user.email) {
+      query['customer.email'] = user.email.toLowerCase();
+    }
+    
+    // Also search by mobile if available
+    if (user.mobile) {
+      if (query['customer.email']) {
+        query = {
+          $or: [
+            { 'customer.email': user.email.toLowerCase() },
+            { 'customer.phone': user.mobile.toString() }
+          ]
+        };
+      } else {
+        query['customer.phone'] = user.mobile.toString();
+      }
+    }
+    
+    console.log('Query being executed:', JSON.stringify(query, null, 2));
+    
+    const orders = await Order.find(query)
+      .populate('items.product', 'name nameHi images category')
+      .sort({ orderDate: -1 });
+    
+    console.log('Orders found:', orders.length);
+    console.log('=== END DEBUG ===');
+    
+    res.json({
+      success: true,
+      data: orders
+    });
+  } catch (error) {
+    console.error('Error in getUserOrders:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user orders',
+      error: error.message
+    });
+  }
+};
+
 // Get order statistics (Admin)
 const getOrderStats = async (req, res) => {
   try {
@@ -407,6 +483,7 @@ module.exports = {
   updateOrderStatus,
   cancelOrder,
   getCustomerOrders,
+  getUserOrders,
   getOrderStats,
   sendOrderConfirmation
 };

@@ -141,11 +141,11 @@ const CartPage = () => {
                         {/* Price */}
                         <div className="flex items-center space-x-2 mb-3">
                           <span className="text-xl font-bold text-orange-600">
-                            ₹{item.product.price.toLocaleString()}
+                            ₹{item.product.price?.toLocaleString() || '0'}
                           </span>
                           {item.product.originalPrice && item.product.originalPrice > item.product.price && (
                             <span className="text-sm text-gray-500 line-through">
-                              ₹{item.product.originalPrice.toLocaleString()}
+                              ₹{item.product.originalPrice?.toLocaleString() || '0'}
                             </span>
                           )}
                         </div>
@@ -188,11 +188,11 @@ const CartPage = () => {
                           {/* Item Total */}
                           <div className="text-right">
                             <p className="font-bold text-gray-800 text-lg">
-                              ₹{(item.product.price * item.quantity).toLocaleString()}
+                              ₹{((item.product.price || 0) * item.quantity).toLocaleString()}
                             </p>
                             {item.quantity > 1 && (
                               <p className="text-xs text-gray-500">
-                                ₹{item.product.price.toLocaleString()} each
+                                ₹{item.product.price?.toLocaleString() || '0'} each
                               </p>
                             )}
                           </div>

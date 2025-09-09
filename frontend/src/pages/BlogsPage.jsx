@@ -186,27 +186,13 @@ const BlogsPage = () => {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-950 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
-                Astrology Insights
-              </span>
-            </h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Discover the wisdom of the stars through our expert articles on astrology, horoscopes, and spiritual guidance
-            </p>
-          </div>
-        </div>
-        
         {/* Search and Filter Section */}
-        <div className="bg-white shadow-sm border-b">
+        <div className="bg-white shadow-sm border-b pt-32">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="flex-1 max-w-md">
-                <div className="relative">
+              <form onSubmit={handleSearch} className="flex-1 max-w-md flex gap-2">
+                <div className="relative flex-1">
                   <input
                     type="text"
                     value={searchTerm}
@@ -220,6 +206,12 @@ const BlogsPage = () => {
                     </svg>
                   </div>
                 </div>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
+                >
+                  Search
+                </button>
               </form>
 
               {/* Category Filter */}

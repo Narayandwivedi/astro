@@ -7,12 +7,17 @@ const {
   updateBookingStatus,
   addCommunication,
   getBookingStats,
-  cancelBooking
+  cancelBooking,
+  getUserBookings
 } = require('../controllers/bookingController');
+const { authMiddleware } = require('../middleware/authMiddleware');
 
 // Public routes (for frontend booking)
 router.post('/', createBooking);
 router.get('/stats', getBookingStats);
+
+// Protected routes
+router.get('/user/my-bookings', authMiddleware, getUserBookings); // Get bookings for authenticated user
 
 // Admin routes (would typically require authentication)
 router.get('/', getBookings);

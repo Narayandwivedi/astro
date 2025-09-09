@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import QRCODE from '../components/QRCODE';
 import { useCart } from '../context/CartContext';
 import { useApi } from '../context/ApiContext';
+import { AppContext } from '../context/AppContext';
+import { getAddresses, addAddress } from '../services/addressService';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cart, clearCart, getCartSummary } = useCart();
   const api = useApi();
+  const { user } = useContext(AppContext);
   
   const [currentStep, setCurrentStep] = useState(1); // 1: Address, 2: Payment, 3: Confirmation
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedSavedAddress, setSelectedSavedAddress] = useState(null);
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
 
   const [formData, setFormData] = useState({
     customer: {
       name: '',
-      email: 'user@example.com', // Default email since user is logged in
+      email: user?.email || '', // Use actual user email
       phone: '',
       whatsapp: ''
     },
@@ -50,6 +56,56 @@ const CheckoutPage = () => {
   ];
 
   const cartSummary = getCartSummary();
+
+  // Update email when user data is available
+  useEffect(() => {
+    if (user?.email && formData.customer.email !== user.email) {
+      setFormData(prev => ({
+        ...prev,
+        customer: {
+          ...prev.customer,
+          email: user.email
+        }
+      }));
+    }
+  }, [user?.email, formData.customer.email]);
+
+  // Load saved addresses
+  useEffect(() => {
+    const loadSavedAddresses = async () => {
+      try {
+        const response = await getAddresses();
+        setSavedAddresses(response.data || []);
+        
+        // Auto-select default address if exists
+        const defaultAddress = response.data?.find(addr => addr.isDefault);
+        if (defaultAddress && !selectedSavedAddress) {
+          setSelectedSavedAddress(defaultAddress);
+          // Pre-fill form with default address
+          setFormData(prev => ({
+            ...prev,
+            customer: {
+              ...prev.customer,
+              name: defaultAddress.fullName,
+              phone: defaultAddress.mobile
+            },
+            shippingAddress: {
+              addressLine1: defaultAddress.addressLine1,
+              addressLine2: defaultAddress.addressLine2 || '',
+              city: defaultAddress.city,
+              state: defaultAddress.state,
+              pincode: defaultAddress.pincode,
+              country: defaultAddress.country || 'India'
+            }
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load addresses:', error);
+      }
+    };
+
+    loadSavedAddresses();
+  }, [selectedSavedAddress]);
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -97,6 +153,79 @@ const CheckoutPage = () => {
       }
     }
   };
+
+  const handleAddressSelect = (address) => {
+    setSelectedSavedAddress(address);
+    setShowNewAddressForm(false);
+    
+    // Pre-fill form with selected address
+    setFormData(prev => ({
+      ...prev,
+      customer: {
+        ...prev.customer,
+        name: address.fullName,
+        phone: address.mobile
+      },
+      shippingAddress: {
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2 || '',
+        city: address.city,
+        state: address.state,
+        pincode: address.pincode,
+        country: address.country || 'India'
+      }
+    }));
+  };
+
+  const handleNewAddressClick = () => {
+    setSelectedSavedAddress(null);
+    setShowNewAddressForm(true);
+    // Clear form data
+    setFormData(prev => ({
+      ...prev,
+      customer: {
+        ...prev.customer,
+        name: '',
+        phone: ''
+      },
+      shippingAddress: {
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        pincode: '',
+        country: 'India'
+      }
+    }));
+    // Clear any existing errors
+    setErrors({});
+  };
+
+  // Function to check if address form is complete
+  const isAddressFormComplete = () => {
+    if (selectedSavedAddress) {
+      // If a saved address is selected, form is complete
+      return true;
+    }
+    
+    if (showNewAddressForm) {
+      // If showing new address form, check if all required fields are filled
+      return (
+        formData.customer.name.trim() &&
+        formData.customer.phone.trim() &&
+        /^[6-9]\d{9}$/.test(formData.customer.phone) &&
+        formData.shippingAddress.addressLine1.trim() &&
+        formData.shippingAddress.city.trim() &&
+        formData.shippingAddress.state.trim() &&
+        formData.shippingAddress.pincode.trim() &&
+        /^[1-9][0-9]{5}$/.test(formData.shippingAddress.pincode)
+      );
+    }
+    
+    // If no address is selected and form is not shown, not complete
+    return false;
+  };
+
 
   const validateStep = (stepNumber) => {
     const newErrors = {};
@@ -154,6 +283,28 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     setLoading(true);
     try {
+      // Save address automatically if user entered a new address manually
+      if (showNewAddressForm && !selectedSavedAddress) {
+        try {
+          const newAddressData = {
+            fullName: formData.customer.name,
+            mobile: formData.customer.phone,
+            addressLine1: formData.shippingAddress.addressLine1,
+            addressLine2: formData.shippingAddress.addressLine2 || '',
+            city: formData.shippingAddress.city,
+            state: formData.shippingAddress.state,
+            pincode: formData.shippingAddress.pincode,
+            isDefault: savedAddresses.length === 0 // Make it default if it's the first address
+          };
+
+          await addAddress(newAddressData);
+          console.log('New address saved automatically during checkout');
+        } catch (addressError) {
+          console.error('Failed to save address during checkout:', addressError);
+          // Continue with order placement even if address save fails
+        }
+      }
+
       const orderItems = cart.items.map(item => ({
         product: item.product._id,
         quantity: item.quantity,
@@ -331,9 +482,96 @@ const CheckoutPage = () => {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h2 className="text-xl font-bold text-gray-800 mb-6">📋 Shipping & Contact Information</h2>
                   
-                  {/* Customer Information */}
-                  <div className="mb-8">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact Details</h3>
+                  {/* Saved Addresses */}
+                  {savedAddresses.length > 0 && (
+                    <div className="mb-8">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">📍 Select Address</h3>
+                      <div className="space-y-3">
+                        {savedAddresses.map((address) => (
+                          <div
+                            key={address._id}
+                            onClick={() => handleAddressSelect(address)}
+                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                              selectedSavedAddress?._id === address._id
+                                ? 'border-orange-500 bg-orange-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center mb-2">
+                                  <h4 className="font-medium text-gray-900">{address.fullName}</h4>
+                                  {address.isDefault && (
+                                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                                      Default
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-gray-600 text-sm">{address.addressLine1}</p>
+                                {address.addressLine2 && (
+                                  <p className="text-gray-600 text-sm">{address.addressLine2}</p>
+                                )}
+                                <p className="text-gray-600 text-sm">
+                                  {address.city}, {address.state} {address.pincode}
+                                </p>
+                                <p className="text-gray-600 text-sm">📱 {address.mobile}</p>
+                              </div>
+                              <div className={`w-4 h-4 rounded-full border-2 ${
+                                selectedSavedAddress?._id === address._id
+                                  ? 'border-orange-500 bg-orange-500'
+                                  : 'border-gray-300'
+                              }`}>
+                                {selectedSavedAddress?._id === address._id && (
+                                  <div className="w-full h-full rounded-full bg-white border-2 border-orange-500"></div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {/* Add New Address Option */}
+                        <div>
+                          <div
+                            onClick={handleNewAddressClick}
+                            className={`p-4 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                              showNewAddressForm
+                                ? 'border-orange-500 bg-orange-50'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                          >
+                            <div className="flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-xl mb-2">📝</div>
+                                <p className="text-sm font-medium text-gray-900">Use a new address</p>
+                                <p className="text-xs text-gray-600 mt-1">Will be automatically saved</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Manual Address Form - Show when no saved addresses or "new address" selected */}
+                  {(savedAddresses.length === 0 || showNewAddressForm) && (
+                    <>
+                      {/* Address Auto-Save Notice */}
+                      {showNewAddressForm && (
+                        <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <p className="text-sm text-green-800">
+                              ✅ This address will be automatically saved to your account for future orders.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Customer Information */}
+                      <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact Details</h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
@@ -456,7 +694,8 @@ const CheckoutPage = () => {
                       </div>
                     </div>
                   </div>
-
+                    </>
+                  )}
 
                   {/* Special Requirements */}
                   <div className="border-t pt-6">
@@ -594,7 +833,12 @@ const CheckoutPage = () => {
                 {currentStep === 1 ? (
                   <button
                     onClick={handleNext}
-                    className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                    disabled={!isAddressFormComplete()}
+                    className={`px-6 py-3 rounded-lg transition-colors font-medium ${
+                      isAddressFormComplete()
+                        ? 'bg-orange-600 text-white hover:bg-orange-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
                   >
                     Continue to Payment
                   </button>
@@ -686,6 +930,7 @@ const CheckoutPage = () => {
           </div>
         )}
       </div>
+      
     </div>
   );
 };

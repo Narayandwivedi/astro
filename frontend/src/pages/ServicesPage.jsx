@@ -196,7 +196,7 @@ const ServicesPage = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-2xl mx-auto w-20 h-20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-3">25+ Years Experience</h3>
+                <h3 className="text-xl font-bold text-slate-800 mb-3">10+ Years Experience</h3>
                 <p className="text-slate-600 font-light leading-relaxed">Trusted by thousands of satisfied clients worldwide</p>
               </div>
 

@@ -24,7 +24,8 @@ export const ApiProvider = ({ children }) => {
       products: `${BACKEND_URL}/api/products`,
       services: `${BACKEND_URL}/api/services`,
       bookings: `${BACKEND_URL}/api/bookings`,
-      orders: `${BACKEND_URL}/api/orders`
+      orders: `${BACKEND_URL}/api/orders`,
+      user: `${BACKEND_URL}/api/user`
     }
   };
 

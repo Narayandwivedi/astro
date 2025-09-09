@@ -16,10 +16,15 @@ import CategoryPage from './pages/CategoryPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import OrdersPage from './pages/OrdersPage';
+import BookingsPage from './pages/BookingsPage';
+import AddressPage from './pages/AddressPage';
+import ManageAddressPage from './pages/ManageAddressPage';
 import About from './pages/About';
 import Login from './pages/Login';
 import MobileBottomNav from './components/MobileBottomNav';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css'
 
 function AppContent() {
@@ -37,8 +42,32 @@ function AppContent() {
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/shop/category/:category" element={<CategoryPage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          } />
           <Route path="/shop/product/:id" element={<ProductDetailPage />} />
+          <Route path="/orders" element={
+            <ProtectedRoute>
+              <OrdersPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/bookings" element={
+            <ProtectedRoute>
+              <BookingsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/addresses" element={
+            <ProtectedRoute>
+              <AddressPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/manage-addresses" element={
+            <ProtectedRoute>
+              <ManageAddressPage />
+            </ProtectedRoute>
+          } />
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:slug" element={<BlogDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />

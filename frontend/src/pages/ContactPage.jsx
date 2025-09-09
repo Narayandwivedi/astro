@@ -90,19 +90,19 @@ const ContactPage = () => {
             
             {/* Email Contact */}
             <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-2xl text-blue-600">📧</span>
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h3 className="text-lg font-semibold text-gray-800">Email</h3>
-                    <p className="text-sm font-semibold text-blue-600 break-all">astrosatya@gmail.com</p>
+                    <p className="text-xs font-semibold text-blue-600 whitespace-nowrap">satyaprakashtripathi7578@gmail.com</p>
                   </div>
                 </div>
                 <a 
-                  href="mailto:astrosatya@gmail.com?subject=Consultation%20Inquiry&body=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-lg text-center"
+                  href="mailto:satyaprakashtripathi7578@gmail.com?subject=Consultation%20Inquiry&body=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-lg text-center whitespace-nowrap"
                 >
                   Email Now
                 </a>
@@ -168,16 +168,16 @@ const ContactPage = () => {
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-2xl text-blue-600">📧</span>
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <h3 className="text-xl font-semibold text-gray-800 mb-2">Email Consultation</h3>
                       <p className="text-gray-600 mb-3">
                         Send your queries and birth details for detailed analysis
                       </p>
                       <a 
-                        href="mailto:astrosatya@gmail.com" 
-                        className="text-xl font-semibold text-blue-600 hover:text-blue-700 transition-colors break-all"
+                        href="mailto:satyaprakashtripathi7578@gmail.com" 
+                        className="text-lg font-semibold text-blue-600 hover:text-blue-700 transition-colors block whitespace-nowrap"
                       >
-                        astrosatya@gmail.com
+                        satyaprakashtripathi7578@gmail.com
                       </a>
                       <p className="text-sm text-gray-500 mt-2">
                         Response within 24 hours
@@ -334,7 +334,7 @@ const ContactPage = () => {
               📞 Call Now: +91 883945431
             </a>
             <a
-              href="mailto:astrosatya@gmail.com"
+              href="mailto:satyaprakashtripathi7578@gmail.com"
               className="bg-orange-700 text-white font-semibold px-8 py-4 rounded-lg hover:bg-orange-800 transition-colors shadow-lg inline-flex items-center justify-center"
             >
               📧 Email Consultation

@@ -10,20 +10,16 @@ const Homepage = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const api = useApi();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
   const [servicesError, setServicesError] = useState(null);
   const [productsError, setProductsError] = useState(null);
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const handleBookConsultation = () => {
+    setIsConsultationModalOpen(true);
   };
 
   const handleAddToCart = (product, e) => {
@@ -90,7 +86,7 @@ const Homepage = () => {
   return (
     <div className="w-full">
       <Navigation />
-      <Hero />
+      <Hero onBookConsultation={handleBookConsultation} />
 
       {/* Get in Touch Section */}
       <section className="py-12 bg-white border-b border-gray-100">
@@ -128,19 +124,19 @@ const Homepage = () => {
             
             {/* Email Contact */}
             <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-2xl text-blue-600">📧</span>
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h3 className="text-lg font-semibold text-gray-800">Email</h3>
-                    <p className="text-sm font-semibold text-blue-600 break-all">astrosatya@gmail.com</p>
+                    <p className="text-xs font-semibold text-blue-600 whitespace-nowrap">satyaprakashtripathi7578@gmail.com</p>
                   </div>
                 </div>
                 <a 
-                  href="mailto:astrosatya@gmail.com?subject=Consultation%20Inquiry&body=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-lg text-center"
+                  href="mailto:satyaprakashtripathi7578@gmail.com?subject=Consultation%20Inquiry&body=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-lg text-center whitespace-nowrap"
                 >
                   Email Now
                 </a>
@@ -171,7 +167,7 @@ const Homepage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {servicesLoading ? (
               // Loading skeleton
               Array.from({ length: 6 }).map((_, index) => (
@@ -200,7 +196,7 @@ const Homepage = () => {
               <div key={service._id} className="group bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-amber-200/60 hover:border-amber-400 transform hover:-translate-y-2">
                 
                 {/* Service Header */}
-                <div className="bg-gradient-to-br from-amber-800 via-yellow-700 to-orange-600 text-white p-4 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-amber-800 via-yellow-700 to-orange-600 text-white p-2 md:p-4 relative overflow-hidden">
                   <div className="absolute inset-0 opacity-10" style={{
                     backgroundImage: `
                       repeating-linear-gradient(45deg, rgba(139,69,19,0.2) 0px, rgba(139,69,19,0.2) 2px, transparent 2px, transparent 15px),
@@ -208,43 +204,43 @@ const Homepage = () => {
                     `
                   }}></div>
                   <div className="relative z-10">
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="w-10 h-10 bg-amber-950/30 rounded-lg flex items-center justify-center border-2 border-yellow-600/50 shadow-lg">
-                        <span className="text-xl filter drop-shadow-lg">{service.icon}</span>
+                    <div className="flex items-center justify-center gap-2 md:gap-3">
+                      <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-950/30 rounded-lg flex items-center justify-center border-2 border-yellow-600/50 shadow-lg">
+                        <span className="text-sm md:text-xl filter drop-shadow-lg">{service.icon}</span>
                       </div>
-                      <h3 className="text-lg font-bold group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.titleEn}</h3>
+                      <h3 className="text-sm md:text-lg font-bold group-hover:text-yellow-300 transition-colors drop-shadow-lg">{service.titleEn}</h3>
                     </div>
-                    <p className="text-yellow-100 text-xs font-semibold drop-shadow-md text-center -mt-0.5">{service.titleHi}</p>
+                    <p className="text-yellow-100 text-xs md:text-xs font-semibold drop-shadow-md text-center mt-1 md:-mt-0.5">{service.titleHi}</p>
                   </div>
                 </div>
 
                 {/* Service Content */}
-                <div className="p-4 md:p-6">
-                  <p className="text-amber-900 mb-4 md:mb-6 leading-relaxed font-medium text-center text-sm md:text-base">
+                <div className="p-2 md:p-6">
+                  <p className="text-amber-900 mb-2 md:mb-6 leading-relaxed font-medium text-center text-xs md:text-base hidden md:block">
                     {service.description}
                   </p>
                   
-                  <div className="flex justify-between items-center mb-4 md:mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 md:p-4 rounded-lg shadow-inner border border-amber-200">
+                  <div className="flex justify-between items-center mb-2 md:mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 p-2 md:p-4 rounded-lg shadow-inner border border-amber-200">
                     <div className="flex flex-col">
-                      <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 bg-clip-text text-transparent">₹{service.price}</span>
-                      <span className="text-xs text-gray-600">{service.duration}</span>
+                      <span className="text-sm md:text-2xl font-bold bg-gradient-to-r from-amber-800 via-yellow-700 to-orange-700 bg-clip-text text-transparent">₹{service.price}</span>
+                      <span className="text-xs text-gray-600 hidden md:block">{service.duration}</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-2 h-2 md:w-3 md:h-3 bg-green-600 rounded-full mr-2 animate-pulse shadow-md"></div>
-                      <p className="text-xs md:text-sm text-green-700 font-bold">{service.isActive ? 'Available' : 'Unavailable'}</p>
+                      <p className="text-xs md:text-sm text-green-700 font-bold hidden md:block">{service.isActive ? 'Available' : 'Unavailable'}</p>
                     </div>
                   </div>
 
                   {/* Book Now Button */}
                   <button
-                    onClick={openModal}
+                    onClick={handleBookConsultation}
                     disabled={!service.isActive}
-                    className="w-full bg-gradient-to-r from-amber-700 via-yellow-600 to-orange-600 hover:from-amber-800 hover:via-yellow-700 hover:to-orange-700 text-white font-bold py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-500/60 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full bg-gradient-to-r from-amber-700 via-yellow-600 to-orange-600 hover:from-amber-800 hover:via-yellow-700 hover:to-orange-700 text-white font-bold py-2 md:py-4 px-2 md:px-6 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border-2 border-yellow-500/60 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                     <span className="relative z-10 flex items-center justify-center drop-shadow-md">
-                      <span className="mr-2 text-base md:text-lg">📅</span>
-                      <span className="text-sm md:text-base">{service.isActive ? 'Book Now' : 'Unavailable'}</span>
+                      <span className="mr-1 md:mr-2 text-sm md:text-lg">📅</span>
+                      <span className="text-xs md:text-base">{service.isActive ? 'Book Now' : 'Unavailable'}</span>
                     </span>
                   </button>
                 </div>
@@ -396,7 +392,11 @@ const Homepage = () => {
       </section>
 
       {/* Consultation Modal */}
-      <ConsultationModal isOpen={isModalOpen} onClose={closeModal} />
+      <ConsultationModal 
+        isOpen={isConsultationModalOpen} 
+        onClose={() => setIsConsultationModalOpen(false)} 
+      />
+
     </div>
   )
 }

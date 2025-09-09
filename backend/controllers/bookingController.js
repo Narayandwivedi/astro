@@ -366,6 +366,58 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+// Get bookings for authenticated user
+const getUserBookings = async (req, res) => {
+  try {
+    const userId = req.user.userId; // From auth middleware
+    const User = require('../models/User');
+    
+    // Get user details
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // Find bookings by user's email or mobile
+    let query = {};
+    if (user.email) {
+      query.email = user.email.toLowerCase();
+    }
+    
+    // Also search by mobile if available
+    if (user.mobile) {
+      if (query.email) {
+        query = {
+          $or: [
+            { email: user.email.toLowerCase() },
+            { mobile: user.mobile.toString() }
+          ]
+        };
+      } else {
+        query.mobile = user.mobile.toString();
+      }
+    }
+    
+    const bookings = await Booking.find(query)
+      .populate('serviceId', 'titleEn titleHi category icon duration')
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      data: bookings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user bookings',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createBooking,
   getBookings,
@@ -373,5 +425,6 @@ module.exports = {
   updateBookingStatus,
   addCommunication,
   getBookingStats,
-  cancelBooking
+  cancelBooking,
+  getUserBookings
 };
