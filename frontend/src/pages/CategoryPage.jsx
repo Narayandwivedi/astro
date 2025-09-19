@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import OrderModal from '../components/OrderModal';
-import { useApi } from '../context/ApiContext';
+import { AppContext } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
 const CategoryPage = () => {
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { category } = useParams();
@@ -77,7 +77,7 @@ const CategoryPage = () => {
     const fetchCategoryProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${api.endpoints.products}/category/${category}?page=${currentPage}&sort=${sortBy}&enabled=true&inStock=all`);
+        const response = await fetch(`${BACKEND_URL}/api/products/category/${category}?page=${currentPage}&sort=${sortBy}&enabled=true&inStock=all`);
         if (!response.ok) {
           throw new Error('Failed to fetch category products');
         }
@@ -209,7 +209,7 @@ const CategoryPage = () => {
                     {product.images && product.images.length > 0 && (
                       <div className="h-48 sm:h-56 md:h-64 overflow-hidden bg-gray-50 relative flex items-center justify-center p-4">
                         <img 
-                          src={api.getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
+                          src={getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
                           alt={product.name}
                           className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {

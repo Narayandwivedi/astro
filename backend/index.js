@@ -34,6 +34,7 @@ const bookingRoutes = require('./routes/bookingRoute');
 const analyticsRoutes = require('./routes/analyticsRoute');
 const cartRoutes = require('./routes/cartRoute');
 const userRoutes = require('./routes/userRoute');
+const addressRoutes = require('./routes/addressRoute');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -46,6 +47,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/addresses', addressRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -71,6 +73,7 @@ app.get('/', (req, res) => {
       analytics: '/api/analytics',
       cart: '/api/cart',
       user: '/api/user',
+      addresses: '/api/addresses',
       health: '/api/health'
     }
   });

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useApi } from '../context/ApiContext';
+import React, { useState, useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
 const OrderModal = ({ isOpen, onClose, product, cartItems, cartMode = false }) => {
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
   const { clearCart } = useCart();
   const [step, setStep] = useState(1); // 1: Customer Info, 2: Address, 3: Review & Submit
   const [loading, setLoading] = useState(false);
@@ -179,7 +179,7 @@ const OrderModal = ({ isOpen, onClose, product, cartItems, cartMode = false }) =
         }
       };
 
-      const response = await fetch(`${api.baseURL}/orders`, {
+      const response = await fetch(`${BACKEND_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -296,7 +296,7 @@ const OrderModal = ({ isOpen, onClose, product, cartItems, cartMode = false }) =
               <div className="text-6xl mb-4">🎉</div>
               <h3 className="text-2xl font-bold text-green-600 mb-4">Order Placed Successfully!</h3>
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <p className="text-green-800 font-medium">Order Number: {orderDetails?.orderNumber}</p>
+                <p className="text-green-800 font-medium">Order ID: {orderDetails?._id}</p>
                 <p className="text-green-700 text-sm mt-1">
                   We'll contact you shortly on {formData.customer.whatsapp || formData.customer.phone} to confirm your order.
                 </p>
@@ -343,7 +343,7 @@ const OrderModal = ({ isOpen, onClose, product, cartItems, cartMode = false }) =
               <div className="mt-8 space-y-3">
                 <button
                   onClick={() => {
-                    const message = `Hi! My order ${orderDetails?.orderNumber} has been placed. Please confirm the details.`;
+                    const message = `Hi! My order ${orderDetails?._id} has been placed. Please confirm the details.`;
                     window.open(`https://wa.me/91883945431?text=${encodeURIComponent(message)}`, '_blank');
                   }}
                   className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
@@ -373,7 +373,7 @@ const OrderModal = ({ isOpen, onClose, product, cartItems, cartMode = false }) =
                           <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
                             {item.product.images && item.product.images.length > 0 ? (
                               <img 
-                                src={api.getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
+                                src={getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
                                 alt={item.product.name}
                                 className="w-10 h-10 object-cover rounded-lg"
                               />
@@ -415,7 +415,7 @@ const OrderModal = ({ isOpen, onClose, product, cartItems, cartMode = false }) =
                     <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center">
                       {product.images && product.images.length > 0 ? (
                         <img 
-                          src={api.getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
+                          src={getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
                           alt={product.name}
                           className="w-12 h-12 object-cover rounded-lg"
                         />

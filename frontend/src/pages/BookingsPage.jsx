@@ -2,16 +2,27 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navigation from '../components/Navigation';
-import { useApi } from '../context/ApiContext';
 import { AppContext } from '../context/AppContext';
 
 const BookingsPage = () => {
   const navigate = useNavigate();
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
   const { user, isAuthenticated } = useContext(AppContext);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedBookings, setExpandedBookings] = useState(new Set());
+
+  // Toggle booking details dropdown
+  const toggleBookingDetails = (bookingId) => {
+    const newExpanded = new Set(expandedBookings);
+    if (newExpanded.has(bookingId)) {
+      newExpanded.delete(bookingId);
+    } else {
+      newExpanded.add(bookingId);
+    }
+    setExpandedBookings(newExpanded);
+  };
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -33,7 +44,7 @@ const BookingsPage = () => {
       
       try {
         setLoading(true);
-        const response = await axios.get(`${api.baseURL}/api/bookings/user/my-bookings`, {
+        const response = await axios.get(`${BACKEND_URL}/api/bookings/user/my-bookings`, {
           withCredentials: true, // Include cookies for authentication
           headers: {
             'Content-Type': 'application/json'
@@ -54,7 +65,7 @@ const BookingsPage = () => {
     };
 
     fetchBookings();
-  }, [api, isAuthenticated]);
+  }, [BACKEND_URL, isAuthenticated]);
 
   const getStatusColor = (status) => {
     const colors = {
@@ -183,208 +194,236 @@ const BookingsPage = () => {
             </button>
           </div>
         ) : (
-          /* Bookings List */
-          <div className="space-y-6">
-            {bookings.map((booking) => (
-              <div key={booking._id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                
-                {/* Booking Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 pb-4 border-b border-gray-100">
-                  <div className="mb-2 sm:mb-0">
-                    <h3 className="text-lg font-bold text-gray-800">
-                      {booking.serviceName}
-                    </h3>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-gray-600">
-                        Booking ID: {booking.bookingId || `BK${booking._id.slice(-6).toUpperCase()}`}
-                      </span>
-                      <span className="text-gray-400">•</span>
-                      <span className="text-sm text-gray-600">
-                        Booked on {formatDate(booking.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(booking.status)}`}>
-                      {getStatusDisplay(booking.status)}
-                    </span>
-                    <span className="text-lg font-bold text-orange-600">
-                      ₹{booking.servicePrice?.toLocaleString() || '0'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Service Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          /* Bookings List - Compact Cards with Dropdown */
+          <div className="space-y-3">
+            {bookings.map((booking) => {
+              const isExpanded = expandedBookings.has(booking._id);
+              
+              return (
+                <div key={booking._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   
-                  {/* Left Column - Booking Details */}
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">📅 Appointment Details</h4>
-                      <div className="bg-blue-50 rounded-lg p-3">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-2xl">📅</span>
-                          <div>
-                            <p className="font-semibold text-blue-800">
-                              {formatDateTime(booking.preferredDate, booking.preferredTime)}
-                            </p>
-                            {booking.status === 'confirmed' && booking.confirmedDate && (
-                              <p className="text-sm text-green-600 mt-1">
-                                ✅ Confirmed for {formatDateTime(booking.confirmedDate, booking.confirmedTime || booking.preferredTime)}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xl">{getConsultationTypeIcon(booking.consultationType)}</span>
-                          <span className="text-sm font-medium text-blue-700">
-                            {getConsultationTypeDisplay(booking.consultationType)}
+                  {/* Compact Header - Always Visible */}
+                  <div 
+                    className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => toggleBookingDetails(booking._id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-800 truncate">
+                            {booking.serviceName}
+                          </h3>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
+                            {getStatusDisplay(booking.status)}
                           </span>
                         </div>
-                        {booking.meetingLink && (
-                          <div className="mt-2">
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <span className="flex items-center">
+                            <span className="mr-1">📅</span>
+                            {formatDateTime(booking.preferredDate, booking.preferredTime)}
+                          </span>
+                          <span className="flex items-center">
+                            <span className="mr-1">{getConsultationTypeIcon(booking.consultationType)}</span>
+                            {getConsultationTypeDisplay(booking.consultationType)}
+                          </span>
+                          <span className="font-semibold text-orange-600">
+                            ₹{booking.servicePrice?.toLocaleString() || '0'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2 ml-4">
+                        <span className="text-xs text-gray-500 font-mono">
+                          Booking ID: {booking._id}
+                        </span>
+                        <div className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Details - Hidden by Default */}
+                  {isExpanded && (
+                    <div className="border-t border-gray-100 bg-gray-50">
+                      <div className="p-4 space-y-4">
+                        
+                        {/* Booking Details Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          
+                          {/* Left Column - Appointment & Birth Details */}
+                          <div className="space-y-3">
+                            {/* Appointment Details */}
+                            <div className="bg-blue-50 rounded-lg p-3">
+                              <h4 className="font-medium text-blue-800 mb-2 flex items-center">
+                                <span className="mr-2">📅</span>
+                                Appointment Details
+                              </h4>
+                              <div className="space-y-1 text-sm">
+                                <p><span className="font-medium">Date:</span> {formatDate(booking.preferredDate)}</p>
+                                <p><span className="font-medium">Time:</span> {booking.preferredTime}</p>
+                                <p><span className="font-medium">Type:</span> {getConsultationTypeDisplay(booking.consultationType)}</p>
+                                {booking.status === 'confirmed' && booking.confirmedDate && (
+                                  <p className="text-green-600 font-medium">
+                                    ✅ Confirmed for {formatDateTime(booking.confirmedDate, booking.confirmedTime || booking.preferredTime)}
+                                  </p>
+                                )}
+                                {booking.meetingLink && (
+                                  <a
+                                    href={booking.meetingLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center text-blue-600 hover:text-blue-700 underline"
+                                  >
+                                    <span className="mr-1">📹</span>
+                                    Join Meeting
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Birth Details */}
+                            {(booking.birthDate || booking.birthTime || booking.birthCity) && (
+                              <div className="bg-purple-50 rounded-lg p-3">
+                                <h4 className="font-medium text-purple-800 mb-2 flex items-center">
+                                  <span className="mr-2">🌟</span>
+                                  Birth Details
+                                </h4>
+                                <div className="space-y-1 text-sm">
+                                  {booking.birthDate && (
+                                    <p><span className="font-medium">Date:</span> {formatDate(booking.birthDate)}</p>
+                                  )}
+                                  {booking.birthTime && (
+                                    <p><span className="font-medium">Time:</span> {booking.birthTime}</p>
+                                  )}
+                                  {booking.birthCity && (
+                                    <p><span className="font-medium">Place:</span> {booking.birthCity}, {booking.birthState}</p>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Right Column - Contact & Payment */}
+                          <div className="space-y-3">
+                            {/* Contact Information */}
+                            <div className="bg-gray-100 rounded-lg p-3">
+                              <h4 className="font-medium text-gray-800 mb-2 flex items-center">
+                                <span className="mr-2">👤</span>
+                                Contact Information
+                              </h4>
+                              <div className="space-y-1 text-sm">
+                                <p><span className="font-medium">Name:</span> {booking.name}</p>
+                                <p><span className="font-medium">Mobile:</span> {booking.mobile}</p>
+                                {booking.email && (
+                                  <p><span className="font-medium">Email:</span> {booking.email}</p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Payment Status */}
+                            <div className="bg-green-50 rounded-lg p-3">
+                              <h4 className="font-medium text-green-800 mb-2 flex items-center">
+                                <span className="mr-2">💳</span>
+                                Payment Details
+                              </h4>
+                              <div className="flex items-center justify-between">
+                                <span className="text-lg font-bold text-green-700">
+                                  ₹{booking.servicePrice?.toLocaleString() || '0'}
+                                </span>
+                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                  booking.paymentStatus === 'paid' 
+                                    ? 'bg-green-100 text-green-800'
+                                    : booking.paymentStatus === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Refunded'}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1">
+                                Booked on {formatDate(booking.createdAt)}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Booking ID: {booking._id}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Special Requests */}
+                        {booking.specialRequests && (
+                          <div className="bg-yellow-50 rounded-lg p-3">
+                            <h4 className="font-medium text-yellow-800 mb-2 flex items-center">
+                              <span className="mr-2">📝</span>
+                              Special Requests
+                            </h4>
+                            <p className="text-sm text-gray-700">{booking.specialRequests}</p>
+                          </div>
+                        )}
+
+                        {/* Admin Notes */}
+                        {booking.adminNotes && (
+                          <div className="bg-blue-50 rounded-lg p-3">
+                            <h4 className="font-medium text-blue-800 mb-2 flex items-center">
+                              <span className="mr-2">📢</span>
+                              Notes from Pandit Ji
+                            </h4>
+                            <p className="text-sm text-blue-700">{booking.adminNotes}</p>
+                          </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          {booking.meetingLink && booking.status === 'confirmed' && (
                             <a
                               href={booking.meetingLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-700 text-sm underline"
+                              className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                             >
-                              📹 Join Meeting
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              Join Meeting
                             </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Birth Details */}
-                    {(booking.birthDate || booking.birthTime || booking.birthCity) && (
-                      <div>
-                        <h4 className="font-semibold text-gray-800 mb-2">🌟 Birth Details</h4>
-                        <div className="bg-purple-50 rounded-lg p-3 space-y-1">
-                          {booking.birthDate && (
-                            <p className="text-sm"><span className="font-medium">Date:</span> {formatDate(booking.birthDate)}</p>
                           )}
-                          {booking.birthTime && (
-                            <p className="text-sm"><span className="font-medium">Time:</span> {booking.birthTime}</p>
+                          
+                          {booking.status === 'completed' && (
+                            <button
+                              onClick={() => navigate('/services')}
+                              className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                            >
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                              Book Again
+                            </button>
                           )}
-                          {booking.birthCity && (
-                            <p className="text-sm"><span className="font-medium">Place:</span> {booking.birthCity}, {booking.birthState}</p>
+                          
+                          {booking.status === 'pending' && (
+                            <button
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to cancel this booking?')) {
+                                  console.log('Cancel booking:', booking._id);
+                                }
+                              }}
+                              className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                            >
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              Cancel
+                            </button>
                           )}
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Right Column - Contact & Payment */}
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">👤 Contact Information</h4>
-                      <div className="bg-gray-50 rounded-lg p-3 space-y-1">
-                        <p className="text-sm"><span className="font-medium">Name:</span> {booking.name}</p>
-                        <p className="text-sm"><span className="font-medium">Mobile:</span> {booking.mobile}</p>
-                        {booking.email && (
-                          <p className="text-sm"><span className="font-medium">Email:</span> {booking.email}</p>
-                        )}
-                      </div>
                     </div>
-
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">💳 Payment Status</h4>
-                      <div className="bg-green-50 rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">Payment:</span>
-                          <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                            booking.paymentStatus === 'paid' 
-                              ? 'bg-green-100 text-green-800'
-                              : booking.paymentStatus === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {booking.paymentStatus === 'paid' ? 'Paid' : booking.paymentStatus === 'pending' ? 'Pending' : 'Refunded'}
-                          </span>
-                        </div>
-                        <p className="text-lg font-bold text-green-700 mt-1">
-                          ₹{booking.servicePrice?.toLocaleString() || '0'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Special Requests */}
-                {booking.specialRequests && (
-                  <div className="bg-yellow-50 rounded-lg p-4 mb-4">
-                    <h4 className="font-semibold text-gray-800 mb-2">📝 Special Requests</h4>
-                    <p className="text-sm text-gray-700">{booking.specialRequests}</p>
-                  </div>
-                )}
-
-                {/* Admin Notes */}
-                {booking.adminNotes && (
-                  <div className="bg-blue-50 rounded-lg p-4 mb-4">
-                    <h4 className="font-semibold text-blue-800 mb-2">📢 Notes</h4>
-                    <p className="text-sm text-blue-700">{booking.adminNotes}</p>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
-                  <button
-                    onClick={() => navigate(`/bookings/${booking._id}`)}
-                    className="flex items-center justify-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    View Details
-                  </button>
-                  
-                  {booking.meetingLink && booking.status === 'confirmed' && (
-                    <a
-                      href={booking.meetingLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                      Join Meeting
-                    </a>
-                  )}
-                  
-                  {booking.status === 'completed' && (
-                    <button
-                      onClick={() => navigate('/services')}
-                      className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Book Again
-                    </button>
-                  )}
-                  
-                  {booking.status === 'pending' && (
-                    <button
-                      onClick={() => {
-                        if (window.confirm('Are you sure you want to cancel this booking?')) {
-                          // Add cancel booking logic here
-                          console.log('Cancel booking:', booking._id);
-                        }
-                      }}
-                      className="flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Cancel Booking
-                    </button>
                   )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

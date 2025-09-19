@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import OrderModal from '../components/OrderModal';
-import { useApi } from '../context/ApiContext';
+import { AppContext } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
 const ShopPage = () => {
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -24,7 +24,7 @@ const ShopPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${api.endpoints.products}?enabled=true&inStock=all`);
+        const response = await fetch(`${BACKEND_URL}/api/products?enabled=true&inStock=all`);
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
@@ -162,7 +162,7 @@ const ShopPage = () => {
         <div className="container mx-auto px-4 lg:px-6">
           {loading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mb-4"></div>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
               <p className="text-gray-600 text-lg">Loading products...</p>
             </div>
           ) : error ? (
@@ -203,7 +203,7 @@ const ShopPage = () => {
                   {product.images && product.images.length > 0 && (
                     <div className="h-48 sm:h-56 md:h-64 overflow-hidden bg-gray-50 relative flex items-center justify-center p-4">
                       <img 
-                        src={api.getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
+                        src={getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
                         alt={product.name}
                         className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
@@ -227,9 +227,9 @@ const ShopPage = () => {
 
                     {/* Price */}
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg sm:text-xl font-bold text-orange-600">₹{product.price.toLocaleString()}</span>
+                      <span className="text-lg sm:text-xl font-bold text-purple-600">₹{product.price}</span>
                       {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="text-sm text-gray-500 line-through">₹{product.originalPrice.toLocaleString()}</span>
+                        <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
                       )}
                     </div>
 
@@ -243,7 +243,7 @@ const ShopPage = () => {
                             e.preventDefault();
                             handleAddToCart(product);
                           }}
-                          className="flex-1 border border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 text-sm flex items-center justify-center"
+                          className="flex-1 border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 text-sm flex items-center justify-center"
                         >
                           <span className="mr-1">🛒</span>
                           <span>Add to Cart</span>
@@ -256,7 +256,7 @@ const ShopPage = () => {
                             e.preventDefault();
                             handleBuyNow(product);
                           }}
-                          className="flex-1 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm flex items-center justify-center"
+                          className="flex-1 bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-700 hover:to-amber-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm flex items-center justify-center"
                         >
                           <span className="mr-1">⚡</span>
                           <span>Buy</span>

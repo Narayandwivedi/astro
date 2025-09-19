@@ -107,17 +107,35 @@ const cartReducer = (state, action) => {
 
     case CART_ACTIONS.LOAD_CART: {
       const loadedItems = action.payload || [];
+      // Ensure each item has an ID - preserve server _id and create local id for UI
+      const itemsWithIds = loadedItems.map(item => ({
+        ...item,
+        id: item._id || item.id || (Date.now() + Math.random()), // UI identifier
+        _id: item._id // Preserve server ID for API calls
+      }));
       return {
         ...state,
-        items: loadedItems,
-        totalItems: loadedItems.reduce((total, item) => total + item.quantity, 0),
-        totalPrice: loadedItems.reduce((total, item) => total + (item.product.price * item.quantity), 0)
+        items: itemsWithIds,
+        totalItems: itemsWithIds.reduce((total, item) => total + item.quantity, 0),
+        totalPrice: itemsWithIds.reduce((total, item) => total + (item.product.price * item.quantity), 0)
       };
     }
 
     default:
       return state;
   }
+};
+
+// Transform server cart items to frontend format
+const transformServerCartItem = (serverItem) => {
+  return {
+    id: serverItem._id || serverItem.id || (Date.now() + Math.random()),
+    _id: serverItem._id, // Preserve server ID
+    product: serverItem.productDetails || serverItem.product, // Use productDetails from server
+    quantity: serverItem.quantity || 1,
+    specifications: serverItem.specifications || '',
+    addedAt: serverItem.addedAt || new Date().toISOString()
+  };
 };
 
 // Initial cart state
@@ -187,9 +205,15 @@ export const CartProvider = ({ children }) => {
       
       if (response.data.success) {
         const serverCart = response.data.data;
+        console.log('Load cart - Server cart response:', serverCart);
+        
+        // Transform server cart items to frontend format
+        const transformedItems = (serverCart.items || []).map(transformServerCartItem);
+        console.log('Load cart - Transformed items:', transformedItems);
+        
         dispatch({ 
           type: CART_ACTIONS.LOAD_CART, 
-          payload: serverCart.items || [] 
+          payload: transformedItems
         });
       }
     } catch (error) {
@@ -214,9 +238,15 @@ export const CartProvider = ({ children }) => {
 
         if (response.data.success) {
           const serverCart = response.data.data;
+          console.log('Add to cart - Server cart response:', serverCart);
+          
+          // Transform server cart items to frontend format
+          const transformedItems = (serverCart.items || []).map(transformServerCartItem);
+          console.log('Transformed cart items:', transformedItems);
+          
           dispatch({ 
             type: CART_ACTIONS.LOAD_CART, 
-            payload: serverCart.items || [] 
+            payload: transformedItems
           });
         }
       } catch (error) {
@@ -240,15 +270,37 @@ export const CartProvider = ({ children }) => {
     if (isAuthenticated) {
       // Remove from server cart for authenticated users
       try {
-        const response = await axios.delete(`${BACKEND_URL}/api/cart/remove/${itemId}`, {
+        // Find the cart item to get the product ID for server call
+        const cartItem = cartState.items.find(item => item.id === itemId);
+        if (!cartItem) {
+          console.error('Cart item not found for removal');
+          return;
+        }
+
+        // For server cart, use cart item _id from the server
+        const serverItemId = cartItem._id || cartItem.id;
+        console.log('Removing cart item:', { itemId, serverItemId, cartItem });
+        
+        if (!serverItemId || typeof serverItemId !== 'string' || serverItemId.length < 20) {
+          console.error('Invalid server item ID for removal:', serverItemId);
+          // Fallback to local removal if no valid server ID
+          dispatch({
+            type: CART_ACTIONS.REMOVE_FROM_CART,
+            payload: { itemId }
+          });
+          return;
+        }
+
+        const response = await axios.delete(`${BACKEND_URL}/api/cart/remove/${serverItemId}`, {
           withCredentials: true
         });
 
         if (response.data.success) {
           const serverCart = response.data.data;
+          const transformedItems = (serverCart.items || []).map(transformServerCartItem);
           dispatch({ 
             type: CART_ACTIONS.LOAD_CART, 
-            payload: serverCart.items || [] 
+            payload: transformedItems
           });
         }
       } catch (error) {
@@ -272,7 +324,26 @@ export const CartProvider = ({ children }) => {
     if (isAuthenticated) {
       // Update server cart for authenticated users
       try {
-        const response = await axios.put(`${BACKEND_URL}/api/cart/update/${itemId}`, {
+        // Find the cart item to get the server ID
+        const cartItem = cartState.items.find(item => item.id === itemId);
+        if (!cartItem) {
+          console.error('Cart item not found for update');
+          return;
+        }
+
+        // For server cart, use cart item _id from the server
+        const serverItemId = cartItem._id || cartItem.id;
+        if (!serverItemId || typeof serverItemId !== 'string' || serverItemId.length < 20) {
+          console.error('Invalid server item ID for update:', serverItemId);
+          // Fallback to local update if no valid server ID
+          dispatch({
+            type: CART_ACTIONS.UPDATE_QUANTITY,
+            payload: { itemId, quantity }
+          });
+          return;
+        }
+
+        const response = await axios.put(`${BACKEND_URL}/api/cart/update/${serverItemId}`, {
           quantity
         }, {
           withCredentials: true
@@ -280,9 +351,10 @@ export const CartProvider = ({ children }) => {
 
         if (response.data.success) {
           const serverCart = response.data.data;
+          const transformedItems = (serverCart.items || []).map(transformServerCartItem);
           dispatch({ 
             type: CART_ACTIONS.LOAD_CART, 
-            payload: serverCart.items || [] 
+            payload: transformedItems
           });
         }
       } catch (error) {

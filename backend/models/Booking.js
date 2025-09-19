@@ -16,6 +16,13 @@ const bookingSchema = new mongoose.Schema({
     required: true
   },
   
+  // User Association (for authenticated users)
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false // Allow null for guest bookings
+  },
+  
   // Customer Information
   name: {
     type: String,
@@ -134,6 +141,8 @@ const bookingSchema = new mongoose.Schema({
 // Indexes for better query performance
 bookingSchema.index({ status: 1, preferredDate: 1 });
 bookingSchema.index({ mobile: 1 });
+bookingSchema.index({ email: 1 });
+bookingSchema.index({ userId: 1 });
 bookingSchema.index({ serviceId: 1 });
 bookingSchema.index({ createdAt: -1 });
 

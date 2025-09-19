@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { addAddress, updateAddress } from '../services/addressService';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const SimpleAddressModal = ({ isOpen, onClose, onSave, address = null, isEditing = false }) => {
   const [formData, setFormData] = useState({
@@ -133,19 +135,23 @@ const SimpleAddressModal = ({ isOpen, onClose, onSave, address = null, isEditing
     try {
       let result;
       if (isEditing && address) {
-        result = await updateAddress(address._id, formData);
+        result = await axios.put(`${API_BASE_URL}/api/addresses/${address._id}`, formData, {
+          withCredentials: true
+        });
       } else {
-        result = await addAddress(formData);
+        result = await axios.post(`${API_BASE_URL}/api/addresses`, formData, {
+          withCredentials: true
+        });
       }
 
       if (onSave) {
-        onSave(result.data);
+        onSave(result.data.data);
       }
       
       onClose();
     } catch (error) {
       console.error('Address save error:', error);
-      alert(error.message || 'Failed to save address. Please try again.');
+      alert(error.response?.data?.message || error.message || 'Failed to save address. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

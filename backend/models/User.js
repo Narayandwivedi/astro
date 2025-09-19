@@ -1,5 +1,102 @@
 const mongoose = require("mongoose");
 
+// Address Schema - Used as subdocument in User
+const addressSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['home', 'work', 'billing', 'shipping', 'other'],
+    default: 'home'
+  },
+  label: {
+    type: String,
+    trim: true,
+    maxlength: 50
+  },
+  fullName: {
+    type: String,
+    required: [true, 'Full name is required'],
+    trim: true,
+    maxlength: 100
+  },
+  mobile: {
+    type: String,
+    required: [true, 'Mobile number is required'],
+    match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number']
+  },
+  alternatePhone: {
+    type: String,
+    match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number']
+  },
+  email: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
+  },
+  addressLine1: {
+    type: String,
+    required: [true, 'Address line 1 is required'],
+    trim: true,
+    maxlength: 200
+  },
+  addressLine2: {
+    type: String,
+    trim: true,
+    maxlength: 200
+  },
+  landmark: {
+    type: String,
+    trim: true,
+    maxlength: 100
+  },
+  area: {
+    type: String,
+    trim: true,
+    maxlength: 100
+  },
+  city: {
+    type: String,
+    required: [true, 'City is required'],
+    trim: true,
+    maxlength: 50
+  },
+  state: {
+    type: String,
+    required: [true, 'State is required'],
+    trim: true,
+    maxlength: 50
+  },
+  pincode: {
+    type: String,
+    required: [true, 'Pincode is required'],
+    match: [/^[1-9][0-9]{5}$/, 'Please enter a valid 6-digit pincode']
+  },
+  country: {
+    type: String,
+    default: 'India',
+    maxlength: 50
+  },
+  isDefault: {
+    type: Boolean,
+    default: false
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  deliveryInstructions: {
+    type: String,
+    trim: true,
+    maxlength: 300
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
+}, {
+  timestamps: true
+});
+
 const userSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -60,124 +157,8 @@ const userSchema = new mongoose.Schema({
     country: { type: String, default: 'India' }
   },
   
-  // Enhanced Addresses for Ecommerce
-  addresses: [{
-    type: {
-      type: String,
-      enum: ['home', 'work', 'billing', 'shipping', 'other'],
-      default: 'home'
-    },
-    label: {
-      type: String,
-      trim: true,
-      maxlength: 50
-    },
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 100
-    },
-    mobile: {
-      type: String,
-      required: true,
-      match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number']
-    },
-    alternatePhone: {
-      type: String,
-      match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number']
-    },
-    email: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
-    },
-    addressLine1: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 200
-    },
-    addressLine2: {
-      type: String,
-      trim: true,
-      maxlength: 200
-    },
-    landmark: {
-      type: String,
-      trim: true,
-      maxlength: 100
-    },
-    area: {
-      type: String,
-      trim: true,
-      maxlength: 100
-    },
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 50
-    },
-    state: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 50
-    },
-    pincode: {
-      type: String,
-      required: true,
-      match: [/^[1-9][0-9]{5}$/, 'Please enter a valid 6-digit pincode']
-    },
-    country: {
-      type: String,
-      default: 'India',
-      maxlength: 50
-    },
-    coordinates: {
-      latitude: {
-        type: Number,
-        min: -90,
-        max: 90
-      },
-      longitude: {
-        type: Number,
-        min: -180,
-        max: 180
-      }
-    },
-    isDefault: {
-      type: Boolean,
-      default: false
-    },
-    isVerified: {
-      type: Boolean,
-      default: false
-    },
-    deliveryInstructions: {
-      type: String,
-      trim: true,
-      maxlength: 300
-    },
-    addressTags: [{
-      type: String,
-      enum: ['safe', 'secure_building', 'no_lift', 'parking_available', 'gated_community', 'apartment', 'independent_house']
-    }],
-    isActive: {
-      type: Boolean,
-      default: true
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
+  // Enhanced Addresses for Ecommerce - Using addressSchema
+  addresses: [addressSchema],
   
   // User Role
   role: {

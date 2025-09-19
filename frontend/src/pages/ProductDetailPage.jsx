@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import OrderModal from '../components/OrderModal';
-import { useApi } from '../context/ApiContext';
+import { AppContext } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${api.endpoints.products}/${id}`);
+        const response = await fetch(`${BACKEND_URL}/api/products/${id}`);
         if (!response.ok) {
           throw new Error('Product not found');
         }
@@ -43,7 +43,7 @@ const ProductDetailPage = () => {
 
     const fetchRelatedProducts = async (category, currentProductId) => {
       try {
-        const response = await fetch(`${api.endpoints.products}?category=${category}&limit=4`);
+        const response = await fetch(`${BACKEND_URL}/api/products?category=${category}&limit=4`);
         if (response.ok) {
           const data = await response.json();
           // Filter out current product
@@ -58,7 +58,7 @@ const ProductDetailPage = () => {
     if (id) {
       fetchProduct();
     }
-  }, [id, api.endpoints.products]);
+  }, [id, BACKEND_URL]);
 
   const handleBuyNow = (product) => {
     addToCart(product, 1);
@@ -140,7 +140,7 @@ const ProductDetailPage = () => {
               <div className="bg-gradient-to-br from-orange-100 to-yellow-100 rounded-xl overflow-hidden aspect-square flex items-center justify-center p-8">
                 {product.images && product.images.length > 0 ? (
                   <img 
-                    src={api.getImageURL(product.images[selectedImageIndex])} 
+                    src={getImageURL(product.images[selectedImageIndex])} 
                     alt={product.name}
                     className="max-w-full max-h-full object-contain"
                     onError={(e) => {
@@ -172,7 +172,7 @@ const ProductDetailPage = () => {
                       }`}
                     >
                       <img 
-                        src={api.getImageURL(image)} 
+                        src={getImageURL(image)} 
                         alt={`${product.name} ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -340,7 +340,7 @@ const ProductDetailPage = () => {
                   <div className="h-48 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center relative p-4">
                     {relatedProduct.images && relatedProduct.images.length > 0 ? (
                       <img 
-                        src={api.getImageURL(relatedProduct.images[0])}
+                        src={getImageURL(relatedProduct.images[0])}
                         alt={relatedProduct.name}
                         className="w-32 h-32 object-cover rounded-lg shadow-md"
                       />

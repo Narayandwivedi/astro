@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { useCart } from '../context/CartContext';
-import { useApi } from '../context/ApiContext';
+import { AppContext } from '../context/AppContext';
 
 const CartPage = () => {
   const navigate = useNavigate();
   const { cart, removeFromCart, updateQuantity, clearCart, getCartSummary } = useCart();
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -96,7 +96,7 @@ const CartPage = () => {
                       <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         {item.product.images && item.product.images.length > 0 ? (
                           <img 
-                            src={api.getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
+                            src={getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
                             alt={item.product.name}
                             className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg"
                             onError={(e) => {

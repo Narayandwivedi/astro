@@ -1,5 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { addAddress, updateAddress, validateAddress } from '../services/addressService';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// Validate address data
+const validateAddressData = (addressData) => {
+  const errors = {};
+
+  if (!addressData.fullName?.trim()) {
+    errors.fullName = 'Full name is required';
+  }
+
+  if (!addressData.mobile?.trim()) {
+    errors.mobile = 'Mobile number is required';
+  } else if (!/^[6-9]\d{9}$/.test(addressData.mobile)) {
+    errors.mobile = 'Please enter a valid 10-digit mobile number';
+  }
+
+  // Validate alternate phone if provided
+  if (addressData.alternatePhone?.trim() && !/^[6-9]\d{9}$/.test(addressData.alternatePhone)) {
+    errors.alternatePhone = 'Please enter a valid 10-digit mobile number';
+  }
+
+  // Validate email if provided
+  if (addressData.email?.trim() && !/^\S+@\S+\.\S+$/.test(addressData.email)) {
+    errors.email = 'Please enter a valid email address';
+  }
+
+  if (!addressData.addressLine1?.trim()) {
+    errors.addressLine1 = 'Address line 1 is required';
+  }
+
+  if (!addressData.city?.trim()) {
+    errors.city = 'City is required';
+  }
+
+  if (!addressData.state?.trim()) {
+    errors.state = 'State is required';
+  }
+
+  if (!addressData.pincode?.trim()) {
+    errors.pincode = 'Pincode is required';
+  } else if (!/^[1-9][0-9]{5}$/.test(addressData.pincode)) {
+    errors.pincode = 'Please enter a valid 6-digit pincode';
+  }
+
+  // Validate delivery instructions length
+  if (addressData.deliveryInstructions?.trim() && addressData.deliveryInstructions.trim().length > 300) {
+    errors.deliveryInstructions = 'Delivery instructions must be less than 300 characters';
+  }
+
+  // Validate label length
+  if (addressData.label?.trim() && addressData.label.trim().length > 50) {
+    errors.label = 'Address label must be less than 50 characters';
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+};
 
 const AddressModal = ({ isOpen, onClose, onSave, address = null, isEditing = false }) => {
   const [formData, setFormData] = useState({
@@ -116,7 +176,7 @@ const AddressModal = ({ isOpen, onClose, onSave, address = null, isEditing = fal
     e.preventDefault();
     
     // Validate form
-    const validation = validateAddress(formData);
+    const validation = validateAddressData(formData);
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
@@ -127,14 +187,18 @@ const AddressModal = ({ isOpen, onClose, onSave, address = null, isEditing = fal
     try {
       let result;
       if (isEditing && address) {
-        result = await updateAddress(address._id, formData);
+        result = await axios.put(`${API_BASE_URL}/api/addresses/${address._id}`, formData, {
+          withCredentials: true
+        });
       } else {
-        result = await addAddress(formData);
+        result = await axios.post(`${API_BASE_URL}/api/addresses`, formData, {
+          withCredentials: true
+        });
       }
 
       // Call onSave callback to refresh the address list
       if (onSave) {
-        onSave(result.data);
+        onSave(result.data.data);
       }
 
       // Show success message
@@ -143,7 +207,7 @@ const AddressModal = ({ isOpen, onClose, onSave, address = null, isEditing = fal
       onClose();
     } catch (error) {
       console.error('Address save error:', error);
-      alert(error.message || 'Failed to save address. Please try again.');
+      alert(error.response?.data?.message || error.message || 'Failed to save address. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

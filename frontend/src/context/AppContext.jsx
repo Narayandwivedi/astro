@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com/'
 
 export const AppContextProvider = (props) => {
   const navigate = useNavigate()
@@ -117,6 +117,15 @@ export const AppContextProvider = (props) => {
     setUser(prevUser => ({ ...prevUser, ...userData }))
   }, [])
 
+  const getImageURL = useCallback((imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+    return `${BACKEND_URL}/${cleanPath}`;
+  }, [BACKEND_URL])
+
   const value = useMemo(() => ({
     BACKEND_URL,
     user,
@@ -128,7 +137,8 @@ export const AppContextProvider = (props) => {
     refreshUser,
     updateUser,
     checkAuthStatus,
-  }), [user, isAuthenticated, loading, login, signup, logout, refreshUser, updateUser, checkAuthStatus]);
+    getImageURL,
+  }), [user, isAuthenticated, loading, login, signup, logout, refreshUser, updateUser, checkAuthStatus, getImageURL]);
 
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>

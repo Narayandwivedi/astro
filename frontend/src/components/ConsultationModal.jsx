@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
 const ConsultationModal = ({ isOpen, onClose }) => {
+  const { BACKEND_URL } = useContext(AppContext);
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
@@ -26,6 +28,15 @@ const ConsultationModal = ({ isOpen, onClose }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  // Show toast notification
+  const showSuccessToast = () => {
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 4000); // Show for 4 seconds
+  };
 
   // Time slots for consultation
   const timeSlots = [
@@ -97,6 +108,26 @@ const ConsultationModal = ({ isOpen, onClose }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Handle mobile number formatting
+    if (name === 'mobile') {
+      let cleanValue = value.replace(/\D/g, ''); // Remove all non-digits
+      
+      // If it starts with 91 and is longer than 10 digits, assume it includes country code
+      if (cleanValue.startsWith('91') && cleanValue.length > 10) {
+        cleanValue = cleanValue.substring(2); // Remove the 91 prefix
+      }
+      
+      // Limit to 10 digits
+      cleanValue = cleanValue.substring(0, 10);
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: cleanValue
+      }));
+      return;
+    }
+    
     setFormData(prev => {
       const newData = {
         ...prev,
@@ -163,11 +194,12 @@ const ConsultationModal = ({ isOpen, onClose }) => {
         specialRequests: `Consultation Type: ${formData.consultationType}${formData.specialRequests ? `\nSpecial Requests: ${formData.specialRequests}` : ''}`
       };
 
-      const response = await fetch('http://localhost:5000/api/bookings', {
+      const response = await fetch(`${BACKEND_URL}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(bookingData),
       });
 
@@ -177,7 +209,8 @@ const ConsultationModal = ({ isOpen, onClose }) => {
 
       const result = await response.json();
       
-      alert(`Thank you ${formData.name}! Your consultation request has been submitted successfully. Booking ID: ${result.data._id}. We will contact you on ${formData.mobile} within 24 hours.`);
+      // Show success toast
+      showSuccessToast();
       
       // Reset form
       setFormData({
@@ -217,27 +250,41 @@ const ConsultationModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl md:rounded-2xl w-full md:max-w-3xl md:w-full max-h-[96vh] md:max-h-[92vh] overflow-y-auto shadow-2xl modal-scroll animate-slide-up md:animate-fade-in">
+      <div className="bg-white rounded-t-3xl md:rounded-2xl w-full md:max-w-3xl md:w-full max-h-[96vh] md:max-h-[92vh] overflow-y-auto shadow-2xl border border-purple-200/50">
         
-        {/* Mobile-Friendly Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-orange-600 to-amber-600 text-white p-4 md:p-6 rounded-t-3xl md:rounded-t-2xl">
+        {/* Enhanced Cosmic Header */}
+        <div className="sticky top-0 z-10 bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white p-4 md:p-6 rounded-t-3xl md:rounded-t-2xl relative overflow-hidden">
+          {/* Cosmic Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-4 left-4 w-20 h-20 border-2 border-white/30 rounded-full"></div>
+            <div className="absolute top-8 right-8 w-16 h-16 border border-white/20 rounded-full"></div>
+            <div className="absolute bottom-4 left-1/2 w-12 h-12 border border-white/25 rounded-full transform -translate-x-1/2"></div>
+          </div>
+          
+          {/* Floating Stars */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-6 right-20 text-amber-300/40">✨</div>
+            <div className="absolute top-12 left-20 text-amber-200/30">⭐</div>
+            <div className="absolute bottom-8 right-12 text-amber-400/35">🌟</div>
+          </div>
+
           {/* Mobile swipe indicator */}
-          <div className="md:hidden w-12 h-1 bg-white/30 rounded-full mx-auto mb-3"></div>
-          <div className="flex items-center justify-between">
+          <div className="md:hidden w-12 h-1 bg-white/30 rounded-full mx-auto mb-3 relative z-10"></div>
+          <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center mr-3 backdrop-blur-sm">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center mr-3 backdrop-blur-sm border border-white/30">
                 <span className="text-lg md:text-xl">🆓</span>
               </div>
               <div>
-                <h2 className="text-lg md:text-2xl font-bold">
+                <h2 className="text-lg md:text-2xl font-bold drop-shadow-lg">
                   Free Consultation
                 </h2>
-                <p className="text-orange-100 text-sm">निःशुल्क परामर्श</p>
+                <p className="text-purple-100 text-sm font-medium">निःशुल्क परामर्श</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:text-orange-200 p-3 rounded-full hover:bg-white/10 transition-all duration-200 active:scale-95"
+              className="text-white hover:text-purple-200 p-3 rounded-full hover:bg-white/10 backdrop-blur-sm"
             >
               <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -245,33 +292,38 @@ const ConsultationModal = ({ isOpen, onClose }) => {
             </button>
           </div>
           
-          {/* Free consultation highlights */}
-          <div className="flex flex-wrap gap-2 mt-3">
-            <div className="flex items-center bg-white/20 rounded-lg px-2 py-1">
+          {/* Free consultation highlights with cosmic theme */}
+          <div className="flex flex-wrap gap-2 mt-3 relative z-10">
+            <div className="flex items-center bg-white/20 backdrop-blur-md rounded-lg px-2 py-1 border border-white/30">
               <span className="text-sm mr-1">🎉</span>
               <span className="text-xs font-medium">100% FREE</span>
             </div>
-            <div className="flex items-center bg-white/20 rounded-lg px-2 py-1">
+            <div className="flex items-center bg-white/20 backdrop-blur-md rounded-lg px-2 py-1 border border-white/30">
               <span className="text-sm mr-1">📞</span>
               <span className="text-xs font-medium">15-20 mins</span>
             </div>
-            <div className="flex items-center bg-white/20 rounded-lg px-2 py-1">
+            <div className="flex items-center bg-white/20 backdrop-blur-md rounded-lg px-2 py-1 border border-white/30">
               <span className="text-sm mr-1">🔮</span>
               <span className="text-xs font-medium">Expert Guidance</span>
             </div>
           </div>
         </div>
 
-        {/* Mobile-Optimized Form */}
-        <div className="p-3 sm:p-4 md:p-6 bg-gray-50 pb-24 sm:pb-4 md:pb-6">
+        {/* Enhanced Cosmic Form */}
+        <div className="p-3 sm:p-4 md:p-6 bg-gradient-to-br from-purple-50/80 via-indigo-50/60 to-amber-50/40 pb-24 sm:pb-4 md:pb-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Personal Information */}
-            <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="text-blue-600 mr-2">👤</span>
-                Personal Information
-                <span className="text-sm text-gray-600 ml-2">(व्यक्तिगत जानकारी)</span>
+            {/* Enhanced Personal Information */}
+            <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4 rounded-2xl border-2 border-blue-200/60 shadow-lg backdrop-blur-sm">
+              <div className="absolute top-4 right-4 text-blue-200 text-3xl sm:text-5xl opacity-20">👤</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center relative z-10">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                  <span className="text-white text-sm sm:text-lg">👤</span>
+                </div>
+                <div>
+                  <span className="text-gray-800 text-sm sm:text-lg">Personal Information</span>
+                  <p className="text-xs text-blue-700 font-normal">(व्यक्तिगत जानकारी)</p>
+                </div>
               </h3>
               
               <div className="space-y-4">
@@ -286,7 +338,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors bg-white"
+                    className="w-full px-3 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -295,27 +347,56 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                   <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
                     Mobile Number / मोबाइल नंबर *
                   </label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                      +91
+                    </div>
+                    <input
+                      type="tel"
+                      id="mobile"
+                      name="mobile"
+                      value={formData.mobile}
+                      onChange={handleInputChange}
+                      required
+                      minLength="10"
+                      maxLength="10"
+                      className="w-full pl-12 pr-3 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
+                      placeholder="9876543210"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter 10-digit mobile number (without +91)
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address / ईमेल पता
+                  </label>
                   <input
-                    type="tel"
-                    id="mobile"
-                    name="mobile"
-                    value={formData.mobile}
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleInputChange}
-                    required
-                    pattern="[0-9]{10}"
-                    className="w-full px-3 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors bg-white"
-                    placeholder="+91 XXXXXXXXXX"
+                    className="w-full px-3 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+                    placeholder="your.email@example.com"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Birth Details - Simplified */}
-            <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="text-orange-600 mr-2">🌟</span>
-                Birth Details (Optional)
-                <span className="text-sm text-gray-600 ml-2">(जन्म विवरण)</span>
+            {/* Enhanced Birth Details */}
+            <div className="relative bg-gradient-to-br from-purple-50 to-indigo-100 p-3 sm:p-4 rounded-2xl border-2 border-purple-200/60 shadow-lg backdrop-blur-sm">
+              <div className="absolute top-4 right-4 text-purple-200 text-3xl sm:text-5xl opacity-20">🌟</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center relative z-10">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                  <span className="text-white text-sm sm:text-lg">🌟</span>
+                </div>
+                <div>
+                  <span className="text-gray-800 text-sm sm:text-lg">Birth Details (Optional)</span>
+                  <p className="text-xs text-purple-700 font-normal">(जन्म विवरण)</p>
+                </div>
               </h3>
               
               <div className="space-y-4">
@@ -328,7 +409,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       name="birthDay"
                       value={formData.birthDay}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
                     >
                       <option value="">Day</option>
                       {getDaysInMonth(formData.birthMonth, formData.birthYear).map((day) => (
@@ -342,7 +423,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       name="birthMonth"
                       value={formData.birthMonth}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
                     >
                       <option value="">Month</option>
                       {months.map((month) => (
@@ -356,7 +437,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       name="birthYear"
                       value={formData.birthYear}
                       onChange={handleInputChange}
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
                     >
                       <option value="">Year</option>
                       {getBirthYears().slice(0, 80).map((year) => (
@@ -420,22 +501,76 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                     </select>
                   </div>
                 </div>
+                
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label htmlFor="birthState" className="block text-sm font-medium text-gray-700 mb-2">
+                      Birth State / जन्म राज्य
+                    </label>
+                    <select
+                      id="birthState"
+                      name="birthState"
+                      value={formData.birthState}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                    >
+                      <option value="">Select State</option>
+                      {[
+                        'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 
+                        'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 
+                        'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 
+                        'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 
+                        'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+                        'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Puducherry', 'Chandigarh', 
+                        'Andaman and Nicobar Islands', 'Dadra and Nagar Haveli and Daman and Diu', 'Lakshadweep'
+                      ].map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="birthCity" className="block text-sm font-medium text-gray-700 mb-2">
+                      Birth City / जन्म शहर
+                    </label>
+                    <input
+                      type="text"
+                      id="birthCity"
+                      name="birthCity"
+                      value={formData.birthCity}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                      placeholder="Enter your birth city"
+                    />
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 mt-2">
+                  * Birth details help provide more accurate consultation
+                </p>
               </div>
             </div>
 
-            {/* Consultation Type - Simplified */}
-            <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="text-purple-600 mr-2">🔮</span>
-                What would you like to discuss?
-                <span className="text-sm text-gray-600 ml-2">(परामर्श प्रकार)</span>
+            {/* Enhanced Consultation Type */}
+            <div className="relative bg-gradient-to-br from-amber-50 to-yellow-100 p-3 sm:p-4 rounded-2xl border-2 border-amber-200/60 shadow-lg backdrop-blur-sm">
+              <div className="absolute top-4 right-4 text-amber-200 text-3xl sm:text-5xl opacity-20">🔮</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center relative z-10">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                  <span className="text-white text-sm sm:text-lg">🔮</span>
+                </div>
+                <div>
+                  <span className="text-gray-800 text-sm sm:text-lg">What would you like to discuss?</span>
+                  <p className="text-xs text-amber-700 font-normal">(परामर्श प्रकार)</p>
+                </div>
               </h3>
               <select
                 id="consultationType"
                 name="consultationType"
                 value={formData.consultationType}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 text-sm"
               >
                 <option value="">Select consultation type</option>
                 <option value="general">General Reading</option>
@@ -450,12 +585,17 @@ const ConsultationModal = ({ isOpen, onClose }) => {
               </select>
             </div>
 
-            {/* Booking Preferences - Simplified */}
-            <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="text-green-600 mr-2">📅</span>
-                When would you like to talk?
-                <span className="text-sm text-gray-600 ml-2">(पसंदीदा समय)</span>
+            {/* Enhanced Booking Preferences */}
+            <div className="relative bg-gradient-to-br from-green-50 to-emerald-100 p-3 sm:p-4 rounded-2xl border-2 border-green-200/60 shadow-lg backdrop-blur-sm">
+              <div className="absolute top-4 right-4 text-green-200 text-3xl sm:text-5xl opacity-20">📅</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center relative z-10">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                  <span className="text-white text-sm sm:text-lg">📅</span>
+                </div>
+                <div>
+                  <span className="text-gray-800 text-sm sm:text-lg">When would you like to talk?</span>
+                  <p className="text-xs text-green-700 font-normal">(पसंदीदा समय)</p>
+                </div>
               </h3>
               
               <div className="space-y-4">
@@ -469,7 +609,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       value={formData.preferredDay}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm"
                     >
                       <option value="">Day</option>
                       {getDaysInMonth(formData.preferredMonth, formData.preferredYear)
@@ -494,7 +634,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       value={formData.preferredMonth}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm"
                     >
                       <option value="">Month</option>
                       {months
@@ -518,7 +658,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       value={formData.preferredYear}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm"
                     >
                       <option value="">Year</option>
                       {getConsultationYears().map((year) => (
@@ -540,7 +680,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                     value={formData.preferredTime}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm"
                   >
                     <option value="">Select Time</option>
                     {timeSlots.map((time) => (
@@ -556,7 +696,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                     How would you prefer to talk? / परामर्श विधि *
                   </label>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                    <label className="flex flex-col items-center justify-center p-2 sm:p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors text-center">
+                    <label className="flex flex-col items-center justify-center p-2 sm:p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 text-center">
                       <input
                         type="radio"
                         name="consultationMethod"
@@ -569,7 +709,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       <span className="text-xs sm:text-sm font-medium">Phone</span>
                     </label>
                     
-                    <label className="flex flex-col items-center justify-center p-2 sm:p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors text-center">
+                    <label className="flex flex-col items-center justify-center p-2 sm:p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 text-center">
                       <input
                         type="radio"
                         name="consultationMethod"
@@ -582,7 +722,7 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                       <span className="text-xs sm:text-sm font-medium">Video</span>
                     </label>
                     
-                    <label className="flex flex-col items-center justify-center p-2 sm:p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors text-center">
+                    <label className="flex flex-col items-center justify-center p-2 sm:p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 text-center">
                       <input
                         type="radio"
                         name="consultationMethod"
@@ -608,50 +748,54 @@ const ConsultationModal = ({ isOpen, onClose }) => {
                     value={formData.specialRequests}
                     onChange={handleInputChange}
                     rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 resize-none text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 resize-none text-sm"
                     placeholder="Any specific questions or requirements..."
                   ></textarea>
                 </div>
               </div>
             </div>
 
-            {/* Free Consultation Notice - Simplified */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-xl border border-green-200">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-lg">🆓</span>
+            {/* Enhanced Free Consultation Notice */}
+            <div className="relative bg-gradient-to-br from-purple-50 to-indigo-100 p-4 rounded-2xl border-2 border-purple-200/60 shadow-lg backdrop-blur-sm overflow-hidden">
+              <div className="absolute top-2 right-2 text-purple-200 text-4xl opacity-20">🆓</div>
+              <div className="absolute inset-0 opacity-30"></div>
+              <div className="flex items-center relative z-10">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mr-4 shadow-md">
+                  <span className="text-xl text-white">🆓</span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-lg font-bold text-green-800">100% Free Consultation</h4>
-                  <p className="text-green-700 text-sm">निःशुल्क परामर्श - No charges apply!</p>
+                  <h4 className="text-xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
+                    100% Free Consultation
+                  </h4>
+                  <p className="text-purple-700 text-sm font-medium">निःशुल्क परामर्श - No charges apply!</p>
                 </div>
               </div>
             </div>
 
-            {/* Submit Buttons - Mobile Optimized */}
-            <div className="bg-white p-3 sm:p-4 -m-3 sm:-m-4 border-t border-gray-200 md:bg-transparent md:p-0 md:border-t-0 md:m-0">
+            {/* Enhanced Submit Buttons - Cosmic Theme */}
+            <div className="bg-gradient-to-br from-white/80 to-purple-50/60 p-3 sm:p-4 -m-3 sm:-m-4 border-t border-purple-200/30 backdrop-blur-sm md:bg-transparent md:p-0 md:border-t-0 md:m-0">
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-base active:scale-95"
+                  className="flex-1 px-4 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 font-semibold text-base shadow-md hover:shadow-lg"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-4 py-4 rounded-lg transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base active:scale-95"
+                  className="flex-2 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:via-indigo-700 hover:to-purple-800 text-white px-4 py-4 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base shadow-lg hover:shadow-xl"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full mr-2"></div>
                       <span>Submitting...</span>
                     </>
                   ) : (
                     <>
-                      <span className="mr-1">🚀</span>
-                      <span>Submit Request</span>
+                      <span className="mr-2">🚀</span>
+                      <span>Submit Free Request</span>
                     </>
                   )}
                 </button>
@@ -660,6 +804,26 @@ const ConsultationModal = ({ isOpen, onClose }) => {
           </form>
         </div>
       </div>
+
+      {/* Enhanced Success Toast Notification - Cosmic Theme */}
+      {showToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[60] animate-fade-in">
+          <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-3 max-w-sm border border-purple-300/30 backdrop-blur-sm animate-pulse">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <p className="font-bold text-sm">Free Consultation Requested!</p>
+              <p className="text-xs text-purple-100">We'll contact you within 24 hours</p>
+            </div>
+            <div className="text-amber-300">✨</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

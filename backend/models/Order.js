@@ -1,15 +1,6 @@
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
-  // Order Details
-  orderNumber: {
-    type: String,
-    unique: true,
-    required: true,
-    default: function() {
-      return 'ORD' + Date.now() + Math.floor(Math.random() * 1000);
-    }
-  },
   
   // Customer Information
   customer: {
@@ -31,11 +22,6 @@ const OrderSchema = new mongoose.Schema({
       trim: true,
       match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit phone number']
     },
-    whatsapp: {
-      type: String,
-      trim: true,
-      match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit WhatsApp number']
-    }
   },
 
   // Shipping Address
@@ -156,7 +142,7 @@ const OrderSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     enum: ['cod', 'online', 'upi', 'bank_transfer', 'whatsapp'],
-    default: 'whatsapp'
+    default: 'cod'
   },
   
   paymentStatus: {
@@ -186,29 +172,6 @@ const OrderSchema = new mongoose.Schema({
     maxlength: [500, 'Special requirements cannot exceed 500 characters']
   },
 
-  // Birth Details for Astrological Products
-  birthDetails: {
-    dateOfBirth: {
-      type: Date
-    },
-    timeOfBirth: {
-      type: String
-    },
-    placeOfBirth: {
-      type: String,
-      trim: true
-    },
-    isRequired: {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  // Consultation Preference
-  consultationRequired: {
-    type: Boolean,
-    default: false
-  },
 
   // Order Tracking
   tracking: {
@@ -254,7 +217,6 @@ const OrderSchema = new mongoose.Schema({
 });
 
 // Indexes for better query performance
-// Note: orderNumber index is automatically created by unique: true
 OrderSchema.index({ 'customer.email': 1 });
 OrderSchema.index({ 'customer.phone': 1 });
 OrderSchema.index({ status: 1 });
@@ -287,7 +249,7 @@ OrderSchema.methods.getStatusDisplay = function() {
 
 // Method to check if order can be cancelled
 OrderSchema.methods.canBeCancelled = function() {
-  return ['pending', 'confirmed'].includes(this.status);
+  return ['pending', 'confirmed', 'processing'].includes(this.status);
 };
 
 // Method to update order status with timestamp
@@ -339,28 +301,28 @@ OrderSchema.statics.getOrderStats = async function() {
   };
 };
 
-// Pre-save middleware to calculate totals
-OrderSchema.pre('save', function(next) {
-  // Calculate subtotal
-  this.pricing.subtotal = this.items.reduce((sum, item) => sum + item.totalPrice, 0);
-  
-  // Calculate total (subtotal + shipping + tax - discount)
-  this.pricing.total = this.pricing.subtotal + this.pricing.shipping + this.pricing.tax - this.pricing.discount;
-  
-  // Ensure total is not negative
-  if (this.pricing.total < 0) {
-    this.pricing.total = 0;
+// Combined pre-save middleware for order processing
+OrderSchema.pre('save', async function(next) {
+  try {
+    // 1. Calculate item total prices
+    this.items.forEach(item => {
+      item.totalPrice = item.quantity * item.price;
+    });
+    
+    // 2. Calculate pricing totals
+    this.pricing.subtotal = this.items.reduce((sum, item) => sum + item.totalPrice, 0);
+    this.pricing.total = this.pricing.subtotal + this.pricing.shipping + this.pricing.tax - this.pricing.discount;
+    
+    // 3. Ensure total is not negative
+    if (this.pricing.total < 0) {
+      this.pricing.total = 0;
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Error in order pre-save middleware:', error);
+    next(error);
   }
-  
-  next();
-});
-
-// Pre-save middleware to set item total prices
-OrderSchema.pre('save', function(next) {
-  this.items.forEach(item => {
-    item.totalPrice = item.quantity * item.price;
-  });
-  next();
 });
 
 module.exports = mongoose.model('Order', OrderSchema);

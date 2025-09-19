@@ -21,6 +21,15 @@ const createBooking = async (req, res) => {
       servicePrice
     } = req.body;
 
+    // Check if user is authenticated (optional - bookings can be made without login)
+    let userId = null;
+    if (req.user && req.user.userId) {
+      userId = req.user.userId;
+      console.log('Authenticated user making booking:', userId);
+    } else {
+      console.log('Guest user making booking');
+    }
+
     // Validate required fields
     if (!name || !mobile || !preferredDate || !preferredTime) {
       return res.status(400).json({
@@ -55,6 +64,7 @@ const createBooking = async (req, res) => {
 
     // Create the booking
     const booking = new Booking({
+      userId: userId || null, // Store authenticated user ID
       serviceId: serviceId || null,
       serviceName: serviceName || (service ? service.titleEn : 'General Consultation'),
       servicePrice: servicePrice || (service ? service.price : 0),
@@ -381,35 +391,87 @@ const getUserBookings = async (req, res) => {
       });
     }
     
-    // Find bookings by user's email or mobile
-    let query = {};
+    console.log('=== DEBUG getUserBookings ===');
+    console.log('User ID:', userId);
+    console.log('User Email:', user.email);
+    console.log('User Mobile:', user.mobile);
+    
+    // First, let's see how many total bookings exist
+    const totalBookings = await Booking.countDocuments();
+    console.log('Total bookings in database:', totalBookings);
+    
+    // Build comprehensive query to find bookings
+    let queryConditions = [];
+    
+    // Primary: Match by userId for new bookings
+    queryConditions.push({ userId: userId });
+    
+    // Secondary: Match by user email (case-insensitive) for legacy bookings
     if (user.email) {
-      query.email = user.email.toLowerCase();
+      queryConditions.push({ 
+        email: new RegExp(user.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+        userId: { $in: [null, undefined] } // Only match legacy bookings without userId
+      });
     }
     
-    // Also search by mobile if available
+    // Tertiary: Match by user mobile (handle different formats) for legacy bookings  
     if (user.mobile) {
-      if (query.email) {
-        query = {
-          $or: [
-            { email: user.email.toLowerCase() },
-            { mobile: user.mobile.toString() }
-          ]
-        };
-      } else {
-        query.mobile = user.mobile.toString();
-      }
+      const mobileStr = user.mobile.toString();
+      const mobileConditions = [
+        { mobile: mobileStr },
+        { mobile: mobileStr.replace(/^91/, '') }, // Remove 91 prefix
+        { mobile: '91' + mobileStr } // Add 91 prefix
+      ];
+      
+      mobileConditions.forEach(condition => {
+        queryConditions.push({
+          ...condition,
+          userId: { $in: [null, undefined] } // Only match legacy bookings without userId
+        });
+      });
     }
+    
+    const query = queryConditions.length > 0 ? { $or: queryConditions } : {};
+    
+    console.log('Query conditions:', JSON.stringify(query, null, 2));
+    console.log('User data for matching:', {
+      userId,
+      email: user.email,
+      mobile: user.mobile
+    });
     
     const bookings = await Booking.find(query)
       .populate('serviceId', 'titleEn titleHi category icon duration')
       .sort({ createdAt: -1 });
+    
+    console.log('Found bookings:', bookings.length);
+    
+    // Show first few bookings for debugging
+    if (bookings.length > 0) {
+      console.log('Sample booking data:');
+      bookings.slice(0, 2).forEach(booking => {
+        console.log('- Booking ID:', booking._id);
+        console.log('- Name:', booking.name);
+        console.log('- Email:', booking.email);
+        console.log('- Mobile:', booking.mobile);
+        console.log('- UserId:', booking.userId);
+        console.log('---');
+      });
+    }
+    
+    // Also let's check what all bookings exist in DB
+    const allBookings = await Booking.find({}).select('_id name email mobile userId').limit(5);
+    console.log('All bookings sample:');
+    allBookings.forEach(booking => {
+      console.log('- ID:', booking._id, 'Name:', booking.name, 'Email:', booking.email, 'Mobile:', booking.mobile, 'UserId:', booking.userId);
+    });
     
     res.json({
       success: true,
       data: bookings
     });
   } catch (error) {
+    console.error('getUserBookings error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch user bookings',

@@ -235,7 +235,7 @@ const ManageOrders = () => {
                       <td className="p-4">
                         <div>
                           <div className="font-medium text-gray-900">
-                            #{order.orderNumber}
+                            #{order._id}
                           </div>
                           <div className="text-sm text-gray-600">
                             {order.items.length} items
@@ -355,7 +355,7 @@ const ManageOrders = () => {
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">Order Details - #{selectedOrder.orderNumber}</h2>
+                <h2 className="text-xl font-semibold">Order Details - #{selectedOrder._id}</h2>
                 <button
                   onClick={() => setShowOrderModal(false)}
                   className="text-gray-500 hover:text-gray-700"

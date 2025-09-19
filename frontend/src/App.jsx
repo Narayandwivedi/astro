@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ApiProvider } from './context/ApiContext';
 import { AppContextProvider } from './context/AppContext';
 import { CartProvider } from './context/CartContext';
 import Homepage from './pages/Homepage';
@@ -17,6 +16,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import BookingsPage from './pages/BookingsPage';
 import AddressPage from './pages/AddressPage';
 import ManageAddressPage from './pages/ManageAddressPage';
@@ -53,6 +53,11 @@ function AppContent() {
               <OrdersPage />
             </ProtectedRoute>
           } />
+          <Route path="/orders/:orderId" element={
+            <ProtectedRoute>
+              <OrderDetailPage />
+            </ProtectedRoute>
+          } />
           <Route path="/bookings" element={
             <ProtectedRoute>
               <BookingsPage />
@@ -86,14 +91,12 @@ function AppContent() {
 
 function App() {
   return (
-    <ApiProvider>
-      <Router>
-        <AppContextProvider>
-          <CartProvider>
-            <AppContent />
-          </CartProvider>
-        </AppContextProvider>
-      </Router>
+    <Router>
+      <AppContextProvider>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </AppContextProvider>
       
       {/* Toast Notifications */}
       <ToastContainer
@@ -108,7 +111,7 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    </ApiProvider>
+    </Router>
   )
 }
 

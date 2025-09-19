@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Navigation from '../components/Navigation';
 import QRCODE from '../components/QRCODE';
 import { useCart } from '../context/CartContext';
-import { useApi } from '../context/ApiContext';
 import { AppContext } from '../context/AppContext';
-import { getAddresses, addAddress } from '../services/addressService';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cart, clearCart, getCartSummary } = useCart();
-  const api = useApi();
   const { user } = useContext(AppContext);
   
   const [currentStep, setCurrentStep] = useState(1); // 1: Address, 2: Payment, 3: Confirmation
@@ -74,11 +74,13 @@ const CheckoutPage = () => {
   useEffect(() => {
     const loadSavedAddresses = async () => {
       try {
-        const response = await getAddresses();
-        setSavedAddresses(response.data || []);
+        const response = await axios.get(`${API_BASE_URL}/api/addresses`, {
+          withCredentials: true
+        });
+        setSavedAddresses(response.data.data || []);
         
         // Auto-select default address if exists
-        const defaultAddress = response.data?.find(addr => addr.isDefault);
+        const defaultAddress = response.data.data?.find(addr => addr.isDefault);
         if (defaultAddress && !selectedSavedAddress) {
           setSelectedSavedAddress(defaultAddress);
           // Pre-fill form with default address
@@ -203,14 +205,14 @@ const CheckoutPage = () => {
 
   // Function to check if address form is complete
   const isAddressFormComplete = () => {
+    // If a saved address is selected, form is complete
     if (selectedSavedAddress) {
-      // If a saved address is selected, form is complete
       return true;
     }
     
-    if (showNewAddressForm) {
-      // If showing new address form, check if all required fields are filled
-      return (
+    // If there are no saved addresses OR user chose to add new address, validate the form
+    if (savedAddresses.length === 0 || showNewAddressForm) {
+      const isComplete = (
         formData.customer.name.trim() &&
         formData.customer.phone.trim() &&
         /^[6-9]\d{9}$/.test(formData.customer.phone) &&
@@ -220,9 +222,24 @@ const CheckoutPage = () => {
         formData.shippingAddress.pincode.trim() &&
         /^[1-9][0-9]{5}$/.test(formData.shippingAddress.pincode)
       );
+      
+      // Debug logging
+      console.log('Address form validation:', {
+        name: !!formData.customer.name.trim(),
+        phone: !!formData.customer.phone.trim(),
+        phoneValid: /^[6-9]\d{9}$/.test(formData.customer.phone),
+        address1: !!formData.shippingAddress.addressLine1.trim(),
+        city: !!formData.shippingAddress.city.trim(),
+        state: !!formData.shippingAddress.state.trim(),
+        pincode: !!formData.shippingAddress.pincode.trim(),
+        pincodeValid: /^[1-9][0-9]{5}$/.test(formData.shippingAddress.pincode),
+        isComplete
+      });
+      
+      return isComplete;
     }
     
-    // If no address is selected and form is not shown, not complete
+    // Default case - if saved addresses exist but none selected and new form not shown
     return false;
   };
 
@@ -283,8 +300,8 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     setLoading(true);
     try {
-      // Save address automatically if user entered a new address manually
-      if (showNewAddressForm && !selectedSavedAddress) {
+      // Save address automatically if user entered a new address manually OR no addresses exist
+      if ((showNewAddressForm && !selectedSavedAddress) || (savedAddresses.length === 0 && !selectedSavedAddress)) {
         try {
           const newAddressData = {
             fullName: formData.customer.name,
@@ -294,13 +311,18 @@ const CheckoutPage = () => {
             city: formData.shippingAddress.city,
             state: formData.shippingAddress.state,
             pincode: formData.shippingAddress.pincode,
+            country: formData.shippingAddress.country || 'India',
             isDefault: savedAddresses.length === 0 // Make it default if it's the first address
           };
 
-          await addAddress(newAddressData);
-          console.log('New address saved automatically during checkout');
+          const addressResponse = await axios.post(`${API_BASE_URL}/api/addresses`, newAddressData, {
+            withCredentials: true
+          });
+          console.log('New address saved automatically during checkout:', addressResponse.data);
         } catch (addressError) {
           console.error('Failed to save address during checkout:', addressError);
+          console.error('Address data being sent:', newAddressData);
+          console.error('Error response:', addressError.response?.data);
           // Continue with order placement even if address save fails
         }
       }
@@ -336,7 +358,7 @@ const CheckoutPage = () => {
         }
       };
 
-      const response = await fetch(`${api.baseURL}/api/orders`, {
+      const response = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -426,7 +448,7 @@ const CheckoutPage = () => {
                 <div className="text-6xl mb-4">🎉</div>
                 <h3 className="text-2xl font-bold text-green-600 mb-4">Order Placed Successfully!</h3>
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                  <p className="text-green-800 font-medium">Order Number: {orderDetails?.orderNumber}</p>
+                  <p className="text-green-800 font-medium">Order ID: {orderDetails?._id}</p>
                   <p className="text-green-700 text-sm mt-1">
                     We'll contact you shortly on {formData.customer.phone} to confirm your order.
                   </p>
@@ -454,7 +476,7 @@ const CheckoutPage = () => {
                 <div className="mt-8 space-y-3">
                   <button
                     onClick={() => {
-                      const message = `Hi! My order ${orderDetails?.orderNumber} has been placed. Please confirm the details.`;
+                      const message = `Hi! My order ${orderDetails?._id} has been placed. Please confirm the details.`;
                       window.open(`https://wa.me/918839454313?text=${encodeURIComponent(message)}`, '_blank');
                     }}
                     className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
@@ -556,7 +578,7 @@ const CheckoutPage = () => {
                   {(savedAddresses.length === 0 || showNewAddressForm) && (
                     <>
                       {/* Address Auto-Save Notice */}
-                      {showNewAddressForm && (
+                      {(showNewAddressForm || savedAddresses.length === 0) && (
                         <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg">
                           <div className="flex items-center">
                             <svg className="w-4 h-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -874,7 +896,7 @@ const CheckoutPage = () => {
                       <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         {item.product.images && item.product.images.length > 0 ? (
                           <img 
-                            src={api.getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
+                            src={`${API_BASE_URL}/uploads/${(item.product.images.find(img => img.isPrimary) || item.product.images[0]).filename}`}
                             alt={item.product.name}
                             className="w-10 h-10 object-cover rounded-lg"
                           />

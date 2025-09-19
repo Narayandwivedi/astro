@@ -86,12 +86,16 @@ const getAllOrders = async (req, res) => {
     if (search) {
       const regex = new RegExp(search, 'i');
       query.$or = [
-        { orderNumber: regex },
         { 'customer.name': regex },
         { 'customer.email': regex },
         { 'customer.phone': regex },
         { 'shippingAddress.city': regex }
       ];
+      
+      // If search looks like an ObjectId, also search by _id
+      if (search.match(/^[0-9a-fA-F]{24}$/)) {
+        query.$or.push({ _id: search });
+      }
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -130,33 +134,6 @@ const getOrderById = async (req, res) => {
     const { id } = req.params;
     
     const order = await Order.findById(id).populate('items.product', 'name nameHi images category description');
-    
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: order
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch order',
-      error: error.message
-    });
-  }
-};
-
-// Get order by order number
-const getOrderByNumber = async (req, res) => {
-  try {
-    const { orderNumber } = req.params;
-    
-    const order = await Order.findOne({ orderNumber }).populate('items.product', 'name nameHi images category description');
     
     if (!order) {
       return res.status(404).json({
@@ -239,26 +216,63 @@ const cancelOrder = async (req, res) => {
       });
     }
     
+    // Check if user is authorized to cancel this order
+    if (req.user) {
+      const User = require('../models/User');
+      const user = await User.findById(req.user.userId);
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+      
+      // Check if this order belongs to the user
+      const isOwner = order.customer.email === user.email || order.customer.phone === user.mobile;
+      
+      if (!isOwner) {
+        return res.status(403).json({
+          success: false,
+          message: 'You are not authorized to cancel this order'
+        });
+      }
+    }
+    
     if (!order.canBeCancelled()) {
       return res.status(400).json({
         success: false,
-        message: 'Order cannot be cancelled at this stage'
+        message: 'Order cannot be cancelled at this stage. Orders can only be cancelled when status is "pending" or "confirmed".'
       });
     }
     
+    // Validate reason
+    if (!reason || reason.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cancellation reason is required'
+      });
+    }
+    
+    // Update order status and add cancellation details
     order.status = 'cancelled';
-    if (reason) {
-      order.adminNotes = (order.adminNotes || '') + `\nCancellation reason: ${reason}`;
+    const cancellationNote = `\n--- Order Cancelled ---\nDate: ${new Date().toISOString()}\nReason: ${reason.trim()}\nCancelled by: ${req.user ? 'Customer' : 'Admin'}`;
+    order.adminNotes = (order.adminNotes || '') + cancellationNote;
+    
+    // If payment was made, mark for refund
+    if (order.paymentStatus === 'paid') {
+      order.paymentStatus = 'refunded';
     }
     
     await order.save();
     
     res.json({
       success: true,
-      message: 'Order cancelled successfully',
+      message: 'Order cancelled successfully. If payment was made, refund will be processed within 3-5 business days.',
       data: order
     });
   } catch (error) {
+    console.error('Error cancelling order:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to cancel order',
@@ -332,8 +346,7 @@ const getUserOrders = async (req, res) => {
     const sampleOrders = await Order.find({}).limit(3);
     console.log('Sample orders structure:', JSON.stringify(sampleOrders.map(o => ({
       _id: o._id,
-      customer: o.customer,
-      orderNumber: o.orderNumber
+      customer: o.customer
     })), null, 2));
     
     // Find orders by user's email or mobile
@@ -438,7 +451,7 @@ const sendOrderConfirmation = async (req, res) => {
     
     const whatsappMessage = `🎉 Order Confirmation - Astro Satya
     
-Order Number: ${order.orderNumber}
+Order ID: ${order._id}
 Customer: ${order.customer.name}
 Phone: ${order.customer.phone}
 
@@ -479,7 +492,6 @@ module.exports = {
   createOrder,
   getAllOrders,
   getOrderById,
-  getOrderByNumber,
   updateOrderStatus,
   cancelOrder,
   getCustomerOrders,

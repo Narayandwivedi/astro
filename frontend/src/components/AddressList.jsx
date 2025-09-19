@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import AddressModal from './AddressModal';
-import { getAddresses, deleteAddress, setDefaultAddress } from '../services/addressService';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const AddressList = ({ onSelectAddress = null, showActions = true, selectedAddressId = null }) => {
   const [addresses, setAddresses] = useState([]);
@@ -19,11 +21,13 @@ const AddressList = ({ onSelectAddress = null, showActions = true, selectedAddre
     try {
       setLoading(true);
       setError('');
-      const response = await getAddresses();
-      setAddresses(response.data || []);
+      const response = await axios.get(`${API_BASE_URL}/api/addresses`, {
+        withCredentials: true
+      });
+      setAddresses(response.data.data || []);
     } catch (err) {
       console.error('Failed to load addresses:', err);
-      setError(err.message || 'Failed to load addresses');
+      setError(err.response?.data?.message || err.message || 'Failed to load addresses');
     } finally {
       setLoading(false);
     }
@@ -47,18 +51,22 @@ const AddressList = ({ onSelectAddress = null, showActions = true, selectedAddre
     }
 
     try {
-      await deleteAddress(addressId);
+      await axios.delete(`${API_BASE_URL}/api/addresses/${addressId}`, {
+        withCredentials: true
+      });
       setAddresses(prev => prev.filter(addr => addr._id !== addressId));
       alert('Address deleted successfully');
     } catch (error) {
       console.error('Failed to delete address:', error);
-      alert(error.message || 'Failed to delete address');
+      alert(error.response?.data?.message || error.message || 'Failed to delete address');
     }
   };
 
   const handleSetDefault = async (addressId) => {
     try {
-      await setDefaultAddress(addressId);
+      await axios.put(`${API_BASE_URL}/api/addresses/${addressId}/default`, {}, {
+        withCredentials: true
+      });
       // Update the addresses list to reflect the change
       setAddresses(prev => prev.map(addr => ({
         ...addr,
@@ -67,7 +75,7 @@ const AddressList = ({ onSelectAddress = null, showActions = true, selectedAddre
       alert('Default address updated successfully');
     } catch (error) {
       console.error('Failed to set default address:', error);
-      alert(error.message || 'Failed to set default address');
+      alert(error.response?.data?.message || error.message || 'Failed to set default address');
     }
   };
 

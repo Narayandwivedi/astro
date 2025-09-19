@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useCart } from '../context/CartContext';
-import { useApi } from '../context/ApiContext';
+import { AppContext } from '../context/AppContext';
 import OrderModal from './OrderModal';
 
 const CartModal = ({ isOpen, onClose }) => {
   const { cart, removeFromCart, updateQuantity, clearCart, getCartSummary } = useCart();
-  const api = useApi();
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
 
   const handleQuantityChange = (itemId, newQuantity) => {
@@ -85,7 +85,7 @@ const CartModal = ({ isOpen, onClose }) => {
                       <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
                         {item.product.images && item.product.images.length > 0 ? (
                           <img 
-                            src={api.getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
+                            src={getImageURL(item.product.images.find(img => img.isPrimary) || item.product.images[0])}
                             alt={item.product.name}
                             className="w-16 h-16 object-cover rounded-lg"
                             onError={(e) => {

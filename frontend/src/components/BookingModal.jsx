@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import AddressSelector from './AddressSelector';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
-const BookingModal = ({ isOpen, onClose, selectedService }) => {
+const BookingModal = ({ isOpen, onClose, selectedService, onSuccess }) => {
+  const { BACKEND_URL } = useContext(AppContext);
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
@@ -26,7 +27,15 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+
+  // Show toast notification
+  const showSuccessToast = () => {
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 600);
+  };
 
   // Indian states data
   const indianStates = [
@@ -116,6 +125,26 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Handle mobile number formatting
+    if (name === 'mobile') {
+      let cleanValue = value.replace(/\D/g, ''); // Remove all non-digits
+      
+      // If it starts with 91 and is longer than 10 digits, assume it includes country code
+      if (cleanValue.startsWith('91') && cleanValue.length > 10) {
+        cleanValue = cleanValue.substring(2); // Remove the 91 prefix
+      }
+      
+      // Limit to 10 digits
+      cleanValue = cleanValue.substring(0, 10);
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: cleanValue
+      }));
+      return;
+    }
+    
     setFormData(prev => {
       const newData = {
         ...prev,
@@ -168,15 +197,15 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
         ...formData,
         serviceId: service._id,
         serviceName: service.titleEn,
-        servicePrice: service.price,
-        address: selectedAddress
+        servicePrice: service.price
       };
 
-      const response = await fetch('http://localhost:5000/api/bookings', {
+      const response = await fetch(`${BACKEND_URL}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(bookingData),
       });
 
@@ -186,7 +215,13 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
 
       const result = await response.json();
       
-      alert(`Thank you ${formData.name}! Your booking for ${service.titleEn} has been submitted successfully. Booking ID: ${result.data._id}. We will contact you on ${formData.mobile} within 24 hours.`);
+      // Show success toast
+      showSuccessToast();
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess(selectedService);
+      }
       
       // Reset form
       setFormData({
@@ -211,7 +246,6 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
         consultationType: 'phone',
         specialRequests: ''
       });
-      setSelectedAddress(null);
       
       onClose();
     } catch (error) {
@@ -335,17 +369,26 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
                   <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-2">
                     Mobile Number / मोबाइल नंबर *
                   </label>
-                  <input
-                    type="tel"
-                    id="mobile"
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={handleInputChange}
-                    required
-                    pattern="[0-9]{10}"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
-                    placeholder="+91 XXXXXXXXXX"
-                  />
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                      +91
+                    </div>
+                    <input
+                      type="tel"
+                      id="mobile"
+                      name="mobile"
+                      value={formData.mobile}
+                      onChange={handleInputChange}
+                      required
+                      minLength="10"
+                      maxLength="10"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
+                      placeholder="9876543210"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter 10-digit mobile number (without +91)
+                  </p>
                 </div>
               </div>
 
@@ -691,30 +734,6 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
               </div>
             </div>
 
-            {/* Address Selection */}
-            <div className="relative bg-gradient-to-br from-purple-50 to-pink-100 p-4 sm:p-6 rounded-2xl border-2 border-purple-200/60 shadow-lg backdrop-blur-sm">
-              <div className="absolute top-4 right-4 text-purple-200 text-4xl sm:text-6xl opacity-20">🏠</div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center relative z-10">
-                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4 shadow-md">
-                  <span className="text-white text-sm sm:text-lg">🏠</span>
-                </div>
-                <div>
-                  <span className="text-gray-800 text-base sm:text-xl">Service Address</span>
-                  <p className="text-xs sm:text-sm text-purple-700 font-normal">सेवा पता (यदि आवश्यक हो)</p>
-                </div>
-              </h3>
-              
-              <div className="relative z-10">
-                <AddressSelector
-                  onSelectAddress={setSelectedAddress}
-                  selectedAddress={selectedAddress}
-                  required={false}
-                />
-                <p className="text-sm text-gray-600 mt-3">
-                  * Address is optional for phone/video consultations, required for in-person meetings
-                </p>
-              </div>
-            </div>
 
             {/* Enhanced Total Cost */}
             <div className="relative bg-gradient-to-br from-yellow-50 to-amber-100 p-4 sm:p-6 rounded-2xl border-2 border-yellow-300/60 shadow-lg backdrop-blur-sm overflow-hidden">
@@ -782,6 +801,23 @@ const BookingModal = ({ isOpen, onClose, selectedService }) => {
           </form>
         </div>
       </div>
+
+      {/* Success Toast Notification */}
+      {showToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[60] animate-fade-in">
+          <div className="bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 max-w-sm">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-sm">Booking Successful!</p>
+              <p className="text-xs text-green-100">We'll contact you within 24 hours</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
