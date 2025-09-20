@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import BlogForm from './BlogForm';
-import { useApi } from '../../context/ApiContext';
 
 const AddBlogModal = ({ showModal, onClose, onSuccess }) => {
-  const api = useApi();
-  const BACKEND_URL = api.baseURL;
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com';
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -56,7 +54,7 @@ const AddBlogModal = ({ showModal, onClose, onSuccess }) => {
 
       setIsSubmitting(true);
 
-      const response = await fetch(api.endpoints.blogs, {
+      const response = await fetch(`${BACKEND_URL}/api/blogs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

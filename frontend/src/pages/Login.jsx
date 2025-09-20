@@ -38,6 +38,11 @@ const Login = () => {
   // Get the intended destination from location state
   const from = location.state?.from?.pathname || '/';
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {

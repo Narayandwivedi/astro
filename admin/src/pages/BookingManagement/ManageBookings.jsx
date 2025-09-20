@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useApi } from '../../context/ApiContext';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../../context/AppContext';
 
 const ManageBookings = () => {
-  const { apiUrl } = useApi();
+  const { BACKEND_URL } = useContext(AppContext);
   const [bookings, setBookings] = useState([]);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
@@ -74,7 +74,7 @@ const ManageBookings = () => {
         limit: filters.limit.toString()
       }).toString();
 
-      const response = await fetch(`${apiUrl}/bookings?${queryParams}`);
+      const response = await fetch(`${BACKEND_URL}/api/bookings?${queryParams}`);
       const data = await response.json();
 
       if (data.success) {
@@ -89,7 +89,7 @@ const ManageBookings = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${apiUrl}/bookings/stats`);
+      const response = await fetch(`${BACKEND_URL}/api/bookings/stats`);
       const data = await response.json();
 
       if (data.success) {
@@ -113,7 +113,7 @@ const ManageBookings = () => {
     if (!selectedBooking) return;
 
     try {
-      const response = await fetch(`${apiUrl}/bookings/${selectedBooking._id}/status`, {
+      const response = await fetch(`${BACKEND_URL}/api/bookings/${selectedBooking._id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ const ManageBookings = () => {
     if (!selectedBooking) return;
 
     try {
-      const response = await fetch(`${apiUrl}/bookings/${selectedBooking._id}/communication`, {
+      const response = await fetch(`${BACKEND_URL}/api/bookings/${selectedBooking._id}/communication`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +169,7 @@ const ManageBookings = () => {
 
   const fetchBookingDetails = async (bookingId) => {
     try {
-      const response = await fetch(`${apiUrl}/bookings/${bookingId}`);
+      const response = await fetch(`${BACKEND_URL}/api/bookings/${bookingId}`);
       const data = await response.json();
 
       if (data.success) {

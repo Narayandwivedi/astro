@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import RichTextEditor from '../../components/RichTextEditor';
 import BlogContentPreview from '../../components/BlogContentPreview';
-import { useApi } from '../../context/ApiContext';
 
 const BLOG_CATEGORIES = [
   { value: 'general', label: 'General' },
@@ -24,8 +23,16 @@ const BlogForm = ({
   mode = 'add',
   isSubmitting = false,
 }) => {
-  const api = useApi();
-  const BACKEND_URL = api.baseURL;
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com';
+
+  const getImageURL = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+    return `${BACKEND_URL}/${cleanPath}`;
+  };
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
@@ -63,7 +70,7 @@ const BlogForm = ({
       formDataUpload.append('image', file);
       formDataUpload.append('category', 'blog');
 
-      const response = await fetch(api.endpoints.upload.image, {
+      const response = await fetch(`${BACKEND_URL}/api/upload/image`, {
         method: 'POST',
         body: formDataUpload,
         credentials: 'include'
@@ -78,7 +85,7 @@ const BlogForm = ({
 
       if (data.success) {
         const imageUrl = data.imagePath;
-        setImagePreview(api.getImageURL(imageUrl));
+        setImagePreview(getImageURL(imageUrl));
         handleInputChange('featuredImage', imageUrl);
         alert('Image uploaded successfully');
       }
@@ -122,7 +129,7 @@ const BlogForm = ({
       if (formData.featuredImage.startsWith('http')) {
         return formData.featuredImage;
       } else {
-        return api.getImageURL(formData.featuredImage);
+        return getImageURL(formData.featuredImage);
       }
     }
     return null;

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useApi } from '../../context/ApiContext';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../../context/AppContext';
 import AddBlogModal from './AddBlogModal';
 import EditBlogModal from './EditBlogModal';
 
 const ManageBlogs = () => {
-  const api = useApi();
-  const BACKEND_URL = api.baseURL;
+  const { BACKEND_URL } = useContext(AppContext);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -33,7 +32,7 @@ const ManageBlogs = () => {
       });
 
       const response = await fetch(
-        `${api.endpoints.blogs}?${queryParams.toString()}`,
+        `${BACKEND_URL}/api/blogs?${queryParams.toString()}`,
         { credentials: 'include' }
       );
 
@@ -59,7 +58,7 @@ const ManageBlogs = () => {
   const fetchBlogStats = async () => {
     try {
       const response = await fetch(
-        `${api.endpoints.blogs}/stats`,
+        `${BACKEND_URL}/api/blogs/stats`,
         { credentials: 'include' }
       );
 
@@ -104,7 +103,7 @@ const ManageBlogs = () => {
 
     try {
       const response = await fetch(
-        `${api.endpoints.blogs}/${blogId}`,
+        `${BACKEND_URL}/api/blogs/${blogId}`,
         {
           method: 'DELETE',
           credentials: 'include'
@@ -138,7 +137,7 @@ const ManageBlogs = () => {
   const handleStatusChange = async (blogId, newStatus) => {
     try {
       const response = await fetch(
-        `${api.endpoints.blogs}/${blogId}`,
+        `${BACKEND_URL}/api/blogs/${blogId}`,
         {
           method: 'PUT',
           headers: {

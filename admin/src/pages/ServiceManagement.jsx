@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { AppContext } from '../context/AppContext'
 
 const ServiceManagement = () => {
+  const { BACKEND_URL } = useContext(AppContext)
   const [services, setServices] = useState([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -29,7 +31,7 @@ const ServiceManagement = () => {
   const fetchServices = async () => {
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:5000/api/services?enabled=all')
+      const response = await fetch(`${BACKEND_URL}/api/services?enabled=all`)
       if (!response.ok) {
         throw new Error('Failed to fetch services')
       }
@@ -89,7 +91,7 @@ const ServiceManagement = () => {
   const handleDeleteService = async (serviceId) => {
     if (window.confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/services/${serviceId}`, { 
+        const response = await fetch(`${BACKEND_URL}/api/services/${serviceId}`, { 
           method: 'DELETE' 
         })
         if (!response.ok) {
@@ -107,7 +109,7 @@ const ServiceManagement = () => {
   const handleToggleStatus = async (serviceId) => {
     try {
       const service = services.find(s => s._id === serviceId)
-      const response = await fetch(`http://localhost:5000/api/services/${serviceId}/toggle`, {
+      const response = await fetch(`${BACKEND_URL}/api/services/${serviceId}/toggle`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -135,7 +137,7 @@ const ServiceManagement = () => {
     try {
       if (showEditModal && selectedService) {
         // Update existing service
-        const response = await fetch(`http://localhost:5000/api/services/${selectedService._id}`, { 
+        const response = await fetch(`${BACKEND_URL}/api/services/${selectedService._id}`, { 
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -156,7 +158,7 @@ const ServiceManagement = () => {
         alert('Service updated successfully!')
       } else {
         // Add new service
-        const response = await fetch('http://localhost:5000/api/services', { 
+        const response = await fetch(`${BACKEND_URL}/api/services`, { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

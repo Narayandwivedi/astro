@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
 const Dashboard = () => {
+  const { BACKEND_URL } = useContext(AppContext);
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,9 +14,9 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/analytics/dashboard');
+      const response = await fetch(`${BACKEND_URL}/api/analytics/dashboard`);
       const data = await response.json();
-      
+
       if (data.success) {
         setDashboardData(data.data);
       } else {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { useApi } from '../context/ApiContext'
+import React, { useState, useEffect, useContext } from 'react'
+import { AppContext } from '../context/AppContext'
 
 const ProductManagement = () => {
-  const api = useApi()
+  const { BACKEND_URL, getImageURL } = useContext(AppContext)
   const [products, setProducts] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -75,7 +75,7 @@ const ProductManagement = () => {
   // Fetch products from API
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${api.endpoints.products}?enabled=all&inStock=all`)
+      const response = await fetch(`${BACKEND_URL}/api/products?enabled=all&inStock=all`)
       if (!response.ok) {
         throw new Error('Failed to fetch products')
       }
@@ -149,7 +149,7 @@ const ProductManagement = () => {
       const uploadFormData = new FormData()
       uploadFormData.append('image', file)
 
-      const response = await fetch(`${api.endpoints.upload.product}/image`, {
+      const response = await fetch(`${BACKEND_URL}/api/upload/product/image`, {
         method: 'POST',
         body: uploadFormData
       })
@@ -194,7 +194,7 @@ const ProductManagement = () => {
       try {
         // Delete from backend
         if (image.filename) {
-          await fetch(`${api.endpoints.upload.product}/image/${image.filename}`, {
+          await fetch(`${BACKEND_URL}/api/upload/product/image/${image.filename}`, {
             method: 'DELETE'
           })
         }
@@ -260,9 +260,9 @@ const ProductManagement = () => {
       if (editingProduct) {
         // Update existing product
         console.log('Updating product with ID:', editingProduct._id)
-        console.log('Update URL:', `${api.endpoints.products}/admin/${editingProduct._id}`)
+        console.log('Update URL:', `${BACKEND_URL}/api/products/admin/${editingProduct._id}`)
         
-        const response = await fetch(`${api.endpoints.products}/admin/${editingProduct._id}`, {
+        const response = await fetch(`${BACKEND_URL}/api/products/admin/${editingProduct._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -298,7 +298,7 @@ const ProductManagement = () => {
         alert('Product updated successfully!')
       } else {
         // Add new product
-        const response = await fetch(`${api.endpoints.products}/admin/create`, {
+        const response = await fetch(`${BACKEND_URL}/api/products/admin/create`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -400,7 +400,7 @@ const ProductManagement = () => {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
       try {
-        const response = await fetch(`${api.endpoints.products}/admin/${productId}`, {
+        const response = await fetch(`${BACKEND_URL}/api/products/admin/${productId}`, {
           method: 'DELETE'
         })
         
@@ -449,7 +449,7 @@ const ProductManagement = () => {
   const handleToggleStatus = async (productId) => {
     try {
       const product = products.find(p => p._id === productId)
-      const response = await fetch(`${api.endpoints.products}/admin/${productId}/status`, {
+      const response = await fetch(`${BACKEND_URL}/api/products/admin/${productId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -557,7 +557,7 @@ const ProductManagement = () => {
                     <div className="flex items-center space-x-3">
                       {product.images && product.images.length > 0 ? (
                         <img 
-                          src={api.getImageURL(product.images.find(img => img.isPrimary)?.url || product.images[0]?.url)} 
+                          src={getImageURL(product.images.find(img => img.isPrimary)?.url || product.images[0]?.url)} 
                           alt={product.name}
                           className="w-12 h-12 rounded-lg object-cover border"
                         />
@@ -932,7 +932,7 @@ const ProductManagement = () => {
                     {formData.images.map((image, index) => (
                       <div key={index} className="relative border rounded-lg overflow-hidden">
                         <img
-                          src={api.getImageURL(image.url)}
+                          src={getImageURL(image.url)}
                           alt={image.alt || `Product image ${index + 1}`}
                           className="w-full h-32 object-cover"
                         />

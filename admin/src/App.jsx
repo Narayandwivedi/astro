@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { ApiProvider } from './context/ApiContext'
+import { AppContextProvider } from './context/AppContext'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
@@ -29,7 +29,7 @@ function App() {
   }
 
   return (
-    <ApiProvider>
+    <AppContextProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
           <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
@@ -80,7 +80,7 @@ function App() {
           </div>
         </div>
       </Router>
-    </ApiProvider>
+    </AppContextProvider>
   )
 }
 

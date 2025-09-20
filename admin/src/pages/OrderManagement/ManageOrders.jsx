@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useApi } from '../../context/ApiContext';
+import React, { useState, useEffect, useContext } from 'react';
+import { AppContext } from '../../context/AppContext';
 
 const ManageOrders = () => {
-  const api = useApi();
+  const { BACKEND_URL } = useContext(AppContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ const ManageOrders = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`${api.baseURL}/api/orders/admin/all?${params}`);
+      const response = await fetch(`${BACKEND_URL}/api/orders/admin/all?${params}`);
       const data = await response.json();
 
       if (data.success) {
@@ -67,7 +67,7 @@ const ManageOrders = () => {
   const updateOrderStatus = async (orderId, newStatus, adminNotes = '') => {
     try {
       setUpdatingStatus(true);
-      const response = await fetch(`${api.baseURL}/api/orders/admin/${orderId}/status`, {
+      const response = await fetch(`${BACKEND_URL}/api/orders/admin/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,4 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
-import { useApi } from '../../context/ApiContext';
 import { hindiTransliterator } from './HindiTransliterator';
 import { 
   FormatButtons, 
@@ -17,7 +16,7 @@ import ColorPickerTools from './ColorPickerTools';
 import ImageUploadTool from './ImageUploadTool';
 
 const RichTextEditor = ({ value, onChange, placeholder = "Start writing...", disabled = false }) => {
-  const api = useApi();
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com';
   const editorRef = useRef(null);
   
   // State management
