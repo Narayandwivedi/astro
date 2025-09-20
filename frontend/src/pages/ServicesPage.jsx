@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import BookingModal from '../components/BookingModal';
+import { AppContext } from '../context/AppContext';
 
 const ServicesPage = () => {
   const navigate = useNavigate();
+  const { BACKEND_URL } = useContext(AppContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [services, setServices] = useState([]);
@@ -26,7 +28,7 @@ const ServicesPage = () => {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/services');
+        const response = await fetch(`${BACKEND_URL}/api/services`);
         if (!response.ok) {
           throw new Error('Failed to fetch services');
         }
