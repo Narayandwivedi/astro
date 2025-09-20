@@ -35,6 +35,7 @@ const analyticsRoutes = require('./routes/analyticsRoute');
 const cartRoutes = require('./routes/cartRoute');
 const userRoutes = require('./routes/userRoute');
 const addressRoutes = require('./routes/addressRoute');
+const seedRoutes = require('./routes/seedRoute');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -48,6 +49,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/seed', seedRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -74,6 +76,7 @@ app.get('/', (req, res) => {
       cart: '/api/cart',
       user: '/api/user',
       addresses: '/api/addresses',
+      seed: '/api/seed',
       health: '/api/health'
     }
   });
