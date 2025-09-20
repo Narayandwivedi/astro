@@ -18,6 +18,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       description: 'Manage Customer Orders'
     },
     {
+      name: 'Bookings',
+      icon: '📅',
+      path: '/bookings',
+      description: 'Service Appointments'
+    },
+    {
       name: 'Services',
       icon: '🔮',
       path: '/services',
@@ -34,24 +40,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       icon: '📝',
       path: '/blogs',
       description: 'Manage Blog Posts'
-    },
-    {
-      name: 'Bookings',
-      icon: '📅',
-      path: '/bookings',
-      description: 'Service Appointments'
-    },
-    {
-      name: 'Customers',
-      icon: '👥',
-      path: '/customers',
-      description: 'Customer Management'
-    },
-    {
-      name: 'Analytics',
-      icon: '📈',
-      path: '/analytics',
-      description: 'Reports & Statistics'
     },
     {
       name: 'Settings',

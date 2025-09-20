@@ -21,8 +21,6 @@ function App() {
       case '/products': return 'Product Management'
       case '/blogs': return 'Blog Management'
       case '/bookings': return 'Bookings'
-      case '/customers': return 'Customer Management'
-      case '/analytics': return 'Analytics'
       case '/settings': return 'Settings'
       default: return 'Dashboard'
     }
@@ -51,20 +49,6 @@ function App() {
                     <Route path="/products" element={<ProductManagement />} />
                     <Route path="/blogs" element={<ManageBlogs />} />
                     <Route path="/bookings" element={<ManageBookings />} />
-                    <Route path="/customers" element={
-                      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-                        <div className="text-6xl mb-4">👥</div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Customer Management</h2>
-                        <p className="text-gray-600">Coming Soon - Manage customer information and history</p>
-                      </div>
-                    } />
-                    <Route path="/analytics" element={
-                      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-                        <div className="text-6xl mb-4">📈</div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Analytics & Reports</h2>
-                        <p className="text-gray-600">Coming Soon - View detailed analytics and performance reports</p>
-                      </div>
-                    } />
                     <Route path="/settings" element={
                       <div className="bg-white rounded-xl shadow-lg p-8 text-center">
                         <div className="text-6xl mb-4">⚙️</div>
