@@ -72,27 +72,69 @@ const ProductManagement = () => {
     images: []
   })
 
-  // Fetch products from API
+  // Fetch ALL products from admin endpoint using pagination
   const fetchProducts = async () => {
     try {
-      // Try admin endpoint first, fallback to regular endpoint
-      let response = await fetch(`${BACKEND_URL}/api/products/admin`)
+      let allProducts = [];
+      let page = 1;
+      let hasMore = true;
+      const limit = 50; // Fetch 50 products per page
 
-      if (!response.ok) {
-        // Fallback to regular endpoint with admin parameters
-        response = await fetch(`${BACKEND_URL}/api/products?enabled=all&inStock=all`)
+      console.log('Starting to fetch all products from admin endpoint...')
+
+      while (hasMore) {
+        console.log(`Fetching page ${page}...`)
+
+        const response = await fetch(`${BACKEND_URL}/api/products/admin?page=${page}&limit=${limit}`)
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch products page ${page}: ${response.status}`)
+        }
+
+        const data = await response.json()
+        console.log(`Page ${page} response:`, data)
+
+        if (data.data && data.data.length > 0) {
+          allProducts = [...allProducts, ...data.data]
+          console.log(`Added ${data.data.length} products from page ${page}. Total so far: ${allProducts.length}`)
+        }
+
+        // Check if there are more pages
+        if (data.pagination) {
+          hasMore = data.pagination.hasMore || (data.pagination.currentPage < data.pagination.totalPages)
+          console.log(`Pagination info:`, data.pagination)
+        } else if (data.data && data.data.length < limit) {
+          // If no pagination info and we got fewer products than limit, we're done
+          hasMore = false
+        } else if (!data.data || data.data.length === 0) {
+          // If no data returned, we're done
+          hasMore = false
+        } else {
+          // Continue to next page
+          hasMore = true
+        }
+
+        page++
+
+        // Safety check to prevent infinite loop
+        if (page > 100) {
+          console.warn('Stopped at page 100 to prevent infinite loop')
+          break
+        }
       }
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch products')
+      console.log(`Finished fetching. Total products loaded: ${allProducts.length}`)
+      console.log('Product categories found:', [...new Set(allProducts.map(p => p.category))])
+
+      setProducts(allProducts)
+
+      if (allProducts.length === 0) {
+        alert('No products found. Please check if products exist in the database.')
       }
 
-      const data = await response.json()
-      console.log('Fetched products:', data.data?.length || 0, 'products')
-      setProducts(data.data || [])
     } catch (error) {
       console.error('Failed to fetch products:', error)
-      alert('Failed to load products. Please check if the backend is running.')
+      alert(`Failed to load products: ${error.message}`)
     }
   }
 
@@ -503,12 +545,12 @@ const ProductManagement = () => {
           <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
           <p className="text-gray-600">Manage your astrology products and shop items</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
             onClick={fetchProducts}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
           >
-            🔄 Refresh
+            🔄 Refresh All Products
           </button>
           <button
             onClick={() => setShowModal(true)}
@@ -546,13 +588,14 @@ const ProductManagement = () => {
           </div>
           <div className="flex items-end">
             <div className="text-sm text-gray-600">
-              <div>Total: {filteredProducts.length} products (showing filtered)</div>
-              <div>Loaded: {products.length} products from API</div>
+              <div><strong>Total:</strong> {filteredProducts.length} products (showing filtered)</div>
+              <div><strong>Loaded:</strong> {products.length} products from API</div>
+              <div><strong>Categories found:</strong> {[...new Set(products.map(p => p.category))].join(', ') || 'None'}</div>
               {filterCategory !== 'all' && (
-                <div>Category: {filterCategory}</div>
+                <div><strong>Filter:</strong> {filterCategory}</div>
               )}
               {searchTerm && (
-                <div>Search: "{searchTerm}"</div>
+                <div><strong>Search:</strong> "{searchTerm}"</div>
               )}
             </div>
           </div>
