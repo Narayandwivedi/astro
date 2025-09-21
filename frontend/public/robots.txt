@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Important pages to crawl
+Allow: /services
+Allow: /shop
+Allow: /about
+Allow: /contact
+Allow: /blog
+
+# Block admin areas and sensitive files
+Disallow: /admin/
+Disallow: /backend/
+Disallow: /*.json$
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /node_modules/
+
+# Block duplicate content and development files
+Disallow: /src/
+Disallow: /*.scss$
+Disallow: /*.sass$
+Disallow: /*.jsx$
+Disallow: /*.ts$
+Disallow: /*.tsx$
+
+# Allow image crawling for products and services
+Allow: /images/
+Allow: /static/
+
+# Sitemap location
+Sitemap: https://astrosatya.com/sitemap.xml
+
+# Crawl delay (optional - 1 second between requests)
+Crawl-delay: 1

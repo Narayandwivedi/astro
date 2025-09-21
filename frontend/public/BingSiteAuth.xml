@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<users>
+    <user>YOUR_BING_VERIFICATION_CODE_HERE</user>
+</users>
+
+<!--
+Instructions for Bing Webmaster Tools verification:
+1. Go to https://www.bing.com/webmasters
+2. Add your site (astrosatya.com)
+3. Choose XML file verification
+4. Replace YOUR_BING_VERIFICATION_CODE_HERE with your actual code
+5. Upload this file to your website root
+6. Click verify in Bing Webmaster Tools
+-->

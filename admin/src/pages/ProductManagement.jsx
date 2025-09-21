@@ -556,8 +556,8 @@ const ProductManagement = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-3">
                       {product.images && product.images.length > 0 ? (
-                        <img 
-                          src={getImageURL(product.images.find(img => img.isPrimary)?.url || product.images[0]?.url)} 
+                        <img
+                          src={getImageURL(product.images.find(img => img.isPrimary) || product.images[0])}
                           alt={product.name}
                           className="w-12 h-12 rounded-lg object-cover border"
                         />
