@@ -75,11 +75,20 @@ const ProductManagement = () => {
   // Fetch products from API
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/products?enabled=all&inStock=all`)
+      // Try admin endpoint first, fallback to regular endpoint
+      let response = await fetch(`${BACKEND_URL}/api/products/admin`)
+
+      if (!response.ok) {
+        // Fallback to regular endpoint with admin parameters
+        response = await fetch(`${BACKEND_URL}/api/products?enabled=all&inStock=all`)
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch products')
       }
+
       const data = await response.json()
+      console.log('Fetched products:', data.data?.length || 0, 'products')
       setProducts(data.data || [])
     } catch (error) {
       console.error('Failed to fetch products:', error)
@@ -494,12 +503,20 @@ const ProductManagement = () => {
           <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
           <p className="text-gray-600">Manage your astrology products and shop items</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-        >
-          + Add New Product
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={fetchProducts}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
+          >
+            🔄 Refresh
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
+          >
+            + Add New Product
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -529,7 +546,14 @@ const ProductManagement = () => {
           </div>
           <div className="flex items-end">
             <div className="text-sm text-gray-600">
-              Total: {filteredProducts.length} products
+              <div>Total: {filteredProducts.length} products (showing filtered)</div>
+              <div>Loaded: {products.length} products from API</div>
+              {filterCategory !== 'all' && (
+                <div>Category: {filterCategory}</div>
+              )}
+              {searchTerm && (
+                <div>Search: "{searchTerm}"</div>
+              )}
             </div>
           </div>
         </div>
@@ -617,13 +641,13 @@ const ProductManagement = () => {
                     <div className="flex items-center space-x-3">
                       <button
                         onClick={() => handleEdit(product)}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
+                        className="text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(product._id)}
-                        className="text-red-600 hover:text-red-800 font-medium"
+                        className="text-red-600 hover:text-red-800 font-medium cursor-pointer"
                       >
                         Delete
                       </button>
@@ -645,7 +669,7 @@ const ProductManagement = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 cursor-pointer"
               >
                 Previous
               </button>
@@ -655,7 +679,7 @@ const ProductManagement = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 cursor-pointer"
               >
                 Next
               </button>
@@ -675,7 +699,7 @@ const ProductManagement = () => {
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                 title="Close"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -946,7 +970,7 @@ const ProductManagement = () => {
                             <button
                               type="button"
                               onClick={() => handleSetPrimaryImage(index)}
-                              className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+                              className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded cursor-pointer"
                               title="Set as primary"
                             >
                               ⭐
@@ -955,7 +979,7 @@ const ProductManagement = () => {
                           <button
                             type="button"
                             onClick={() => handleRemoveImage(index)}
-                            className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded"
+                            className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded cursor-pointer"
                             title="Remove image"
                           >
                             ×
@@ -994,13 +1018,13 @@ const ProductManagement = () => {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium"
+                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold"
+                  className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold cursor-pointer"
                 >
                   {editingProduct ? 'Update Product' : 'Add Product'}
                 </button>

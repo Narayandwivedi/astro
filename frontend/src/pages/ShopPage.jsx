@@ -19,6 +19,10 @@ const ShopPage = () => {
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
   // Fetch products from database
   useEffect(() => {
     const fetchProducts = async () => {
@@ -53,9 +57,20 @@ const ShopPage = () => {
     fetchProducts();
   }, []);
 
-  const filteredProducts = selectedCategory === "all" 
-    ? products 
+  const filteredProducts = selectedCategory === "all"
+    ? products
     : products.filter(product => product.category === selectedCategory);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset current page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   const handleBuyNow = (product) => {
     addToCart(product, 1);
@@ -191,7 +206,7 @@ const ShopPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
+              {currentProducts.map((product) => (
                 <Link 
                   key={product._id} 
                   to={`/shop/product/${product._id}`}
@@ -274,6 +289,113 @@ const ShopPage = () => {
                   </div>
                 </Link>
               ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {filteredProducts.length > itemsPerPage && (
+            <div className="mt-12 flex justify-center">
+              <div className="flex items-center space-x-2">
+                {/* Previous Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(prev - 1, 1));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === 1
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 cursor-pointer'
+                  }`}
+                >
+                  ← Previous
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex items-center space-x-1">
+                  {/* Show first page */}
+                  {currentPage > 3 && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setCurrentPage(1);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="px-3 py-2 rounded-lg bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 cursor-pointer"
+                      >
+                        1
+                      </button>
+                      {currentPage > 4 && <span className="px-2 text-gray-500">...</span>}
+                    </>
+                  )}
+
+                  {/* Show current page and surrounding pages */}
+                  {Array.from({ length: totalPages }, (_, index) => index + 1)
+                    .filter(page =>
+                      page >= Math.max(1, currentPage - 2) &&
+                      page <= Math.min(totalPages, currentPage + 2)
+                    )
+                    .map(page => (
+                      <button
+                        key={page}
+                        onClick={() => {
+                          setCurrentPage(page);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className={`px-3 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
+                          currentPage === page
+                            ? 'bg-orange-600 text-white'
+                            : 'bg-white border border-orange-300 text-orange-600 hover:bg-orange-50'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                  {/* Show last page */}
+                  {currentPage < totalPages - 2 && (
+                    <>
+                      {currentPage < totalPages - 3 && <span className="px-2 text-gray-500">...</span>}
+                      <button
+                        onClick={() => {
+                          setCurrentPage(totalPages);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="px-3 py-2 rounded-lg bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 cursor-pointer"
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-white border border-orange-300 text-orange-600 hover:bg-orange-50 cursor-pointer'
+                  }`}
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Pagination Info */}
+          {filteredProducts.length > 0 && (
+            <div className="mt-6 text-center text-gray-600">
+              <p className="text-sm">
+                Showing {startIndex + 1} to {Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} products
+                {selectedCategory !== 'all' && ` in ${categories.find(cat => cat.value === selectedCategory)?.name}`}
+              </p>
             </div>
           )}
         </div>

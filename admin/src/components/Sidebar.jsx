@@ -40,12 +40,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       icon: '📝',
       path: '/blogs',
       description: 'Manage Blog Posts'
-    },
-    {
-      name: 'Settings',
-      icon: '⚙️',
-      path: '/settings',
-      description: 'System Configuration'
     }
   ]
 
