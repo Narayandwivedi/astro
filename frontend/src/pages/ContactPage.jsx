@@ -83,10 +83,10 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-amber-800">Phone</h3>
-                  <p className="text-xl font-bold text-amber-600">+91 883945431</p>
+                  <p className="text-xl font-bold text-amber-600">+91 8839453431</p>
                 </div>
                 <a 
-                  href="tel:+91883945431"
+                  href="tel:+918839453431"
                   className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 w-full"
                 >
                   Call Now
@@ -104,10 +104,10 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">WhatsApp</h3>
-                  <p className="text-xl font-bold text-green-600">+91 883945431</p>
+                  <p className="text-xl font-bold text-green-600">+91 8839453431</p>
                 </div>
                 <a 
-                  href="https://wa.me/91883945431?text=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
+                  href="https://wa.me/918839453431?text=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors shadow-lg w-full"
@@ -280,13 +280,13 @@ const ContactPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="tel:+91883945431"
+              href="tel:+918839453431"
               className="bg-white text-purple-700 font-semibold px-8 py-4 rounded-lg hover:bg-purple-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 inline-flex items-center justify-center border-2 border-purple-200"
             >
-              📞 Call Now: +91 883945431
+              📞 Call Now: +91 8839453431
             </a>
             <a
-              href="https://wa.me/91883945431?text=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
+              href="https://wa.me/918839453431?text=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-600 text-white font-semibold px-8 py-4 rounded-lg hover:bg-green-700 transition-colors shadow-lg inline-flex items-center justify-center"

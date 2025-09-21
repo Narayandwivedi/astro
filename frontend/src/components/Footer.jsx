@@ -192,7 +192,7 @@ const Footer = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-purple-200 text-sm">+91 883945431</p>
+                  <p className="text-purple-200 text-sm">+91 8839453431</p>
                   <p className="text-indigo-300 text-xs">Available 9 AM - 8 PM</p>
                 </div>
               </div>

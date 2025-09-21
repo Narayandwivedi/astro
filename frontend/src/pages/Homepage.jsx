@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Hero from '../components/Hero'
 import Navigation from '../components/Navigation'
+import IntroBanner from '../components/IntroBanner'
 import ConsultationModal from '../components/ConsultationModal'
 import BookingModal from '../components/BookingModal'
 import { useCart } from '../context/CartContext'
@@ -109,6 +110,7 @@ const Homepage = () => {
   return (
     <div className="w-full">
       <Navigation />
+      <IntroBanner />
       <Hero onBookConsultation={handleBookConsultation} />
 
       {/* Get in Touch Section */}
@@ -137,11 +139,11 @@ const Homepage = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-amber-800">Phone</h3>
-                    <p className="text-xl font-bold text-orange-600">+91 883945431</p>
+                    <p className="text-xl font-bold text-orange-600">+91 8839453431</p>
                   </div>
                 </div>
                 <a 
-                  href="tel:+91883945431"
+                  href="tel:+918839453431"
                   className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-center"
                 >
                   Call Now

@@ -13,11 +13,11 @@ const {
 
 // Image processing configuration for ecommerce products
 const PRODUCT_IMAGE_CONFIG = {
-  width: 800,        // Standard ecommerce product image width
-  height: 800,       // Square aspect ratio for consistency
+  width: 600,        // Optimized ecommerce product image width
+  height: 600,       // Square aspect ratio for consistency
   quality: 85,       // Good quality with reasonable file size
   format: 'webp',    // Modern format with better compression
-  enableProcessing: false  // Set to false to skip Sharp processing
+  enableProcessing: true   // Enable Sharp processing for WebP conversion
 };
 
 // Helper function to process and convert image to WebP
@@ -115,7 +115,7 @@ const uploadProductImage = (req, res) => {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
           success: false,
-          message: 'File too large. Maximum size is 5MB.'
+          message: 'File too large. Maximum size is 2MB.'
         });
       }
       return res.status(400).json({
@@ -283,7 +283,7 @@ const uploadProductImages = (req, res) => {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
           success: false,
-          message: 'File too large. Maximum size is 5MB per file.'
+          message: 'File too large. Maximum size is 2MB per file.'
         });
       }
       if (err.code === 'LIMIT_FILE_COUNT') {

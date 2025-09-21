@@ -342,7 +342,7 @@ const ShopPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://wa.me/91883945431?text=Hi! I need help choosing the right spiritual products for me."
+              href="https://wa.me/918839453431?text=Hi! I need help choosing the right spiritual products for me."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-orange-600 font-semibold px-8 py-4 rounded-lg hover:bg-orange-50 transition-colors shadow-lg"
@@ -350,10 +350,10 @@ const ShopPage = () => {
               💬 WhatsApp Consultation
             </a>
             <a
-              href="tel:+91883945431"
+              href="tel:+918839453431"
               className="bg-orange-700 text-white font-semibold px-8 py-4 rounded-lg hover:bg-orange-800 transition-colors shadow-lg"
             >
-              📞 Call: +91 883945431
+              📞 Call: +91 8839453431
             </a>
           </div>
         </div>

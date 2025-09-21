@@ -65,7 +65,7 @@ const Hero = ({ onBookConsultation }) => {
                 Get Free Consultation
               </button>
               <a 
-                href="tel:+91883945431"
+                href="tel:+918839453431"
                 className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-all duration-300 transform hover:scale-105 text-sm sm:text-base text-center inline-flex items-center justify-center shadow-lg"
               >
                 📞 Call Now

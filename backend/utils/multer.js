@@ -89,7 +89,7 @@ const imageFilter = (req, file, cb) => {
 const productUpload = multer({
   storage: productStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 2 * 1024 * 1024, // 2MB limit - better for web performance
   },
   fileFilter: imageFilter
 });
@@ -98,7 +98,7 @@ const productUpload = multer({
 const serviceUpload = multer({
   storage: serviceStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 2 * 1024 * 1024, // 2MB limit - better for web performance
   },
   fileFilter: imageFilter
 });

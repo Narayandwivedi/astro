@@ -477,7 +477,7 @@ const CheckoutPage = () => {
                   <button
                     onClick={() => {
                       const message = `Hi! My order ${orderDetails?._id} has been placed. Please confirm the details.`;
-                      window.open(`https://wa.me/918839454313?text=${encodeURIComponent(message)}`, '_blank');
+                      window.open(`https://wa.me/918839453431?text=${encodeURIComponent(message)}`, '_blank');
                     }}
                     className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
                   >
