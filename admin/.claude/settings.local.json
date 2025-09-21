@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/Users/Naray/OneDrive/Desktop/astro satya/**)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}

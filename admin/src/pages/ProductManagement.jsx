@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
+import axios from 'axios'
 import { AppContext } from '../context/AppContext'
 
 const ProductManagement = () => {
@@ -72,7 +73,7 @@ const ProductManagement = () => {
     images: []
   })
 
-  // Fetch ALL products from admin endpoint using pagination
+  // Fetch ALL products from admin endpoint using pagination with axios
   const fetchProducts = async () => {
     try {
       let allProducts = [];
@@ -80,61 +81,106 @@ const ProductManagement = () => {
       let hasMore = true;
       const limit = 50; // Fetch 50 products per page
 
-      console.log('Starting to fetch all products from admin endpoint...')
+      console.log('🚀 Starting to fetch all products from admin endpoint...')
+      console.log('🔗 Backend URL:', BACKEND_URL)
 
       while (hasMore) {
-        console.log(`Fetching page ${page}...`)
+        console.log(`📄 Fetching page ${page}...`)
 
-        const response = await fetch(`${BACKEND_URL}/api/products/admin?page=${page}&limit=${limit}`)
+        try {
+          const response = await axios.get(`${BACKEND_URL}/api/products/admin`, {
+            params: { page, limit },
+            timeout: 10000, // 10 second timeout
+          })
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch products page ${page}: ${response.status}`)
-        }
+          console.log(`✅ Page ${page} response status:`, response.status)
+          console.log(`📊 Page ${page} response data:`, response.data)
 
-        const data = await response.json()
-        console.log(`Page ${page} response:`, data)
+          if (response.data.success === false) {
+            throw new Error(`API returned error: ${response.data.message || 'Unknown error'}`)
+          }
 
-        if (data.data && data.data.length > 0) {
-          allProducts = [...allProducts, ...data.data]
-          console.log(`Added ${data.data.length} products from page ${page}. Total so far: ${allProducts.length}`)
-        }
+          const data = response.data
 
-        // Check if there are more pages
-        if (data.pagination) {
-          hasMore = data.pagination.hasMore || (data.pagination.currentPage < data.pagination.totalPages)
-          console.log(`Pagination info:`, data.pagination)
-        } else if (data.data && data.data.length < limit) {
-          // If no pagination info and we got fewer products than limit, we're done
-          hasMore = false
-        } else if (!data.data || data.data.length === 0) {
-          // If no data returned, we're done
-          hasMore = false
-        } else {
-          // Continue to next page
-          hasMore = true
+          if (data.data && data.data.length > 0) {
+            allProducts = [...allProducts, ...data.data]
+            console.log(`➕ Added ${data.data.length} products from page ${page}. Total so far: ${allProducts.length}`)
+          } else {
+            console.log(`⚠️ Page ${page} returned no products`)
+          }
+
+          // Check if there are more pages
+          if (data.pagination) {
+            hasMore = data.pagination.hasMore || (data.pagination.currentPage < data.pagination.totalPages)
+            console.log(`📄 Pagination info:`, data.pagination)
+          } else if (data.data && data.data.length < limit) {
+            // If no pagination info and we got fewer products than limit, we're done
+            hasMore = false
+            console.log(`🔚 No more pages (got ${data.data.length} < ${limit})`)
+          } else if (!data.data || data.data.length === 0) {
+            // If no data returned, we're done
+            hasMore = false
+            console.log(`🔚 No more pages (no data)`)
+          } else {
+            // Continue to next page
+            hasMore = true
+          }
+
+        } catch (pageError) {
+          console.error(`❌ Error fetching page ${page}:`, pageError)
+
+          if (pageError.response) {
+            console.error(`📋 Error response status:`, pageError.response.status)
+            console.error(`📋 Error response data:`, pageError.response.data)
+
+            if (pageError.response.status === 404 && page === 1) {
+              throw new Error(`Admin endpoint not found. Please check if /api/products/admin exists.`)
+            } else if (pageError.response.status === 404 && page > 1) {
+              // 404 on later pages might mean no more data
+              console.log(`🔚 Page ${page} not found, assuming no more pages`)
+              hasMore = false
+              break
+            }
+          }
+
+          throw pageError
         }
 
         page++
 
         // Safety check to prevent infinite loop
         if (page > 100) {
-          console.warn('Stopped at page 100 to prevent infinite loop')
+          console.warn('⚠️ Stopped at page 100 to prevent infinite loop')
           break
         }
       }
 
-      console.log(`Finished fetching. Total products loaded: ${allProducts.length}`)
-      console.log('Product categories found:', [...new Set(allProducts.map(p => p.category))])
+      console.log(`🎉 Finished fetching. Total products loaded: ${allProducts.length}`)
+      console.log('📂 Product categories found:', [...new Set(allProducts.map(p => p.category))])
 
       setProducts(allProducts)
 
       if (allProducts.length === 0) {
-        alert('No products found. Please check if products exist in the database.')
+        console.warn('⚠️ No products loaded')
+        alert('No products found. Please check:\n1. If products exist in the database\n2. If the admin endpoint is working\n3. Browser console for detailed errors')
+      } else {
+        console.log(`✅ Successfully loaded ${allProducts.length} products`)
       }
 
     } catch (error) {
-      console.error('Failed to fetch products:', error)
-      alert(`Failed to load products: ${error.message}`)
+      console.error('💥 Failed to fetch products:', error)
+
+      let errorMessage = 'Failed to load products: '
+
+      if (error.response) {
+        errorMessage += `Server error ${error.response.status}: ${error.response.data?.message || error.response.statusText}`
+      } else if (error.request) {
+        errorMessage += 'Network error - unable to reach server'
+      } else {
+        errorMessage += error.message
+      }
+
+      alert(errorMessage + '\n\nCheck browser console for details.')
     }
   }
 
@@ -200,12 +246,13 @@ const ProductManagement = () => {
       const uploadFormData = new FormData()
       uploadFormData.append('image', file)
 
-      const response = await fetch(`${BACKEND_URL}/api/upload/product/image`, {
-        method: 'POST',
-        body: uploadFormData
+      const response = await axios.post(`${BACKEND_URL}/api/upload/product/image`, uploadFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       })
 
-      const result = await response.json()
+      const result = response.data
 
       if (result.success) {
         // Add image to product images array
@@ -245,9 +292,7 @@ const ProductManagement = () => {
       try {
         // Delete from backend
         if (image.filename) {
-          await fetch(`${BACKEND_URL}/api/upload/product/image/${image.filename}`, {
-            method: 'DELETE'
-          })
+          await axios.delete(`${BACKEND_URL}/api/upload/product/image/${image.filename}`)
         }
 
         // Remove from state
@@ -312,34 +357,13 @@ const ProductManagement = () => {
         // Update existing product
         console.log('Updating product with ID:', editingProduct._id)
         console.log('Update URL:', `${BACKEND_URL}/api/products/admin/${editingProduct._id}`)
-        
-        const response = await fetch(`${BACKEND_URL}/api/products/admin/${editingProduct._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(cleanFormData)
-        })
-        
+
+        const response = await axios.put(`${BACKEND_URL}/api/products/admin/${editingProduct._id}`, cleanFormData)
+
         console.log('Update response status:', response.status)
-        
-        if (!response.ok) {
-          const errorText = await response.text()
-          console.error('Update error response text:', errorText)
-          
-          let errorData
-          try {
-            errorData = JSON.parse(errorText)
-          } catch (e) {
-            errorData = { message: errorText }
-          }
-          
-          console.error('Update error response:', errorData)
-          throw new Error(errorData.message || errorData.error || 'Failed to update product')
-        }
-        
-        const data = await response.json()
-        console.log('Update success response:', data)
+        console.log('Update success response:', response.data)
+
+        const data = response.data
         
         setProducts(prev => prev.map(product => 
           product._id === editingProduct._id 
@@ -349,21 +373,12 @@ const ProductManagement = () => {
         alert('Product updated successfully!')
       } else {
         // Add new product
-        const response = await fetch(`${BACKEND_URL}/api/products/admin/create`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(cleanFormData)
-        })
-        
-        if (!response.ok) {
-          const errorData = await response.json()
-          console.error('Create error response:', errorData)
-          throw new Error(errorData.message || 'Failed to create product')
-        }
-        
-        const data = await response.json()
+        const response = await axios.post(`${BACKEND_URL}/api/products/admin/create`, cleanFormData)
+
+        console.log('Create response status:', response.status)
+        console.log('Create success response:', response.data)
+
+        const data = response.data
         setProducts(prev => [...prev, data.data])
         alert('Product added successfully!')
       }
@@ -451,13 +466,9 @@ const ProductManagement = () => {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/products/admin/${productId}`, {
-          method: 'DELETE'
-        })
-        
-        if (!response.ok) {
-          throw new Error('Failed to delete product')
-        }
+        const response = await axios.delete(`${BACKEND_URL}/api/products/admin/${productId}`)
+
+        console.log('Delete response status:', response.status)
         
         setProducts(prev => prev.filter(product => product._id !== productId))
         alert('Product deleted successfully!')
@@ -500,17 +511,11 @@ const ProductManagement = () => {
   const handleToggleStatus = async (productId) => {
     try {
       const product = products.find(p => p._id === productId)
-      const response = await fetch(`${BACKEND_URL}/api/products/admin/${productId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ enabled: !product.isActive })
+      const response = await axios.patch(`${BACKEND_URL}/api/products/admin/${productId}/status`, {
+        enabled: !product.isActive
       })
-      
-      if (!response.ok) {
-        throw new Error('Failed to toggle product status')
-      }
+
+      console.log('Toggle status response status:', response.status)
       
       setProducts(products.map(p => 
         p._id === productId 
