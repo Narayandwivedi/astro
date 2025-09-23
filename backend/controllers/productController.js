@@ -3,14 +3,14 @@ const Product = require('../models/Product');
 // Get all products (with filters)
 const getAllProducts = async (req, res) => {
   try {
-    const { 
-      category = 'all', 
+    const {
+      category = 'all',
       enabled = 'true',
       inStock = 'true',
       featured,
       search,
       page = 1,
-      limit = 20,
+      limit = 10,
       sort = 'sortOrder',
       minPrice,
       maxPrice
@@ -59,7 +59,7 @@ const getAllProducts = async (req, res) => {
 
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
+
     // Sort options
     let sortOptions = {};
     switch (sort) {
@@ -88,7 +88,7 @@ const getAllProducts = async (req, res) => {
       .limit(parseInt(limit));
 
     const total = await Product.countDocuments(query);
-    
+
     res.json({
       success: true,
       data: products,

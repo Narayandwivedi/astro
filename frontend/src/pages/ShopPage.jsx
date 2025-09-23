@@ -25,13 +25,14 @@ const ShopPage = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const itemsPerPage = 10;
 
+
   // Fetch products from database
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
 
-        // Build query parameters
+        // Build query parameters with pagination
         const queryParams = new URLSearchParams({
           enabled: 'true',
           inStock: 'all',
@@ -66,7 +67,12 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-  }, [BACKEND_URL, currentPage, selectedCategory, itemsPerPage]);
+  }, [BACKEND_URL, selectedCategory, currentPage, itemsPerPage]);
+
+  // Reset current page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   // Fetch categories separately (only once)
   useEffect(() => {
@@ -94,11 +100,6 @@ const ShopPage = () => {
 
   // Products are already filtered and paginated by the server
   const currentProducts = products;
-
-  // Reset current page when category changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory]);
 
   const handleBuyNow = (product) => {
     addToCart(product, 1);
@@ -220,7 +221,7 @@ const ShopPage = () => {
                 Try Again
               </button>
             </div>
-          ) : products.length === 0 ? (
+          ) : currentProducts.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📦</div>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">No Products Found</h2>
@@ -418,7 +419,7 @@ const ShopPage = () => {
           )}
 
           {/* Pagination Info */}
-          {products.length > 0 && (
+          {currentProducts.length > 0 && (
             <div className="mt-6 text-center text-gray-600">
               <p className="text-sm">
                 Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts} products
