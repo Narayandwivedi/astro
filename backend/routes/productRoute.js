@@ -25,11 +25,8 @@ router.get('/search', searchProducts);
 router.get('/:id', getProductById);
 router.post('/:id/purchase', trackPurchase); // When someone buys via WhatsApp
 
-// Admin routes (authentication would be added here in production)
-// For now, these are open but in production you'd add middleware like:
-// router.use('/admin', authenticateAdmin);
-
-// Admin CRUD operations
+// Admin routes have been moved to /api/admin/products
+// Legacy admin routes for backward compatibility (can be removed later)
 router.post('/admin/create', createProduct);
 router.put('/admin/:id', updateProduct);
 router.delete('/admin/:id', deleteProduct);

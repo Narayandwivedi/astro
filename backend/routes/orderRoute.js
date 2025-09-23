@@ -22,7 +22,8 @@ router.get('/:id', getOrderById); // Get order by ID
 router.get('/user/my-orders', authMiddleware, getUserOrders); // Get orders for authenticated user
 router.put('/:id/cancel', authMiddleware, cancelOrder); // User cancel order
 
-// Admin routes (in production, add authentication middleware)
+// Admin routes have been moved to /api/admin/orders
+// Legacy admin routes for backward compatibility (can be removed later)
 router.get('/admin/all', getAllOrders);
 router.get('/admin/stats', getOrderStats);
 router.patch('/admin/:id/status', updateOrderStatus);

@@ -46,7 +46,7 @@ const ManageOrders = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`${BACKEND_URL}/api/orders/admin/all?${params}`);
+      const response = await fetch(`${BACKEND_URL}/api/admin/orders?${params}`);
       const data = await response.json();
 
       if (data.success) {
@@ -67,7 +67,7 @@ const ManageOrders = () => {
   const updateOrderStatus = async (orderId, newStatus, adminNotes = '') => {
     try {
       setUpdatingStatus(true);
-      const response = await fetch(`${BACKEND_URL}/api/orders/admin/${orderId}/status`, {
+      const response = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

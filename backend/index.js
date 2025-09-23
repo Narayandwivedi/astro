@@ -37,6 +37,9 @@ const userRoutes = require('./routes/userRoute');
 const addressRoutes = require('./routes/addressRoute');
 const seedRoutes = require('./routes/seedRoute');
 
+// Admin routes
+const adminRoutes = require('./routes/admin');
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
@@ -50,6 +53,9 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/seed', seedRoutes);
+
+// Admin API Routes
+app.use('/api/admin', adminRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

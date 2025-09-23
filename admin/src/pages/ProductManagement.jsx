@@ -88,7 +88,7 @@ const ProductManagement = () => {
         console.log(`📄 Fetching page ${page}...`)
 
         try {
-          const response = await axios.get(`${BACKEND_URL}/api/products/admin`, {
+          const response = await axios.get(`${BACKEND_URL}/api/admin/products`, {
             params: { page, limit },
             timeout: 10000, // 10 second timeout
           })
@@ -134,7 +134,7 @@ const ProductManagement = () => {
             console.error(`📋 Error response data:`, pageError.response.data)
 
             if (pageError.response.status === 404 && page === 1) {
-              throw new Error(`Admin endpoint not found. Please check if /api/products/admin exists.`)
+              throw new Error(`Admin endpoint not found. Please check if /api/admin/products exists.`)
             } else if (pageError.response.status === 404 && page > 1) {
               // 404 on later pages might mean no more data
               console.log(`🔚 Page ${page} not found, assuming no more pages`)
@@ -356,9 +356,9 @@ const ProductManagement = () => {
       if (editingProduct) {
         // Update existing product
         console.log('Updating product with ID:', editingProduct._id)
-        console.log('Update URL:', `${BACKEND_URL}/api/products/admin/${editingProduct._id}`)
+        console.log('Update URL:', `${BACKEND_URL}/api/admin/products/${editingProduct._id}`)
 
-        const response = await axios.put(`${BACKEND_URL}/api/products/admin/${editingProduct._id}`, cleanFormData)
+        const response = await axios.put(`${BACKEND_URL}/api/admin/products/${editingProduct._id}`, cleanFormData)
 
         console.log('Update response status:', response.status)
         console.log('Update success response:', response.data)
@@ -373,7 +373,7 @@ const ProductManagement = () => {
         alert('Product updated successfully!')
       } else {
         // Add new product
-        const response = await axios.post(`${BACKEND_URL}/api/products/admin/create`, cleanFormData)
+        const response = await axios.post(`${BACKEND_URL}/api/admin/products`, cleanFormData)
 
         console.log('Create response status:', response.status)
         console.log('Create success response:', response.data)
@@ -466,7 +466,7 @@ const ProductManagement = () => {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
       try {
-        const response = await axios.delete(`${BACKEND_URL}/api/products/admin/${productId}`)
+        const response = await axios.delete(`${BACKEND_URL}/api/admin/products/${productId}`)
 
         console.log('Delete response status:', response.status)
         
@@ -511,7 +511,7 @@ const ProductManagement = () => {
   const handleToggleStatus = async (productId) => {
     try {
       const product = products.find(p => p._id === productId)
-      const response = await axios.patch(`${BACKEND_URL}/api/products/admin/${productId}/status`, {
+      const response = await axios.patch(`${BACKEND_URL}/api/admin/products/${productId}/status`, {
         enabled: !product.isActive
       })
 
