@@ -1,6 +1,7 @@
 # Environment variables
 frontend/.env
 backend/.env
+admin/.env
 .env
 
 # Node modules

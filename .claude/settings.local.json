@@ -30,7 +30,10 @@
       "Bash(node:*)",
       "WebFetch(domain:gchub.in)",
       "WebFetch(domain:rigskart.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git push:*)",
+      "Bash(grep:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
