@@ -21,31 +21,42 @@ const ShopPage = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const itemsPerPage = 10;
 
   // Fetch products from database
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${BACKEND_URL}/api/products?enabled=true&inStock=all`);
+
+        // Build query parameters
+        const queryParams = new URLSearchParams({
+          enabled: 'true',
+          inStock: 'all',
+          page: currentPage.toString(),
+          limit: itemsPerPage.toString(),
+        });
+
+        // Add category filter if not "all"
+        if (selectedCategory !== 'all') {
+          queryParams.append('category', selectedCategory);
+        }
+
+        const response = await fetch(`${BACKEND_URL}/api/products?${queryParams}`);
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
         const data = await response.json();
         setProducts(data.data || []);
-        
-        // Extract unique categories from products
-        const uniqueCategories = [...new Set(data.data.map(product => product.category))];
-        const categoryOptions = [
-          { name: "All Products", value: "all" },
-          ...uniqueCategories.map(cat => ({
-            name: cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' '),
-            value: cat
-          }))
-        ];
-        setCategories(categoryOptions);
-        
+
+        // Set pagination info from backend response
+        if (data.pagination) {
+          setTotalPages(data.pagination.pages);
+          setTotalProducts(data.pagination.total);
+        }
+
       } catch (err) {
         setError('Failed to load products. Please try again later.');
         console.error('Error fetching products:', err);
@@ -55,17 +66,34 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [BACKEND_URL, currentPage, selectedCategory, itemsPerPage]);
 
-  const filteredProducts = selectedCategory === "all"
-    ? products
-    : products.filter(product => product.category === selectedCategory);
+  // Fetch categories separately (only once)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/products/categories`);
+        if (response.ok) {
+          const data = await response.json();
+          const categoryOptions = [
+            { name: "All Products", value: "all" },
+            ...data.data.map(cat => ({
+              name: cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' '),
+              value: cat
+            }))
+          ];
+          setCategories(categoryOptions);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+    fetchCategories();
+  }, [BACKEND_URL]);
+
+  // Products are already filtered and paginated by the server
+  const currentProducts = products;
 
   // Reset current page when category changes
   useEffect(() => {
@@ -192,7 +220,7 @@ const ShopPage = () => {
                 Try Again
               </button>
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📦</div>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">No Products Found</h2>
@@ -293,7 +321,7 @@ const ShopPage = () => {
           )}
 
           {/* Pagination */}
-          {filteredProducts.length > itemsPerPage && (
+          {totalPages > 1 && (
             <div className="mt-12 flex justify-center">
               <div className="flex items-center space-x-2">
                 {/* Previous Button */}
@@ -390,10 +418,10 @@ const ShopPage = () => {
           )}
 
           {/* Pagination Info */}
-          {filteredProducts.length > 0 && (
+          {products.length > 0 && (
             <div className="mt-6 text-center text-gray-600">
               <p className="text-sm">
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} products
+                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts} products
                 {selectedCategory !== 'all' && ` in ${categories.find(cat => cat.value === selectedCategory)?.name}`}
               </p>
             </div>
@@ -412,7 +440,7 @@ const ShopPage = () => {
               हमसे क्यों खरीदें - Your Trusted Spiritual Partner
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              Total Products Available: {products.length}
+              Total Products Available: {totalProducts}
             </p>
           </div>
 

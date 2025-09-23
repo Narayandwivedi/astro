@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com/'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com'
 
 export const AppContextProvider = (props) => {
   const navigate = useNavigate()
