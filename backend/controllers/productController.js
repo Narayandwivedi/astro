@@ -10,7 +10,7 @@ const getAllProducts = async (req, res) => {
       featured,
       search,
       page = 1,
-      limit = 10,
+      limit = 12,
       sort = 'sortOrder',
       minPrice,
       maxPrice

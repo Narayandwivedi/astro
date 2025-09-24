@@ -237,20 +237,20 @@ const Footer = () => {
           </div>
           
           <div className="flex space-x-6 text-xs">
-            <Link 
-              to="/privacy" 
+            <Link
+              to="/privacy"
               className="text-purple-200 hover:text-indigo-200"
             >
               Privacy Policy
             </Link>
-            <Link 
-              to="/terms" 
+            <Link
+              to="/terms"
               className="text-purple-200 hover:text-indigo-200"
             >
               Terms of Service
             </Link>
-            <Link 
-              to="/disclaimer" 
+            <Link
+              to="/disclaimer"
               className="text-purple-200 hover:text-indigo-200"
             >
               Disclaimer

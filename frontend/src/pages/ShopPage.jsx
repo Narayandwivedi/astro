@@ -23,7 +23,7 @@ const ShopPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
 
 
   // Fetch products from database
