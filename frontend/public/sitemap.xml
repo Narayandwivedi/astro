@@ -6,90 +6,66 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://astrosatya.com/</loc>
-    <lastmod>2024-12-21</lastmod>
+    <loc>https://astrosatyaprakash.com/</loc>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- About Page -->
   <url>
-    <loc>https://astrosatya.com/about</loc>
-    <lastmod>2024-12-21</lastmod>
+    <loc>https://astrosatyaprakash.com/about</loc>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Services Page -->
   <url>
-    <loc>https://astrosatya.com/services</loc>
-    <lastmod>2024-12-21</lastmod>
+    <loc>https://astrosatyaprakash.com/services</loc>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Shop Page -->
   <url>
-    <loc>https://astrosatya.com/shop</loc>
-    <lastmod>2024-12-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Contact Page -->
-  <url>
-    <loc>https://astrosatya.com/contact</loc>
-    <lastmod>2024-12-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Blog Page -->
-  <url>
-    <loc>https://astrosatya.com/blog</loc>
-    <lastmod>2024-12-21</lastmod>
+    <loc>https://astrosatyaprakash.com/shop</loc>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Cart Page -->
+  <!-- Blog Page -->
   <url>
-    <loc>https://astrosatya.com/cart</loc>
-    <lastmod>2024-12-21</lastmod>
+    <loc>https://astrosatyaprakash.com/blog</loc>
+    <lastmod>2024-12-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Contact Page -->
+  <url>
+    <loc>https://astrosatyaprakash.com/contact</loc>
+    <lastmod>2024-12-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Terms & Conditions Page -->
+  <url>
+    <loc>https://astrosatyaprakash.com/terms</loc>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
-  <!-- Checkout Page -->
+  <!-- Privacy Policy Page -->
   <url>
-    <loc>https://astrosatya.com/checkout</loc>
-    <lastmod>2024-12-21</lastmod>
+    <loc>https://astrosatyaprakash.com/privacy</loc>
+    <lastmod>2024-12-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-  </url>
-
-  <!-- Privacy Policy -->
-  <url>
-    <loc>https://astrosatya.com/privacy</loc>
-    <lastmod>2024-12-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
-
-  <!-- Terms of Service -->
-  <url>
-    <loc>https://astrosatya.com/terms</loc>
-    <lastmod>2024-12-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
-
-  <!-- Disclaimer -->
-  <url>
-    <loc>https://astrosatya.com/disclaimer</loc>
-    <lastmod>2024-12-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
   </url>
 
 </urlset>

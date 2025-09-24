@@ -22,6 +22,8 @@ import AddressPage from './pages/AddressPage';
 import ManageAddressPage from './pages/ManageAddressPage';
 import About from './pages/About';
 import Login from './pages/Login';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import MobileBottomNav from './components/MobileBottomNav';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -76,6 +78,8 @@ function AppContent() {
           <Route path="/blog" element={<BlogsPage />} />
           <Route path="/blog/:slug" element={<BlogDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>

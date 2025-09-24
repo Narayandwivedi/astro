@@ -28,8 +28,17 @@ Disallow: /*.tsx$
 Allow: /images/
 Allow: /static/
 
+# Block user-specific and protected pages
+Disallow: /checkout
+Disallow: /orders
+Disallow: /bookings
+Disallow: /addresses
+Disallow: /manage-addresses
+Disallow: /cart
+Disallow: /login
+
 # Sitemap location
-Sitemap: https://astrosatya.com/sitemap.xml
+Sitemap: https://astrosatyaprakash.com/sitemap.xml
 
 # Crawl delay (optional - 1 second between requests)
 Crawl-delay: 1
