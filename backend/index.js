@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['https://api.astrosatyaprakash.com', 'https://astrosatyaprakash.com', 'https://astro-admin-nu.vercel.app','http://localhost:5173', 'http://localhost:5174'],
+  origin: ['https://api.astrosatyaprakash.com', 'https://astrosatyaprakash.com', 'https://www.astrosatyaprakash.com', 'https://astro-admin-nu.vercel.app','http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }));
 app.use(express.json());
