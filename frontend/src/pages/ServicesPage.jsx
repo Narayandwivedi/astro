@@ -23,6 +23,106 @@ const ServicesPage = () => {
     setSelectedService(null);
   };
 
+  // SEO optimization
+  useEffect(() => {
+    document.title = 'Vedic Astrology Services | Expert Consultation by Acharya Satya Prakash Tripathi';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Explore comprehensive Vedic astrology services by Acharya Satya Prakash Tripathi. Get expert guidance on Kundli reading, marriage compatibility, business astrology, vastu consultation, health astrology, education guidance, and remedial solutions. Book online consultation now!');
+    }
+
+    let structuredData = document.querySelector('script[type="application/ld+json"][data-page="services"]');
+    if (!structuredData) {
+      structuredData = document.createElement('script');
+      structuredData.type = 'application/ld+json';
+      structuredData.setAttribute('data-page', 'services');
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Vedic Astrology Services",
+      "description": "Comprehensive Vedic astrology services including Kundli reading, marriage consultation, business astrology, vastu shastra, health predictions, education guidance, and spiritual remedies by expert astrologer Acharya Satya Prakash Tripathi",
+      "provider": {
+        "@type": "Organization",
+        "name": "Astro Satya Prakash",
+        "url": "https://astrosatyaprakash.com",
+        "founder": {
+          "@type": "Person",
+          "name": "Acharya Satya Prakash Tripathi",
+          "jobTitle": "Vedic Astrologer",
+          "description": "Expert Vedic Astrologer with 10+ years of experience"
+        }
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "India"
+      },
+      "availableChannel": {
+        "@type": "ServiceChannel",
+        "serviceType": "Online Consultation",
+        "availableLanguage": ["Hindi", "English"]
+      },
+      "serviceType": [
+        "Kundli Reading",
+        "Marriage Astrology",
+        "Business Consultation",
+        "Vastu Shastra",
+        "Health Astrology",
+        "Education Guidance",
+        "Remedial Astrology",
+        "Career Guidance"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Astrology Services Catalog",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Complete Kundli Analysis",
+              "description": "Detailed birth chart reading with predictions and remedies"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Marriage Compatibility",
+              "description": "Gun Milan and compatibility analysis for marriage"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Business Astrology",
+              "description": "Business timing, partnership analysis, and success predictions"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Vastu Consultation",
+              "description": "Vastu shastra guidance for homes and offices"
+            }
+          }
+        ]
+      }
+    });
+
+    return () => {
+      const script = document.querySelector('script[data-page="services"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
   // Fetch services from database
   useEffect(() => {
     const fetchServices = async () => {
@@ -73,6 +173,44 @@ const ServicesPage = () => {
     <>
       <div className="w-full">
         <Navigation />
+
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 overflow-hidden">
+          {/* Cosmic background */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="w-full h-full cosmic-stars"></div>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/5 via-indigo-900/5 to-amber-900/5"></div>
+
+          <div className="container mx-auto px-4 lg:px-6 relative z-10">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-purple-200 rounded-full px-6 py-2 mb-6 shadow-lg">
+                <span className="text-purple-600 text-sm font-semibold">🪐 Expert Vedic Astrology</span>
+              </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+                <span className="text-gray-800">Vedic Astrology</span><br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-indigo-600 to-amber-600">Services</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-600 font-light mb-8 max-w-3xl mx-auto leading-relaxed">
+                Get expert guidance from <strong>Acharya Satya Prakash Tripathi</strong> with 10+ years of experience in authentic Vedic astrology. Transform your life with personalized solutions.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => openModal(null)}
+                  className="bg-gradient-to-r from-purple-600 via-indigo-600 to-amber-600 hover:from-purple-700 hover:via-indigo-700 hover:to-amber-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                >
+                  📅 Book Free Consultation
+                </button>
+                <a
+                  href="tel:+918839453431"
+                  className="bg-white hover:bg-gray-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-purple-200 hover:border-purple-300 transform hover:-translate-y-1"
+                >
+                  📞 Call: +91 8839453431
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
         
 
         {/* Category Filter */}

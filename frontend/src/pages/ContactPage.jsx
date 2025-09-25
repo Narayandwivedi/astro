@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 
 const ContactPage = () => {
@@ -17,6 +17,116 @@ const ContactPage = () => {
       [name]: value
     }));
   };
+
+  // SEO optimization
+  useEffect(() => {
+    document.title = 'Contact Acharya Satya Prakash Tripathi | Expert Vedic Astrologer Consultation';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Contact renowned Vedic astrologer Acharya Satya Prakash Tripathi for expert astrological consultation. Get personalized guidance on life, career, marriage, health through phone, WhatsApp, or email. Book your consultation today!');
+    }
+
+    let structuredData = document.querySelector('script[type="application/ld+json"][data-page="contact"]');
+    if (!structuredData) {
+      structuredData = document.createElement('script');
+      structuredData.type = 'application/ld+json';
+      structuredData.setAttribute('data-page', 'contact');
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "name": "Contact Acharya Satya Prakash Tripathi",
+      "description": "Contact page for expert Vedic astrologer Acharya Satya Prakash Tripathi. Get professional astrological consultation and guidance for all life matters",
+      "url": "https://astrosatyaprakash.com/contact",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Acharya Satya Prakash Tripathi",
+        "jobTitle": "Expert Vedic Astrologer",
+        "description": "Professional Vedic astrologer with 10+ years of experience providing accurate predictions and spiritual guidance",
+        "telephone": "+91-8839453431",
+        "email": "satyaprakashtripathi7578@gmail.com",
+        "url": "https://astrosatyaprakash.com",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Varanasi",
+          "addressRegion": "Uttar Pradesh",
+          "addressCountry": "IN"
+        },
+        "areaServed": {
+          "@type": "Country",
+          "name": "India"
+        },
+        "knowsAbout": [
+          "Vedic Astrology",
+          "Kundli Reading",
+          "Marriage Compatibility",
+          "Career Guidance",
+          "Health Astrology",
+          "Business Consultation",
+          "Vastu Shastra",
+          "Gemstone Consultation",
+          "Spiritual Remedies"
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Astrological Consultation Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Phone Consultation",
+                "description": "Direct phone consultation with expert astrologer"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "WhatsApp Consultation",
+                "description": "Convenient WhatsApp chat and voice consultation"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Email Consultation",
+                "description": "Detailed written astrological analysis via email"
+              }
+            }
+          ]
+        }
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://astrosatyaprakash.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Contact",
+            "item": "https://astrosatyaprakash.com/contact"
+          }
+        ]
+      }
+    });
+
+    return () => {
+      const script = document.querySelector('script[data-page="contact"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,23 +147,46 @@ const ContactPage = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 relative overflow-hidden">
+      <section className="relative pt-32 pb-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 overflow-hidden">
         {/* Cosmic stars background */}
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/5 via-purple-900/5 to-amber-900/5"></div>
+
         <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-6">
-              Contact Us
+          <div className="text-center max-w-5xl mx-auto">
+            <div className="inline-flex items-center bg-white/90 backdrop-blur-sm border border-purple-300 rounded-full px-6 py-2 mb-6 shadow-lg">
+              <span className="text-purple-600 text-sm font-semibold">📞 Expert Astrologer Contact</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+              <span className="text-gray-800">Contact</span><br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-600">Acharya Satya Prakash</span>
             </h1>
-            <p className="text-xl md:text-2xl text-purple-700 mb-8 font-medium">
-              संपर्क करें - Get in Touch with Astro Satya
+            <p className="text-xl md:text-2xl text-gray-700 mb-6 font-medium">
+              संपर्क करें - Connect with Expert <strong>Vedic Astrologer</strong>
             </p>
-            <p className="text-lg text-purple-600 max-w-3xl mx-auto leading-relaxed">
-              Ready to discover what the stars have in store for you? Reach out to Pandit Satya Prakash Tripathi 
-              for personalized astrological guidance and solutions to life's challenges.
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
+              Ready to transform your life with ancient Vedic wisdom? Connect with <strong>Acharya Satya Prakash Tripathi</strong>,
+              a renowned astrologer with 10+ years of experience. Get personalized astrological guidance and effective solutions
+              to all your life challenges through phone, WhatsApp, or email consultation.
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="tel:+918839453431"
+                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-600 hover:from-indigo-700 hover:via-purple-700 hover:to-amber-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+              >
+                📞 Call: +91 8839453431
+              </a>
+              <a
+                href="https://wa.me/918839453431?text=Hello%20Acharya%20Satya%20Prakash%20Tripathi,%0A%0AI%20need%20astrological%20guidance.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white hover:bg-gray-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-purple-300 hover:border-purple-400 transform hover:-translate-y-1"
+              >
+                💬 WhatsApp Now
+              </a>
+            </div>
           </div>
         </div>
       </section>

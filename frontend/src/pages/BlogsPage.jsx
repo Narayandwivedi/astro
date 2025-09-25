@@ -140,6 +140,104 @@ const BlogsPage = () => {
     }
   };
 
+  // Enhanced SEO optimization
+  useEffect(() => {
+    document.title = 'Expert Astrology Blog | Vedic Astrology Articles by Acharya Satya Prakash Tripathi';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Read expert Vedic astrology blog by Acharya Satya Prakash Tripathi. Latest articles on horoscope predictions, gemstone remedies, vastu shastra, spiritual guidance, meditation, and planetary effects. Get authentic astrological insights for modern life challenges.');
+    }
+
+    // Add additional schema markup for blog listing
+    let structuredData = document.querySelector('script[type="application/ld+json"][data-page="blogs"]');
+    if (!structuredData) {
+      structuredData = document.createElement('script');
+      structuredData.type = 'application/ld+json';
+      structuredData.setAttribute('data-page', 'blogs');
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Expert Astrology Blog by Acharya Satya Prakash",
+      "description": "Comprehensive Vedic astrology blog featuring expert insights on horoscopes, planetary effects, gemstone remedies, vastu shastra, spiritual guidance, and meditation practices",
+      "url": "https://astrosatyaprakash.com/blogs",
+      "author": {
+        "@type": "Person",
+        "name": "Acharya Satya Prakash Tripathi",
+        "jobTitle": "Expert Vedic Astrologer",
+        "description": "Renowned Vedic astrologer with 10+ years of experience in providing accurate predictions and spiritual guidance",
+        "url": "https://astrosatyaprakash.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Astro Satya Prakash",
+        "url": "https://astrosatyaprakash.com",
+        "founder": {
+          "@type": "Person",
+          "name": "Acharya Satya Prakash Tripathi"
+        }
+      },
+      "about": [
+        {
+          "@type": "Thing",
+          "name": "Vedic Astrology",
+          "description": "Ancient Indian astrology system based on planetary positions"
+        },
+        {
+          "@type": "Thing",
+          "name": "Horoscope Predictions",
+          "description": "Daily, weekly, and monthly astrological forecasts"
+        },
+        {
+          "@type": "Thing",
+          "name": "Gemstone Remedies",
+          "description": "Healing and beneficial effects of precious gemstones"
+        },
+        {
+          "@type": "Thing",
+          "name": "Vastu Shastra",
+          "description": "Ancient architectural principles for harmonious living"
+        },
+        {
+          "@type": "Thing",
+          "name": "Spiritual Guidance",
+          "description": "Spiritual practices and meditation for personal growth"
+        }
+      ],
+      "keywords": "vedic astrology, horoscope, gemstone remedies, vastu shastra, spiritual guidance, meditation, planetary effects, kundli reading, marriage astrology, business astrology",
+      "inLanguage": ["en", "hi"],
+      "blogPost": filteredBlogs.slice(0, 5).map(blog => ({
+        "@type": "BlogPosting",
+        "headline": blog.title,
+        "description": blog.excerpt,
+        "url": `https://astrosatyaprakash.com/blog/${blog.slug}`,
+        "datePublished": blog.publishedAt,
+        "author": {
+          "@type": "Person",
+          "name": "Acharya Satya Prakash Tripathi"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Astro Satya Prakash"
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": `https://astrosatyaprakash.com/blog/${blog.slug}`
+        }
+      }))
+    });
+
+    return () => {
+      const script = document.querySelector('script[data-page="blogs"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
+  }, [filteredBlogs]);
+
   return (
     <>
       {/* Schema markup for Blog page */}
@@ -149,17 +247,17 @@ const BlogsPage = () => {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
-            "name": "Blog - Astro Satya",
-            "description": "Latest astrology articles, horoscope insights, spiritual guidance, and remedies from expert astrologer Pandit Satya Prakash Tripathi.",
-            "url": "https://astrosatya.com/blog",
+            "name": "Astrology Blog - Astro Satya Prakash | Vedic Astrology Articles",
+            "description": "Expert astrology insights, horoscope predictions, spiritual guidance and remedies by Acharya Satya Prakash Tripathi. Latest articles on Vedic astrology, gemstones, vastu shastra and more.",
+            "url": "https://astrosatyaprakash.com/blog",
             "mainEntity": {
               "@type": "Blog",
-              "name": "Astro Satya Blog",
-              "description": "Astrology insights, horoscope predictions, and spiritual guidance",
+              "name": "Astro Satya Prakash Blog",
+              "description": "Comprehensive astrology insights, horoscope predictions, spiritual guidance and Vedic remedies by expert astrologer Acharya Satya Prakash Tripathi",
               "publisher": {
                 "@type": "Organization",
-                "name": "Astro Satya",
-                "url": "https://astrosatya.com"
+                "name": "Astro Satya Prakash",
+                "url": "https://astrosatyaprakash.com"
               }
             },
             "breadcrumb": {
@@ -169,13 +267,13 @@ const BlogsPage = () => {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://astrosatya.com/"
+                  "item": "https://astrosatyaprakash.com/"
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Blog",
-                  "item": "https://astrosatya.com/blog"
+                  "item": "https://astrosatyaprakash.com/blog"
                 }
               ]
             }
@@ -186,8 +284,49 @@ const BlogsPage = () => {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         
+        {/* Enhanced Hero Section */}
+        <section className="relative bg-gradient-to-br from-purple-900 via-indigo-800 to-purple-700 pt-32 pb-16 overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="w-full h-full cosmic-stars"></div>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/30 via-indigo-900/30 to-purple-900/30"></div>
+
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <div className="max-w-5xl mx-auto">
+              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full px-6 py-2 mb-6 shadow-lg">
+                <span className="text-purple-200 text-sm font-semibold">📜 Expert Astrology Insights</span>
+              </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
+                <span className="text-white">Astrology</span><br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-300 to-amber-300">Blog</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-purple-200 mb-6 font-medium">
+                ज्योतिष ब्लॉग - By <strong>Acharya Satya Prakash Tripathi</strong>
+              </p>
+              <p className="text-lg text-purple-300 max-w-4xl mx-auto leading-relaxed mb-8">
+                Discover ancient Vedic wisdom for modern life challenges. Get expert insights on <strong>horoscope predictions, gemstone remedies, vastu guidance, spiritual practices, planetary effects, and meditation techniques</strong> from India's trusted astrologer with 10+ years of experience.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="#articles"
+                  className="bg-white hover:bg-purple-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  📜 Read Latest Articles
+                </a>
+                <a
+                  href="/services"
+                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  🕰 Book Consultation
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Search and Filter Section */}
-        <div className="bg-white shadow-sm border-b pt-32">
+        <div className="bg-white shadow-sm border-b">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               {/* Search Bar */}
@@ -235,7 +374,18 @@ const BlogsPage = () => {
         </div>
 
         {/* Blog Grid */}
-        <div className="container mx-auto px-4 py-12">
+        <section id="articles" className="container mx-auto px-4 py-12">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center bg-purple-100 backdrop-blur-sm border border-purple-200 rounded-full px-6 py-2 mb-6">
+              <span className="text-purple-600 text-sm font-semibold">✨ Latest Articles</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent mb-6">
+              Expert Astrology Articles
+            </h2>
+            <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
+              Stay updated with the latest insights on <strong>Vedic astrology, horoscope predictions, spiritual guidance, gemstone remedies, vastu shastra, and planetary effects</strong> from renowned astrologer <strong>Acharya Satya Prakash Tripathi</strong>. Get authentic knowledge to navigate life's challenges with ancient wisdom.
+            </p>
+          </div>
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
@@ -311,9 +461,39 @@ const BlogsPage = () => {
               ))}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Footer can be added here if you have one */}
+        {/* Call to Action Section */}
+        <section className="py-16 bg-gradient-to-br from-purple-900 via-indigo-900 to-amber-900 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-25">
+            <div className="w-full h-full cosmic-stars"></div>
+          </div>
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Need Personalized Astrological Guidance?
+              </h3>
+              <p className="text-xl text-purple-200 mb-8 leading-relaxed">
+                Get expert consultation from <strong>Acharya Satya Prakash Tripathi</strong>. Discover personalized solutions for your life challenges through authentic Vedic astrology.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="/services"
+                  className="bg-white hover:bg-purple-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  🕰 Book Consultation Now
+                </a>
+                <a
+                  href="/contact"
+                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  📞 Contact Expert
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
     </>
   );

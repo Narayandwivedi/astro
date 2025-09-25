@@ -26,6 +26,124 @@ const ShopPage = () => {
   const itemsPerPage = 12;
 
 
+  // SEO optimization
+  useEffect(() => {
+    document.title = 'Spiritual Products Shop | Authentic Rudraksha, Gemstones & Yantras by Acharya Satya Prakash';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Shop authentic spiritual products from Astro Satya Prakash. Buy original Rudraksha, precious gemstones, powerful yantras, spiritual books, and blessed malas. All products energized by expert astrologer Acharya Satya Prakash Tripathi. Free shipping across India.');
+    }
+
+    let structuredData = document.querySelector('script[type="application/ld+json"][data-page="shop"]');
+    if (!structuredData) {
+      structuredData = document.createElement('script');
+      structuredData.type = 'application/ld+json';
+      structuredData.setAttribute('data-page', 'shop');
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Spiritual Products Shop",
+      "description": "Authentic spiritual products including Rudraksha, gemstones, yantras, malas, and spiritual books. All products blessed and energized by expert astrologer Acharya Satya Prakash Tripathi",
+      "url": "https://astrosatyaprakash.com/shop",
+      "mainEntity": {
+        "@type": "Store",
+        "name": "Astro Satya Prakash Spiritual Store",
+        "description": "Online spiritual products store offering authentic Rudraksha, gemstones, yantras, and spiritual items",
+        "url": "https://astrosatyaprakash.com/shop",
+        "founder": {
+          "@type": "Person",
+          "name": "Acharya Satya Prakash Tripathi",
+          "jobTitle": "Vedic Astrologer & Spiritual Guide"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Spiritual Products Catalog",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Rudraksha Beads",
+                "description": "Original Rudraksha beads from Nepal, energized with mantras",
+                "category": "Spiritual Products"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Precious Gemstones",
+                "description": "Natural gemstones for astrological benefits and healing",
+                "category": "Gemstones"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Sacred Yantras",
+                "description": "Powerful yantras for prosperity, protection, and spiritual growth",
+                "category": "Yantras"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Spiritual Malas",
+                "description": "Prayer beads and malas for meditation and spiritual practice",
+                "category": "Malas"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Spiritual Books",
+                "description": "Books on astrology, spirituality, and Vedic knowledge",
+                "category": "Books"
+              }
+            }
+          ]
+        },
+        "paymentAccepted": ["Cash", "Credit Card", "UPI", "Bank Transfer"],
+        "currenciesAccepted": "INR",
+        "areaServed": {
+          "@type": "Country",
+          "name": "India"
+        }
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://astrosatyaprakash.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Shop",
+            "item": "https://astrosatyaprakash.com/shop"
+          }
+        ]
+      }
+    });
+
+    return () => {
+      const script = document.querySelector('script[data-page="shop"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
   // Fetch products from database
   useEffect(() => {
     const fetchProducts = async () => {
@@ -120,19 +238,45 @@ const ShopPage = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100">
-        <div className="container mx-auto px-4 lg:px-6">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6">
-              Spiritual Shop
+      <section className="relative pt-32 pb-16 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="w-full h-full cosmic-stars"></div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-900/5 via-yellow-900/5 to-orange-900/5"></div>
+
+        <div className="container mx-auto px-4 lg:px-6 relative z-10">
+          <div className="text-center max-w-5xl mx-auto">
+            <div className="inline-flex items-center bg-white/90 backdrop-blur-sm border border-orange-300 rounded-full px-6 py-2 mb-6 shadow-lg">
+              <span className="text-orange-600 text-sm font-semibold">🛍️ Authentic Spiritual Products</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+              <span className="text-gray-800">Spiritual</span><br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-600">Shop</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-8">
-              आध्यात्मिक दुकान - Authentic Spiritual Products
+            <p className="text-xl md:text-2xl text-gray-700 mb-6 font-medium">
+              आध्यात्मिक दुकान - Blessed by <strong>Acharya Satya Prakash Tripathi</strong>
             </p>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Discover our collection of authentic Rudraksha, precious gemstones, yantras, and spiritual items. 
-              All products are energized and blessed by Pandit Satya Prakash Tripathi for maximum benefits.
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
+              Discover our exclusive collection of <strong>authentic Rudraksha, precious gemstones, powerful yantras, and sacred spiritual items</strong>.
+              Every product is personally energized and blessed with powerful mantras by expert astrologer Acharya Satya Prakash Tripathi for maximum spiritual benefits.
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="#products"
+                className="bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-600 hover:from-orange-700 hover:via-yellow-700 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+              >
+                🛍️ Shop Now
+              </a>
+              <a
+                href="https://wa.me/918839453431?text=Hi! I need help choosing spiritual products."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white hover:bg-gray-50 text-orange-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-orange-300 hover:border-orange-400 transform hover:-translate-y-1"
+              >
+                💬 Expert Guidance
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -202,7 +346,7 @@ const ShopPage = () => {
       </section>
 
       {/* Products Grid */}
-      <section className="py-16 bg-gray-50">
+      <section id="products" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 lg:px-6">
           {loading ? (
             <div className="text-center py-12">

@@ -12,6 +12,17 @@ const Homepage = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { BACKEND_URL, getImageURL } = useContext(AppContext);
+
+  // SEO Optimization
+  useEffect(() => {
+    document.title = 'Astro Satya Prakash - Expert Vedic Astrology Services | Acharya Satya Prakash Tripathi';
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Get expert Vedic astrology guidance from Acharya Satya Prakash Tripathi. Professional kundali reading, marriage consultation, business astrology, vastu shastra, gemstone remedies. 10+ years experience in Varanasi.');
+    }
+  }, []);
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -108,6 +119,53 @@ const Homepage = () => {
   }, []);
 
   return (
+    <>
+      {/* Homepage Schema Markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Astro Satya Prakash",
+            "description": "Expert Vedic astrology services by Acharya Satya Prakash Tripathi. Professional astrology consultations, kundali reading, vastu shastra, gemstone remedies.",
+            "url": "https://astrosatyaprakash.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://astrosatyaprakash.com/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            },
+            "mainEntity": {
+              "@type": "LocalBusiness",
+              "name": "Astro Satya Prakash - Acharya Satya Prakash Tripathi",
+              "image": "https://astrosatyaprakash.com/images/astro-satya-logo.jpg",
+              "description": "Professional Vedic astrology services including kundali reading, marriage consultation, business guidance, vastu shastra, and gemstone remedies by experienced astrologer Acharya Satya Prakash Tripathi.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Varanasi",
+                "addressRegion": "Uttar Pradesh",
+                "addressCountry": "IN"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 25.3176,
+                "longitude": 82.9739
+              },
+              "url": "https://astrosatyaprakash.com",
+              "telephone": "+91-8839453431",
+              "email": "satyaprakashtripathi7578@gmail.com",
+              "priceRange": "₹₹",
+              "openingHours": "Mo-Su 09:00-20:00",
+              "serviceType": "Astrology Services",
+              "areaServed": {
+                "@type": "Country",
+                "name": "India"
+              }
+            }
+          })
+        }}
+      />
+
     <div className="w-full">
       <Navigation />
       <IntroBanner />
@@ -516,6 +574,7 @@ const Homepage = () => {
       )}
 
     </div>
+    </>
   )
 }
 

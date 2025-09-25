@@ -1,7 +1,76 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navigation from '../components/Navigation';
 
 const PrivacyPage = () => {
+  // SEO optimization
+  useEffect(() => {
+    document.title = 'Privacy Policy | Astro Satya Prakash - Data Protection by Acharya Satya Prakash';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Read our comprehensive Privacy Policy for Astro Satya Prakash. Learn how we protect your personal information, birth details, and consultation data. Committed to safeguarding your privacy in astrological services by Acharya Satya Prakash Tripathi.');
+    }
+
+    let structuredData = document.querySelector('script[type="application/ld+json"][data-page="privacy"]');
+    if (!structuredData) {
+      structuredData = document.createElement('script');
+      structuredData.type = 'application/ld+json';
+      structuredData.setAttribute('data-page', 'privacy');
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Privacy Policy - Astro Satya Prakash",
+      "description": "Privacy Policy for Astro Satya Prakash detailing how we protect personal information, birth details, and consultation data in astrological services",
+      "url": "https://astrosatyaprakash.com/privacy",
+      "mainEntity": {
+        "@type": "Organization",
+        "name": "Astro Satya Prakash",
+        "founder": {
+          "@type": "Person",
+          "name": "Acharya Satya Prakash Tripathi",
+          "jobTitle": "Expert Vedic Astrologer"
+        },
+        "url": "https://astrosatyaprakash.com",
+        "email": "satyaprakashtripathi7578@gmail.com",
+        "telephone": "+91-8839453431",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Varanasi",
+          "addressRegion": "Uttar Pradesh",
+          "addressCountry": "IN"
+        },
+        "knowsAbout": ["Data Protection", "Privacy Rights", "Information Security", "Confidential Consultations"]
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://astrosatyaprakash.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Privacy Policy",
+            "item": "https://astrosatyaprakash.com/privacy"
+          }
+        ]
+      }
+    });
+
+    return () => {
+      const script = document.querySelector('script[data-page="privacy"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-amber-50">
       <Navigation />

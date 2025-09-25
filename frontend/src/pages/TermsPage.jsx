@@ -1,7 +1,75 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navigation from '../components/Navigation';
 
 const TermsPage = () => {
+  // SEO optimization
+  useEffect(() => {
+    document.title = 'Terms & Conditions | Astro Satya Prakash - Acharya Satya Prakash Tripathi';
+
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Read the Terms and Conditions for Astro Satya Prakash astrology services. Learn about consultation policies, e-commerce terms, cancellation policy, refunds, and service guidelines by expert astrologer Acharya Satya Prakash Tripathi.');
+    }
+
+    let structuredData = document.querySelector('script[type="application/ld+json"][data-page="terms"]');
+    if (!structuredData) {
+      structuredData = document.createElement('script');
+      structuredData.type = 'application/ld+json';
+      structuredData.setAttribute('data-page', 'terms');
+      document.head.appendChild(structuredData);
+    }
+
+    structuredData.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Terms and Conditions - Astro Satya Prakash",
+      "description": "Terms and Conditions for Astro Satya Prakash astrology services, consultations, and spiritual products by Acharya Satya Prakash Tripathi",
+      "url": "https://astrosatyaprakash.com/terms",
+      "mainEntity": {
+        "@type": "Organization",
+        "name": "Astro Satya Prakash",
+        "founder": {
+          "@type": "Person",
+          "name": "Acharya Satya Prakash Tripathi",
+          "jobTitle": "Expert Vedic Astrologer"
+        },
+        "url": "https://astrosatyaprakash.com",
+        "email": "satyaprakashtripathi7578@gmail.com",
+        "telephone": "+91-8839453431",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Varanasi",
+          "addressRegion": "Uttar Pradesh",
+          "addressCountry": "IN"
+        }
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://astrosatyaprakash.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Terms & Conditions",
+            "item": "https://astrosatyaprakash.com/terms"
+          }
+        ]
+      }
+    });
+
+    return () => {
+      const script = document.querySelector('script[data-page="terms"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-amber-50">
       <Navigation />
