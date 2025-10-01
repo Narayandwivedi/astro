@@ -5,6 +5,26 @@ body {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Cursor pointer for all interactive elements */
+button,
+.cursor-pointer,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+.clickable {
+  cursor: pointer !important;
+}
+
+/* Ensure disabled buttons don't have pointer cursor */
+button:disabled,
+input:disabled,
+select:disabled,
+.disabled {
+  cursor: not-allowed !important;
 } 
 
 /* Font families for the rich text editor */

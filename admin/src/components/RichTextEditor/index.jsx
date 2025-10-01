@@ -588,8 +588,8 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start writing...", dis
           />
 
           {/* Image Upload Tool */}
-          <ImageUploadTool 
-            api={api}
+          <ImageUploadTool
+            BACKEND_URL={BACKEND_URL}
             executeCommand={executeCommand}
             disabled={disabled}
           />

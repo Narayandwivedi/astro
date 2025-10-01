@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { Image } from 'lucide-react';
 
-const ImageUploadTool = ({ api, executeCommand, disabled }) => {
+const ImageUploadTool = ({ BACKEND_URL, executeCommand, disabled }) => {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  // Helper function to get full image URL
+  const getImageURL = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+    return `${BACKEND_URL}/${cleanPath}`;
+  };
 
   // Image upload from computer
   const uploadImageFromComputer = async (file) => {
@@ -22,7 +32,7 @@ const ImageUploadTool = ({ api, executeCommand, disabled }) => {
     formData.append('category', 'blog');
 
     try {
-      const response = await fetch(api.endpoints.upload.image, {
+      const response = await fetch(`${BACKEND_URL}/api/upload/image`, {
         method: 'POST',
         body: formData,
         credentials: 'include'
@@ -34,16 +44,16 @@ const ImageUploadTool = ({ api, executeCommand, disabled }) => {
       }
 
       const data = await response.json();
-      
+
       if (!data.success) {
         throw new Error(data.message || 'Failed to upload image');
       }
 
       const { imagePath } = data;
-      const fullImageUrl = imagePath.startsWith('http') ? imagePath : api.getImageURL(imagePath);
-      
+      const fullImageUrl = imagePath.startsWith('http') ? imagePath : getImageURL(imagePath);
+
       insertImageHTML(fullImageUrl, 'Uploaded image');
-      
+
     } catch (error) {
       console.error('Image upload error:', error);
       alert(error.message || 'Failed to upload image');

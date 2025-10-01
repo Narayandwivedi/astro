@@ -1,91 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
+import { AppContext } from '../context/AppContext';
 
 const BlogsPage = () => {
-  // Demo blog data
-  const demoBlogs = [
-    {
-      _id: '1',
-      title: 'राहु-केतु का जीवन पर प्रभाव - Understanding Rahu-Ketu Effects',
-      slug: 'rahu-ketu-effects-on-life',
-      excerpt: 'राहु और केतु ग्रहों के जीवन पर प्रभाव को समझें। जानें कि कैसे ये छाया ग्रह आपके करियर, रिश्ते और स्वास्थ्य को प्रभावित करते हैं। Learn how shadow planets Rahu and Ketu influence your life, career, relationships, and health.',
-      category: 'astrology',
-      publishedAt: '2024-01-15T10:30:00Z',
-      views: 1245,
-      featuredImage: null,
-      content: 'राहु और केतु के प्रभाव पर विस्तृत जानकारी...'
-    },
-    {
-      _id: '2',
-      title: 'मकर संक्रांति 2024 - Astrological Significance and Remedies',
-      slug: 'makar-sankranti-2024-significance',
-      excerpt: 'मकर संक्रांति का ज्योतिषीय महत्व और उपाय जानें। इस पवित्र दिन सूर्य देव मकर राशि में प्रवेश करते हैं। Discover the astrological importance of Makar Sankranti and powerful remedies for prosperity.',
-      category: 'spirituality',
-      publishedAt: '2024-01-10T08:15:00Z',
-      views: 892,
-      featuredImage: null,
-      content: 'मकर संक्रांति के ज्योतिषीय महत्व पर विस्तार...'
-    },
-    {
-      _id: '3',
-      title: 'Weekly Horoscope - साप्ताहिक राशिफल (January 2024)',
-      slug: 'weekly-horoscope-january-2024',
-      excerpt: 'जनवरी 2024 का साप्ताहिक राशिफल। जानें इस सप्ताह आपकी राशि के लिए क्या है खास। Get detailed weekly predictions for all zodiac signs with career, love, and health insights.',
-      category: 'horoscope',
-      publishedAt: '2024-01-08T06:00:00Z',
-      views: 2156,
-      featuredImage: null,
-      content: 'इस सप्ताह के सभी राशियों का विस्तृत राशिफल...'
-    },
-    {
-      _id: '4',
-      title: 'Gemstone Remedies - रत्न चिकित्सा के फायदे',
-      slug: 'gemstone-remedies-benefits',
-      excerpt: 'रत्न चिकित्सा के अद्भुत फायदे जानें। सही रत्न पहनने से कैसे बदल सकती है आपकी किस्मत। Explore the incredible benefits of gemstone therapy and how the right gems can transform your destiny.',
-      category: 'remedies',
-      publishedAt: '2024-01-05T14:20:00Z',
-      views: 756,
-      featuredImage: null,
-      content: 'रत्न चिकित्सा और इसके लाभों का विस्तार...'
-    },
-    {
-      _id: '5',
-      title: 'Mercury Retrograde Effects - बुध वक्री का प्रभाव',
-      slug: 'mercury-retrograde-effects-2024',
-      excerpt: 'बुध वक्री के दौरान क्या सावधानियां बरतें। जानें इस समय कौन से काम करें और कौन से न करें। Learn about Mercury retrograde effects and essential precautions to take during this period.',
-      category: 'astrology',
-      publishedAt: '2024-01-03T11:45:00Z',
-      views: 634,
-      featuredImage: null,
-      content: 'बुध वक्री के प्रभाव और सावधानियों का विवरण...'
-    },
-    {
-      _id: '6',
-      title: 'Meditation and Astrology - ध्यान और ज्योतिष',
-      slug: 'meditation-astrology-connection',
-      excerpt: 'ध्यान और ज्योतिष के बीच गहरा संबंध है। जानें कैसे आपकी राशि के अनुसार ध्यान करने से मिलते हैं बेहतर परिणाम। Discover the deep connection between meditation and astrology for better spiritual growth.',
-      category: 'meditation',
-      publishedAt: '2024-01-01T09:30:00Z',
-      views: 445,
-      featuredImage: null,
-      content: 'ध्यान और ज्योतिष के संबंध का विस्तृत विवरण...'
-    }
-  ];
+  const { BACKEND_URL, getImageURL } = useContext(AppContext);
 
-  const [blogs, setBlogs] = useState(demoBlogs);
-  const [loading, setLoading] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [categories] = useState(['all', 'astrology', 'horoscope', 'spirituality', 'meditation', 'remedies', 'general']);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredBlogs, setFilteredBlogs] = useState(demoBlogs);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
+  const [error, setError] = useState(null);
+
+  // Fetch blogs from backend
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`${BACKEND_URL}/api/blogs?status=published&limit=50`, {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch blogs');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setBlogs(data.blogs || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch blogs');
+      }
+    } catch (error) {
+      console.error('Error fetching blogs:', error);
+      setError(error.message);
+      setBlogs([]); // Set to empty array on error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
   useEffect(() => {
     filterBlogs();
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, blogs]);
 
   const filterBlogs = () => {
-    let filtered = demoBlogs;
+    let filtered = blogs;
 
     // Filter by category
     if (selectedCategory !== 'all') {
@@ -94,7 +62,7 @@ const BlogsPage = () => {
 
     // Filter by search term
     if (searchTerm.trim()) {
-      filtered = filtered.filter(blog => 
+      filtered = filtered.filter(blog =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -389,12 +357,32 @@ const BlogsPage = () => {
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+              <p className="mt-4 text-gray-600">Loading blogs...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <div className="text-red-400 text-6xl mb-4">⚠️</div>
+              <h3 className="text-2xl font-semibold text-gray-700 mb-2">Error Loading Blogs</h3>
+              <p className="text-gray-500 mb-4">{error}</p>
+              <button
+                onClick={fetchBlogs}
+                className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                Try Again
+              </button>
             </div>
           ) : filteredBlogs.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-gray-400 text-6xl mb-4">🔮</div>
-              <h3 className="text-2xl font-semibold text-gray-700 mb-2">No articles found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria.</p>
+              <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+                {blogs.length === 0 ? 'No blogs available' : 'No articles found'}
+              </h3>
+              <p className="text-gray-500">
+                {blogs.length === 0
+                  ? 'Check back later for new content.'
+                  : 'Try adjusting your search or filter criteria.'
+                }
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -407,7 +395,18 @@ const BlogsPage = () => {
                   <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer">
                     {/* Blog Image */}
                     <div className="h-56 lg:h-64 bg-gradient-to-br from-indigo-100 to-purple-100" style={{ aspectRatio: '16/9' }}>
-                      <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                      {blog.featuredImage ? (
+                        <img
+                          src={getImageURL(blog.featuredImage)}
+                          alt={blog.featuredImageAlt || blog.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center" style={{ display: blog.featuredImage ? 'none' : 'flex' }}>
                         <div className="text-center">
                           <div className="text-4xl mb-2">🔮</div>
                           <p className="text-indigo-700 font-medium text-sm">Astrology Insights</p>
