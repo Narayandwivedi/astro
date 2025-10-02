@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
+const { sendBookingAlert, sendBookingCancellationAlert } = require('../utils/telegramNotification');
 
 // Create a new booking
 const createBooking = async (req, res) => {
@@ -84,9 +85,14 @@ const createBooking = async (req, res) => {
     const savedBooking = await booking.save();
 
     // Populate service details for response (only if serviceId exists)
-    const populatedBooking = serviceId 
+    const populatedBooking = serviceId
       ? await Booking.findById(savedBooking._id).populate('serviceId', 'titleEn titleHi category icon duration')
       : await Booking.findById(savedBooking._id);
+
+    // Send Telegram booking alert
+    sendBookingAlert(populatedBooking.toObject()).catch(err =>
+      console.error('Telegram alert error:', err.message)
+    );
 
     res.status(201).json({
       success: true,
@@ -359,6 +365,11 @@ const cancelBooking = async (req, res) => {
     }
 
     await booking.save();
+
+    // Send Telegram cancellation alert
+    sendBookingCancellationAlert(booking._id.toString(), booking.name, reason || 'No reason provided').catch(err =>
+      console.error('Telegram alert error:', err.message)
+    );
 
     res.status(200).json({
       success: true,

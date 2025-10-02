@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/User.js");
 const { OAuth2Client } = require('google-auth-library');
+const { sendLoginAlert, sendSignupAlert, sendGoogleSignupAlert } = require('../utils/telegramNotification');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -69,6 +70,11 @@ const handelUserSignup = async (req, res) => {
 
     const userObj = newUser.toObject();
     delete userObj.password;
+
+    // Send Telegram signup alert
+    sendSignupAlert(newUser.fullName, newUser.email).catch(err =>
+      console.error('Telegram alert error:', err.message)
+    );
 
     return res.status(201).json({
       success: true,
@@ -138,6 +144,12 @@ const handelUserLogin = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 365 * 24 * 60 * 60 * 1000,
     });
+
+    // Send Telegram login alert
+    const loginMethod = isEmail ? 'email' : 'mobile';
+    sendLoginAlert(user.fullName, loginMethod).catch(err =>
+      console.error('Telegram alert error:', err.message)
+    );
 
     return res.status(200).json({
       success: true,
@@ -347,6 +359,11 @@ const handleGoogleAuth = async (req, res) => {
 
       user = new userModel(newUserData);
       await user.save();
+
+      // Send Telegram signup alert for new Google users
+      sendGoogleSignupAlert(user.fullName, user.email).catch(err =>
+        console.error('Telegram alert error:', err.message)
+      );
     }
 
     // Generate JWT token (no expiration)

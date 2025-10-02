@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const { sendOrderAlert, sendOrderCancellationAlert } = require('../utils/telegramNotification');
 
 // Create new order
 const createOrder = async (req, res) => {
@@ -40,7 +41,12 @@ const createOrder = async (req, res) => {
     
     // Populate product references
     await order.populate('items.product', 'name nameHi price images category');
-    
+
+    // Send Telegram order alert
+    sendOrderAlert(order.toObject()).catch(err =>
+      console.error('Telegram alert error:', err.message)
+    );
+
     res.status(201).json({
       success: true,
       message: 'Order created successfully',
@@ -258,14 +264,19 @@ const cancelOrder = async (req, res) => {
     order.status = 'cancelled';
     const cancellationNote = `\n--- Order Cancelled ---\nDate: ${new Date().toISOString()}\nReason: ${reason.trim()}\nCancelled by: ${req.user ? 'Customer' : 'Admin'}`;
     order.adminNotes = (order.adminNotes || '') + cancellationNote;
-    
+
     // If payment was made, mark for refund
     if (order.paymentStatus === 'paid') {
       order.paymentStatus = 'refunded';
     }
-    
+
     await order.save();
-    
+
+    // Send Telegram cancellation alert
+    sendOrderCancellationAlert(order._id.toString(), order.customer.name, reason.trim()).catch(err =>
+      console.error('Telegram alert error:', err.message)
+    );
+
     res.json({
       success: true,
       message: 'Order cancelled successfully. If payment was made, refund will be processed within 3-5 business days.',
