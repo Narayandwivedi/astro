@@ -146,8 +146,7 @@ const handelUserLogin = async (req, res) => {
     });
 
     // Send Telegram login alert
-    const loginMethod = isEmail ? 'email' : 'mobile';
-    sendLoginAlert(user.fullName, loginMethod).catch(err =>
+    sendLoginAlert(user.fullName).catch(err =>
       console.error('Telegram alert error:', err.message)
     );
 

@@ -1,117 +1,139 @@
 const axios = require('axios');
 
-/**
- * Send Telegram notification to configured group
- * @param {string} message - The message to send
- * @returns {Promise<void>}
- */
-const sendTelegramNotification = async (message) => {
+// Send user login alert (same as winners11)
+const sendLoginAlert = async (userName) => {
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
 
-  if (!BOT_TOKEN || !CHAT_ID) {
-    console.log('Telegram credentials not configured. Skipping notification.');
-    return;
-  }
-
+  const message = `🔐 NEW LOGIN: ${userName} just logged in!`;
   const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
   try {
     await axios.post(url, {
       chat_id: CHAT_ID,
       text: message,
-      parse_mode: 'HTML'
     });
   } catch (err) {
-    console.error('Telegram notification error:', err.message);
+    console.error("Telegram error:", err.message);
   }
 };
 
-/**
- * Send user login alert
- * @param {string} userName - User's full name
- * @param {string} loginMethod - Login method (email/mobile)
- */
-const sendLoginAlert = async (userName, loginMethod = 'email') => {
-  const message = `🔐 <b>NEW LOGIN</b>\n\nUser: ${userName}\nMethod: ${loginMethod}\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
-  await sendTelegramNotification(message);
-};
-
-/**
- * Send user signup alert
- * @param {string} userName - User's full name
- * @param {string} email - User's email
- */
+// Send user signup alert
 const sendSignupAlert = async (userName, email) => {
-  const message = `🎉 <b>NEW USER SIGNUP</b>\n\nName: ${userName}\nEmail: ${email}\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
-  await sendTelegramNotification(message);
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+
+  const message = `🎉 NEW USER SIGNUP: ${userName} (${email}) just signed up!`;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+  try {
+    await axios.post(url, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+  } catch (err) {
+    console.error("Telegram error:", err.message);
+  }
 };
 
-/**
- * Send Google signup alert
- * @param {string} userName - User's full name
- * @param {string} email - User's email
- */
+// Send Google signup alert
 const sendGoogleSignupAlert = async (userName, email) => {
-  const message = `🔐 <b>NEW GOOGLE SIGNUP</b>\n\nName: ${userName}\nEmail: ${email}\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
-  await sendTelegramNotification(message);
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+
+  const message = `🔐 NEW GOOGLE SIGNUP: ${userName} (${email}) signed up with Google!`;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+  try {
+    await axios.post(url, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+  } catch (err) {
+    console.error("Telegram error:", err.message);
+  }
 };
 
-/**
- * Send new order alert
- * @param {object} orderData - Order details
- */
+// Send new order alert
 const sendOrderAlert = async (orderData) => {
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+
   const { customer, items, pricing, _id } = orderData;
 
   const itemsList = items.map(item =>
     `• ${item.productName} (Qty: ${item.quantity}) - ₹${item.totalPrice}`
   ).join('\n');
 
-  const message = `🛍️ <b>NEW ORDER RECEIVED</b>\n\nOrder ID: ${_id}\nCustomer: ${customer.name}\nPhone: ${customer.phone}\nEmail: ${customer.email}\n\nItems:\n${itemsList}\n\n<b>Total: ₹${pricing.total}</b>\n\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
+  const message = `🛍️ NEW ORDER RECEIVED!\n\nOrder ID: ${_id}\nCustomer: ${customer.name}\nPhone: ${customer.phone}\nEmail: ${customer.email}\n\nItems:\n${itemsList}\n\nTotal: ₹${pricing.total}`;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-  await sendTelegramNotification(message);
+  try {
+    await axios.post(url, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+  } catch (err) {
+    console.error("Telegram error:", err.message);
+  }
 };
 
-/**
- * Send new booking alert
- * @param {object} bookingData - Booking details
- */
+// Send new booking alert
 const sendBookingAlert = async (bookingData) => {
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+
   const { name, mobile, email, serviceName, preferredDate, preferredTime, consultationType, _id } = bookingData;
 
-  const formattedDate = new Date(preferredDate).toLocaleDateString('en-IN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'Asia/Kolkata'
-  });
+  const formattedDate = new Date(preferredDate).toLocaleDateString('en-IN');
 
-  const message = `📅 <b>NEW BOOKING RECEIVED</b>\n\nBooking ID: ${_id}\nService: ${serviceName}\n\nCustomer: ${name}\nPhone: ${mobile}\n${email ? `Email: ${email}\n` : ''}\nPreferred Date: ${formattedDate}\nPreferred Time: ${preferredTime}\nConsultation: ${consultationType}\n\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
+  const message = `📅 NEW BOOKING RECEIVED!\n\nBooking ID: ${_id}\nService: ${serviceName}\n\nCustomer: ${name}\nPhone: ${mobile}\n${email ? `Email: ${email}\n` : ''}Preferred Date: ${formattedDate}\nPreferred Time: ${preferredTime}\nConsultation: ${consultationType}`;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-  await sendTelegramNotification(message);
+  try {
+    await axios.post(url, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+  } catch (err) {
+    console.error("Telegram error:", err.message);
+  }
 };
 
-/**
- * Send order cancellation alert
- * @param {string} orderId - Order ID
- * @param {string} customerName - Customer name
- * @param {string} reason - Cancellation reason
- */
+// Send order cancellation alert
 const sendOrderCancellationAlert = async (orderId, customerName, reason) => {
-  const message = `❌ <b>ORDER CANCELLED</b>\n\nOrder ID: ${orderId}\nCustomer: ${customerName}\nReason: ${reason}\n\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
-  await sendTelegramNotification(message);
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+
+  const message = `❌ ORDER CANCELLED\n\nOrder ID: ${orderId}\nCustomer: ${customerName}\nReason: ${reason}`;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+  try {
+    await axios.post(url, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+  } catch (err) {
+    console.error("Telegram error:", err.message);
+  }
 };
 
-/**
- * Send booking cancellation alert
- * @param {string} bookingId - Booking ID
- * @param {string} customerName - Customer name
- * @param {string} reason - Cancellation reason
- */
+// Send booking cancellation alert
 const sendBookingCancellationAlert = async (bookingId, customerName, reason) => {
-  const message = `❌ <b>BOOKING CANCELLED</b>\n\nBooking ID: ${bookingId}\nCustomer: ${customerName}\nReason: ${reason}\n\nTime: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
-  await sendTelegramNotification(message);
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = process.env.TELEGRAM_GROUP_ID;
+
+  const message = `❌ BOOKING CANCELLED\n\nBooking ID: ${bookingId}\nCustomer: ${customerName}\nReason: ${reason}`;
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+  try {
+    await axios.post(url, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+  } catch (err) {
+    console.error("Telegram error:", err.message);
+  }
 };
 
 module.exports = {
