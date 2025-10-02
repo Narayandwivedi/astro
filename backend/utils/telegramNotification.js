@@ -137,7 +137,6 @@ const sendBookingCancellationAlert = async (bookingId, customerName, reason) => 
 };
 
 module.exports = {
-  sendTelegramNotification,
   sendLoginAlert,
   sendSignupAlert,
   sendGoogleSignupAlert,
