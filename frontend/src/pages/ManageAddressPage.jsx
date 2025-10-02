@@ -3,7 +3,7 @@ import axios from 'axios';
 import Navigation from '../components/Navigation';
 import SimpleAddressModal from '../components/SimpleAddressModal';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 const ManageAddressPage = () => {
   const [addresses, setAddresses] = useState([]);

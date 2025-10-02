@@ -6,7 +6,7 @@ import QRCODE from '../components/QRCODE';
 import { useCart } from '../context/CartContext';
 import { AppContext } from '../context/AppContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();

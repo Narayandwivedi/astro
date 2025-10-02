@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddressModal from './AddressModal';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 const AddressList = ({ onSelectAddress = null, showActions = true, selectedAddressId = null }) => {
   const [addresses, setAddresses] = useState([]);
