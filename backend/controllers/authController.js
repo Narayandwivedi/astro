@@ -343,6 +343,11 @@ const handleGoogleAuth = async (req, res) => {
         user.isEmailVerified = true;
         await user.save();
       }
+
+      // Send login alert for existing Google users
+      sendLoginAlert(user.fullName).catch(err =>
+        console.error('Telegram alert error:', err.message)
+      );
     } else {
       // Create new user
       const newUserData = {
