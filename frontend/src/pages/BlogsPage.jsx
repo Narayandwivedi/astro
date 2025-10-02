@@ -251,50 +251,9 @@ const BlogsPage = () => {
       
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        
-        {/* Enhanced Hero Section */}
-        <section className="relative bg-gradient-to-br from-purple-900 via-indigo-800 to-purple-700 pt-32 pb-16 overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="w-full h-full cosmic-stars"></div>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/30 via-indigo-900/30 to-purple-900/30"></div>
-
-          <div className="container mx-auto px-4 text-center relative z-10">
-            <div className="max-w-5xl mx-auto">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full px-6 py-2 mb-6 shadow-lg">
-                <span className="text-purple-200 text-sm font-semibold">📜 Expert Astrology Insights</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
-                <span className="text-white">Astrology</span><br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-300 to-amber-300">Blog</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-purple-200 mb-6 font-medium">
-                ज्योतिष ब्लॉग - By <strong>Acharya Satya Prakash Tripathi</strong>
-              </p>
-              <p className="text-lg text-purple-300 max-w-4xl mx-auto leading-relaxed mb-8">
-                Discover ancient Vedic wisdom for modern life challenges. Get expert insights on <strong>horoscope predictions, gemstone remedies, vastu guidance, spiritual practices, planetary effects, and meditation techniques</strong> from India's trusted astrologer with 10+ years of experience.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="#articles"
-                  className="bg-white hover:bg-purple-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  📜 Read Latest Articles
-                </a>
-                <a
-                  href="/services"
-                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  🕰 Book Consultation
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Search and Filter Section */}
-        <div className="bg-white shadow-sm border-b">
+        <div className="bg-white shadow-sm border-b pt-24">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               {/* Search Bar */}
@@ -342,16 +301,13 @@ const BlogsPage = () => {
         </div>
 
         {/* Blog Grid */}
-        <section id="articles" className="container mx-auto px-4 py-12">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center bg-purple-100 backdrop-blur-sm border border-purple-200 rounded-full px-6 py-2 mb-6">
-              <span className="text-purple-600 text-sm font-semibold">✨ Latest Articles</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent mb-6">
-              Expert Astrology Articles
-            </h2>
-            <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
-              Stay updated with the latest insights on <strong>Vedic astrology, horoscope predictions, spiritual guidance, gemstone remedies, vastu shastra, and planetary effects</strong> from renowned astrologer <strong>Acharya Satya Prakash Tripathi</strong>. Get authentic knowledge to navigate life's challenges with ancient wisdom.
+        <section id="articles" className="container mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent mb-4">
+              Astrology Blog
+            </h1>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Expert insights by <strong>Acharya Satya Prakash Tripathi</strong>
             </p>
           </div>
           {loading ? (
