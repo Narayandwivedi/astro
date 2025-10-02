@@ -357,24 +357,16 @@ const OrderDetailPage = () => {
               <div className="space-y-4">
                 {order.items.map((item, index) => (
                   <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      {item.productImage ? (
-                        <img 
-                          src={getImageURL({ filename: item.productImage })}
-                          alt={item.productName}
-                          className="w-14 h-14 object-cover rounded-lg"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                      ) : (
-                        <span className="text-2xl">{item.product?.icon || '🔮'}</span>
-                      )}
-                      {/* Fallback icon */}
-                      <div className="hidden w-14 h-14 items-center justify-center">
-                        <span className="text-2xl">{item.product?.icon || '🔮'}</span>
-                      </div>
+                    <div className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <img
+                        src={item.productImage ? `${BACKEND_URL}/uploads/products/${item.productImage}` : 'https://via.placeholder.com/60?text=No+Image'}
+                        alt={item.productName}
+                        className="w-14 h-14 object-cover rounded-lg border border-gray-200"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/60?text=No+Image';
+                        }}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-gray-800">{item.productName}</h4>

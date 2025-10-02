@@ -361,11 +361,12 @@ const OrdersPage = () => {
                           {previewItems.map((item, index) => (
                             <div key={index} className="relative">
                               <img
-                                src={item.productImage ? getImageURL(item.productImage) : '/api/placeholder/60/60'}
+                                src={item.productImage ? `${BACKEND_URL}/uploads/products/${item.productImage}` : 'https://via.placeholder.com/60?text=No+Image'}
                                 alt={item.productName}
                                 className="w-12 h-12 rounded-lg object-cover border border-gray-200"
                                 onError={(e) => {
-                                  e.target.src = '/api/placeholder/60/60';
+                                  e.target.onerror = null;
+                                  e.target.src = 'https://via.placeholder.com/60?text=No+Image';
                                 }}
                               />
                               {item.quantity > 1 && (
@@ -439,11 +440,12 @@ const OrdersPage = () => {
                             {previewItems.map((item, index) => (
                               <div key={index} className="relative">
                                 <img
-                                  src={item.productImage ? getImageURL(item.productImage) : '/api/placeholder/60/60'}
+                                  src={item.productImage ? `${BACKEND_URL}/uploads/products/${item.productImage}` : 'https://via.placeholder.com/60?text=No+Image'}
                                   alt={item.productName}
                                   className="w-14 h-14 rounded-lg object-cover border border-gray-200"
                                   onError={(e) => {
-                                    e.target.src = '/api/placeholder/60/60';
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://via.placeholder.com/60?text=No+Image';
                                   }}
                                 />
                                 {item.quantity > 1 && (
