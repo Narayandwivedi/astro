@@ -92,7 +92,7 @@ const About = () => {
                 <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto rounded-full"></div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-purple-600">
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center mr-4">
@@ -126,6 +126,24 @@ const About = () => {
                   </p>
                   <p className="text-purple-700 text-sm leading-relaxed">
                     श्री लाल बहादुर राष्ट्रीय संस्कृत विश्वविद्यालय से प्राचीन व्याकरण और फलित ज्योतिष विषयों में आचार्य की उपाधि प्राप्त की।
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-amber-600">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-amber-600 to-yellow-500 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-white text-xl">🥇</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-amber-900">Gold Medalist</h3>
+                      <p className="text-amber-700 text-sm font-semibold">स्वर्ण पदक विजेता</p>
+                    </div>
+                  </div>
+                  <p className="text-amber-800 leading-relaxed mb-3">
+                    Gold Medalist in Vedic Astrology (Jyotish Shastra) with highest academic honors.
+                  </p>
+                  <p className="text-orange-700 text-sm leading-relaxed">
+                    वैदिक ज्योतिष शास्त्र में स्वर्ण पदक प्राप्तकर्ता, सर्वोच्च शैक्षणिक सम्मान के साथ।
                   </p>
                 </div>
               </div>
