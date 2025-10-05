@@ -39,7 +39,7 @@ const getAllOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate('items.productId', 'name nameHi price images category');
+      .populate('items.product', 'name nameHi price images category');
 
     // Get total count for pagination
     const totalOrders = await Order.countDocuments(filterQuery);
@@ -70,7 +70,7 @@ const getAllOrders = async (req, res) => {
 const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate('items.productId', 'name nameHi price images category');
+      .populate('items.product', 'name nameHi price images category');
 
     if (!order) {
       return res.status(404).json({
@@ -127,7 +127,7 @@ const updateOrderStatus = async (req, res) => {
       orderId,
       updateData,
       { new: true }
-    ).populate('items.productId', 'name nameHi price images category');
+    ).populate('items.product', 'name nameHi price images category');
 
     if (!order) {
       return res.status(404).json({
@@ -172,7 +172,7 @@ const cancelOrder = async (req, res) => {
         }
       },
       { new: true }
-    ).populate('items.productId', 'name nameHi price images category');
+    ).populate('items.product', 'name nameHi price images category');
 
     if (!order) {
       return res.status(404).json({
