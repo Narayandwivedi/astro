@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
+import ShareButton from '../components/ShareButton';
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -235,12 +236,17 @@ const BlogDetailPage = () => {
             </nav>
 
             <div className="text-center lg:text-left">
-              <div className="mb-6">
+              <div className="mb-6 flex items-center justify-between">
                 <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold capitalize shadow-sm ${getCategoryColor(blog.category)}`}>
                   {blog.category}
                 </span>
+                <ShareButton
+                  url={window.location.href}
+                  title={blog.title}
+                  description={blog.excerpt}
+                />
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                 {blog.title}
               </h1>

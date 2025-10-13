@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import OrderModal from '../components/OrderModal';
+import ShareButton from '../components/ShareButton';
 import { AppContext } from '../context/AppContext';
 import { useCart } from '../context/CartContext';
 
@@ -187,8 +188,15 @@ const ProductDetailPage = () => {
               
               {/* Product Title & Category */}
               <div>
-                <div className="inline-block bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold mb-3 capitalize">
-                  {product.category.replace('-', ' ')}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="inline-block bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold capitalize">
+                    {product.category.replace('-', ' ')}
+                  </div>
+                  <ShareButton
+                    url={window.location.href}
+                    title={product.name}
+                    description={product.description}
+                  />
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{product.name}</h1>
                 <p className="text-xl text-orange-600 font-medium">{product.nameHi}</p>
