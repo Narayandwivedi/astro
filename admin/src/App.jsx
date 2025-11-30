@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { AppContextProvider } from './context/AppContext'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -30,6 +32,18 @@ function App() {
     <AppContextProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
           <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
           
           <div className="lg:ml-64 flex flex-col min-h-screen">

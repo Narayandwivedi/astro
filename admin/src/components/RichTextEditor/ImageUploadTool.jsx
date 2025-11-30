@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import { Image } from 'lucide-react';
 
 const ImageUploadTool = ({ BACKEND_URL, executeCommand, disabled }) => {
@@ -17,12 +19,12 @@ const ImageUploadTool = ({ BACKEND_URL, executeCommand, disabled }) => {
   // Image upload from computer
   const uploadImageFromComputer = async (file) => {
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file');
+      toast.error('Please select a valid image file');
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      alert('Image size must be less than 10MB');
+      toast.error('Image size must be less than 10MB');
       return;
     }
 
@@ -32,31 +34,41 @@ const ImageUploadTool = ({ BACKEND_URL, executeCommand, disabled }) => {
     formData.append('category', 'blog');
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/upload/image`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/api/upload/image`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to upload image');
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Failed to upload image');
       }
 
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to upload image');
-      }
-
-      const { imagePath } = data;
+      const { imagePath } = response.data;
       const fullImageUrl = imagePath.startsWith('http') ? imagePath : getImageURL(imagePath);
 
       insertImageHTML(fullImageUrl, 'Uploaded image');
+      toast.success('Image uploaded successfully');
 
     } catch (error) {
       console.error('Image upload error:', error);
-      alert(error.message || 'Failed to upload image');
+
+      let errorMessage = 'Failed to upload image';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to upload image';
+      }
+
+      toast.error(`Error uploading image: ${errorMessage}`);
     } finally {
       setIsUploadingImage(false);
     }

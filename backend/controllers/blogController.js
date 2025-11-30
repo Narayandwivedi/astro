@@ -26,10 +26,10 @@ const createBlog = async (req, res) => {
     } = req.body;
 
     // Validation
-    if (!title || !content || !excerpt) {
+    if (!title || !content) {
       return res.status(400).json({
         success: false,
-        message: "Title, content, and excerpt are required",
+        message: "Title and content are required",
       });
     }
 
@@ -47,11 +47,49 @@ const createBlog = async (req, res) => {
       });
     }
 
-    if (typeof excerpt !== "string" || excerpt.trim().length > 200) {
+    // Helper to generate excerpt (max 180 words)
+    const generateExcerpt = (content, maxWords = 180) => {
+      const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      const words = plainText.split(' ');
+
+      if (words.length <= maxWords) {
+        return plainText;
+      }
+
+      return words.slice(0, maxWords).join(' ') + '...';
+    };
+
+    // Helper to generate meta description (max 160 chars)
+    const generateMetaDescription = (text, maxChars = 160) => {
+      if (text.length <= maxChars) {
+        return text;
+      }
+
+      const truncated = text.substring(0, maxChars);
+      const lastSpace = truncated.lastIndexOf(' ');
+      return truncated.substring(0, lastSpace > 0 ? lastSpace : maxChars) + '...';
+    };
+
+    // Auto-generate excerpt if not provided
+    let finalExcerpt = excerpt && excerpt.trim() ? excerpt.trim() : '';
+    if (!finalExcerpt) {
+      finalExcerpt = generateExcerpt(content);
+    }
+
+    // Validate excerpt length if provided (max 2000 chars for ~180 words)
+    if (finalExcerpt.length > 2000) {
       return res.status(400).json({
         success: false,
-        message: "Excerpt must be less than 200 characters",
+        message: "Excerpt must be less than 2000 characters (approximately 180 words)",
       });
+    }
+
+    // Auto-generate metaDescription if not provided (ensure max 160 chars)
+    let finalMetaDescription = metaDescription && metaDescription.trim() ? metaDescription.trim() : '';
+    if (!finalMetaDescription) {
+      finalMetaDescription = generateMetaDescription(finalExcerpt);
+    } else if (finalMetaDescription.length > 160) {
+      finalMetaDescription = generateMetaDescription(finalMetaDescription);
     }
 
     // Check if blog with same title exists
@@ -91,7 +129,7 @@ const createBlog = async (req, res) => {
       title: title.trim(),
       slug: slug,
       content: content.trim(),
-      excerpt: excerpt.trim(),
+      excerpt: finalExcerpt,
       author: author || "Admin",
       category: category || "general",
       tags: tags || [],
@@ -99,7 +137,7 @@ const createBlog = async (req, res) => {
       featuredImageAlt: featuredImageAlt || "",
       status: status || "draft",
       metaTitle: metaTitle || title.trim(),
-      metaDescription: metaDescription || excerpt.trim(),
+      metaDescription: finalMetaDescription,
     });
 
     const savedBlog = await newBlog.save();
@@ -409,6 +447,41 @@ const updateBlog = async (req, res) => {
       }
       
       updateData.slug = slug;
+    }
+
+    // Helper to generate excerpt (max 180 words)
+    const generateExcerpt = (content, maxWords = 180) => {
+      const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      const words = plainText.split(' ');
+
+      if (words.length <= maxWords) {
+        return plainText;
+      }
+
+      return words.slice(0, maxWords).join(' ') + '...';
+    };
+
+    // Helper to generate meta description (max 160 chars)
+    const generateMetaDescription = (text, maxChars = 160) => {
+      if (text.length <= maxChars) {
+        return text;
+      }
+
+      const truncated = text.substring(0, maxChars);
+      const lastSpace = truncated.lastIndexOf(' ');
+      return truncated.substring(0, lastSpace > 0 ? lastSpace : maxChars) + '...';
+    };
+
+    // Auto-generate excerpt if content is being updated and excerpt is empty
+    if (updateData.content && (!updateData.excerpt || updateData.excerpt.trim() === '')) {
+      updateData.excerpt = generateExcerpt(updateData.content);
+    }
+
+    // Auto-generate or truncate metaDescription
+    if (updateData.excerpt && (!updateData.metaDescription || updateData.metaDescription.trim() === '')) {
+      updateData.metaDescription = generateMetaDescription(updateData.excerpt);
+    } else if (updateData.metaDescription && updateData.metaDescription.length > 160) {
+      updateData.metaDescription = generateMetaDescription(updateData.metaDescription);
     }
 
     // Update blog

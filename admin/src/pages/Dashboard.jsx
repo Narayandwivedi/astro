@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
 
 const Dashboard = () => {
@@ -14,17 +16,33 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/analytics/dashboard`);
-      const data = await response.json();
+      setError(null);
 
-      if (data.success) {
-        setDashboardData(data.data);
+      const response = await axios.get(
+        `${BACKEND_URL}/api/analytics/dashboard`,
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setDashboardData(response.data.data);
       } else {
-        setError('Failed to fetch dashboard data');
+        throw new Error(response.data.message || 'Failed to fetch dashboard data');
       }
     } catch (err) {
-      setError('Error loading dashboard');
       console.error('Dashboard fetch error:', err);
+
+      let errorMessage = 'Error loading dashboard';
+      if (err.response) {
+        const errorData = err.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${err.response.status}`;
+      } else if (err.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = err.message || 'Error loading dashboard';
+      }
+
+      setError(errorMessage);
+      toast.error(`Error loading dashboard: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

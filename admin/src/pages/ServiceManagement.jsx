@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 import { AppContext } from '../context/AppContext'
 
 const ServiceManagement = () => {
@@ -31,17 +33,28 @@ const ServiceManagement = () => {
   const fetchServices = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${BACKEND_URL}/api/services?enabled=all`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch services')
-      }
-      const data = await response.json()
-      setServices(data.data || [])
+      const response = await axios.get(
+        `${BACKEND_URL}/api/services?enabled=all`,
+        { withCredentials: true }
+      )
+
+      setServices(response.data.data || [])
       setLoading(false)
     } catch (error) {
       console.error('Failed to fetch services:', error)
       setLoading(false)
-      // You could show a toast notification here
+
+      let errorMessage = 'Failed to fetch services'
+      if (error.response) {
+        const errorData = error.response.data
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.'
+      } else {
+        errorMessage = error.message || 'Failed to fetch services'
+      }
+
+      toast.error(`Error fetching services: ${errorMessage}`)
     }
   }
 
@@ -91,17 +104,27 @@ const ServiceManagement = () => {
   const handleDeleteService = async (serviceId) => {
     if (window.confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/services/${serviceId}`, { 
-          method: 'DELETE' 
-        })
-        if (!response.ok) {
-          throw new Error('Failed to delete service')
-        }
+        await axios.delete(
+          `${BACKEND_URL}/api/services/${serviceId}`,
+          { withCredentials: true }
+        )
+
         setServices(services.filter(s => s._id !== serviceId))
-        alert('Service deleted successfully!')
+        toast.success('Service deleted successfully!')
       } catch (error) {
         console.error('Failed to delete service:', error)
-        alert('Failed to delete service. Please try again.')
+
+        let errorMessage = 'Failed to delete service'
+        if (error.response) {
+          const errorData = error.response.data
+          errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`
+        } else if (error.request) {
+          errorMessage = 'No response from server. Please check your connection.'
+        } else {
+          errorMessage = error.message || 'Failed to delete service'
+        }
+
+        toast.error(`Error deleting service: ${errorMessage}`)
       }
     }
   }
@@ -109,79 +132,100 @@ const ServiceManagement = () => {
   const handleToggleStatus = async (serviceId) => {
     try {
       const service = services.find(s => s._id === serviceId)
-      const response = await fetch(`${BACKEND_URL}/api/services/${serviceId}/toggle`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ enabled: !service.isActive })
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to toggle service status')
-      }
-      
-      setServices(services.map(service => 
-        service._id === serviceId 
+
+      await axios.put(
+        `${BACKEND_URL}/api/services/${serviceId}/toggle`,
+        { enabled: !service.isActive },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      setServices(services.map(service =>
+        service._id === serviceId
           ? { ...service, isActive: !service.isActive }
           : service
       ))
+
+      toast.success(`Service ${!service.isActive ? 'enabled' : 'disabled'} successfully`)
     } catch (error) {
       console.error('Failed to toggle service status:', error)
+
+      let errorMessage = 'Failed to toggle service status'
+      if (error.response) {
+        const errorData = error.response.data
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.'
+      } else {
+        errorMessage = error.message || 'Failed to toggle service status'
+      }
+
+      toast.error(`Error toggling service status: ${errorMessage}`)
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     try {
       if (showEditModal && selectedService) {
         // Update existing service
-        const response = await fetch(`${BACKEND_URL}/api/services/${selectedService._id}`, { 
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        })
-        
-        if (!response.ok) {
-          throw new Error('Failed to update service')
-        }
-        
-        const data = await response.json()
-        setServices(services.map(service => 
-          service._id === selectedService._id 
-            ? data.data
+        const response = await axios.put(
+          `${BACKEND_URL}/api/services/${selectedService._id}`,
+          formData,
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+
+        setServices(services.map(service =>
+          service._id === selectedService._id
+            ? response.data.data
             : service
         ))
-        alert('Service updated successfully!')
+        toast.success('Service updated successfully!')
       } else {
         // Add new service
-        const response = await fetch(`${BACKEND_URL}/api/services`, { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        })
-        
-        if (!response.ok) {
-          throw new Error('Failed to create service')
-        }
-        
-        const data = await response.json()
-        setServices([...services, data.data])
-        alert('Service added successfully!')
+        const response = await axios.post(
+          `${BACKEND_URL}/api/services`,
+          formData,
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+
+        setServices([...services, response.data.data])
+        toast.success('Service added successfully!')
       }
-      
+
       setShowAddModal(false)
       setShowEditModal(false)
       setSelectedService(null)
       resetForm()
     } catch (error) {
       console.error('Failed to save service:', error)
-      alert('Failed to save service. Please try again.')
+
+      let errorMessage = 'Failed to save service'
+      if (error.response) {
+        const errorData = error.response.data
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.'
+      } else {
+        errorMessage = error.message || 'Failed to save service'
+      }
+
+      toast.error(`Error saving service: ${errorMessage}`)
     }
   }
 

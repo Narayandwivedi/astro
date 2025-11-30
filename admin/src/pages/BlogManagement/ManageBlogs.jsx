@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import { AppContext } from '../../context/AppContext';
 import AddBlogModal from './AddBlogModal';
 import EditBlogModal from './EditBlogModal';
@@ -31,24 +33,27 @@ const ManageBlogs = () => {
         }
       });
 
-      const response = await fetch(
+      const response = await axios.get(
         `${BACKEND_URL}/api/blogs?${queryParams.toString()}`,
-        { credentials: 'include' }
+        { withCredentials: true }
       );
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch blogs');
-      }
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setBlogs(data.blogs || []);
-        setPagination(data.pagination || {});
+      if (response.data.success) {
+        setBlogs(response.data.blogs || []);
+        setPagination(response.data.pagination || {});
       }
     } catch (error) {
       console.error('Error fetching blogs:', error);
-      alert('Failed to fetch blogs');
+
+      let errorMessage = 'Failed to fetch blogs';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      }
+
+      toast.error(`Error fetching blogs: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -57,22 +62,27 @@ const ManageBlogs = () => {
   // Fetch blog stats
   const fetchBlogStats = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `${BACKEND_URL}/api/blogs/stats`,
-        { credentials: 'include' }
+        { withCredentials: true }
       );
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch blog stats');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setStats(data.stats || {});
+      if (response.data.success) {
+        setStats(response.data.stats || {});
       }
     } catch (error) {
       console.error('Error fetching blog stats:', error);
+
+      let errorMessage = 'Failed to fetch blog stats';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      }
+
+      // Silent error for stats - don't show alert as it's not critical
+      console.error(`Error fetching blog stats: ${errorMessage}`);
     }
   };
 
@@ -102,28 +112,30 @@ const ManageBlogs = () => {
     }
 
     try {
-      const response = await fetch(
+      const response = await axios.delete(
         `${BACKEND_URL}/api/blogs/${blogId}`,
-        {
-          method: 'DELETE',
-          credentials: 'include'
-        }
+        { withCredentials: true }
       );
 
-      if (!response.ok) {
-        throw new Error('Failed to delete blog');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert('Blog deleted successfully');
+      if (response.data.success) {
+        toast.success('Blog deleted successfully');
         fetchBlogs();
         fetchBlogStats();
       }
     } catch (error) {
       console.error('Error deleting blog:', error);
-      alert(error.message || 'Failed to delete blog');
+
+      let errorMessage = 'Failed to delete blog';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to delete blog';
+      }
+
+      toast.error(`Error deleting blog: ${errorMessage}`);
     }
   };
 
@@ -136,32 +148,36 @@ const ManageBlogs = () => {
   // Handle status change
   const handleStatusChange = async (blogId, newStatus) => {
     try {
-      const response = await fetch(
+      const response = await axios.put(
         `${BACKEND_URL}/api/blogs/${blogId}`,
+        { status: newStatus },
         {
-          method: 'PUT',
+          withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status: newStatus }),
-          credentials: 'include'
+          }
         }
       );
 
-      if (!response.ok) {
-        throw new Error('Failed to update blog status');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert(`Blog ${newStatus} successfully`);
+      if (response.data.success) {
+        toast.success(`Blog ${newStatus} successfully`);
         fetchBlogs();
         fetchBlogStats();
       }
     } catch (error) {
       console.error('Error updating blog status:', error);
-      alert(error.message || 'Failed to update blog status');
+
+      let errorMessage = 'Failed to update blog status';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to update blog status';
+      }
+
+      toast.error(`Error updating blog status: ${errorMessage}`);
     }
   };
 

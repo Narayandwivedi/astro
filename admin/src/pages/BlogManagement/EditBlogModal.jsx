@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import BlogForm from './BlogForm';
 
 const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
@@ -53,54 +55,85 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
     });
   };
 
+  // Helper function to generate excerpt from content (max 180 words)
+  const generateExcerpt = (content, maxWords = 180) => {
+    // Strip HTML tags
+    const plainText = content.replace(/<[^>]*>/g, '');
+    // Remove extra whitespace
+    const cleanText = plainText.replace(/\s+/g, ' ').trim();
+    // Split into words
+    const words = cleanText.split(' ');
+
+    // Take first maxWords words
+    if (words.length <= maxWords) {
+      return cleanText;
+    }
+
+    // Join first maxWords words and add ellipsis
+    return words.slice(0, maxWords).join(' ') + '...';
+  };
+
   const handleSubmit = async () => {
     try {
       // Validation
       if (!formData.title.trim()) {
-        alert('Title is required');
+        toast.error('Title is required');
         return;
       }
 
       if (!formData.content.trim() || formData.content.replace(/<[^>]*>/g, '').length < 50) {
-        alert('Content must be at least 50 characters long');
+        toast.error('Content must be at least 50 characters long');
         return;
       }
 
-      if (!formData.excerpt.trim()) {
-        alert('Excerpt is required');
-        return;
+      // Auto-generate excerpt if not provided
+      let excerptToSend = formData.excerpt.trim();
+      if (!excerptToSend) {
+        excerptToSend = generateExcerpt(formData.content);
       }
 
       setIsSubmitting(true);
 
-      const response = await fetch(`${BACKEND_URL}/api/blogs/${blog._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await axios.put(
+        `${BACKEND_URL}/api/blogs/${blog._id}`,
+        {
           ...formData,
+          excerpt: excerptToSend,
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        }),
-        credentials: 'include'
-      });
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update blog');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert('Blog updated successfully!');
+      if (response.data.success) {
+        toast.success('Blog updated successfully!');
         onSuccess();
       } else {
-        throw new Error(data.message || 'Failed to update blog');
+        throw new Error(response.data.message || 'Failed to update blog');
       }
     } catch (error) {
       console.error('Error updating blog:', error);
-      alert(error.message || 'Failed to update blog');
+
+      // Extract the exact error message from backend
+      let errorMessage = 'Failed to update blog';
+
+      if (error.response) {
+        // Server responded with error status
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // Request made but no response
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        // Error in setting up request
+        errorMessage = error.message || 'Failed to update blog';
+      }
+
+      toast.error(`Error updating blog: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }

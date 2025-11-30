@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import RichTextEditor from '../../components/RichTextEditor';
 import BlogContentPreview from '../../components/BlogContentPreview';
 
@@ -55,12 +57,12 @@ const BlogForm = ({
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file');
+      toast.error('Please select a valid image file');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB');
+      toast.error('Image size should be less than 5MB');
       return;
     }
 
@@ -70,28 +72,37 @@ const BlogForm = ({
       formDataUpload.append('image', file);
       formDataUpload.append('category', 'blog');
 
-      const response = await fetch(`${BACKEND_URL}/api/upload/image`, {
-        method: 'POST',
-        body: formDataUpload,
-        credentials: 'include'
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/api/upload/image`,
+        formDataUpload,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to upload image');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        const imageUrl = data.imagePath;
+      if (response.data.success) {
+        const imageUrl = response.data.imagePath;
         setImagePreview(getImageURL(imageUrl));
         handleInputChange('featuredImage', imageUrl);
-        alert('Image uploaded successfully');
+        toast.success('Image uploaded successfully');
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert(error.message || 'Failed to upload image');
+
+      let errorMessage = 'Failed to upload image';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to upload image';
+      }
+
+      toast.error(`Error uploading image: ${errorMessage}`);
     } finally {
       setIsUploadingImage(false);
     }
@@ -104,18 +115,18 @@ const BlogForm = ({
     }
 
     setIsDeletingImage(true);
-    
+
     try {
       // Clear the form data and preview
       setImagePreview(null);
       handleInputChange('featuredImage', '');
-      alert('Image removed successfully');
+      toast.success('Image removed successfully');
     } catch (error) {
       console.error('Error deleting image:', error);
       // Still remove from form even if server deletion fails
       setImagePreview(null);
       handleInputChange('featuredImage', '');
-      alert('Image removed from form');
+      toast.info('Image removed from form');
     } finally {
       setIsDeletingImage(false);
     }
@@ -189,20 +200,19 @@ const BlogForm = ({
           {/* Excerpt */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Excerpt * (Max 200 characters)
+              Excerpt (Optional, max 180 words)
             </label>
             <textarea
               value={formData.excerpt}
               onChange={(e) => handleInputChange('excerpt', e.target.value)}
               rows={4}
-              maxLength={200}
+              maxLength={2000}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-              placeholder="Brief description of the blog post"
-              required
+              placeholder="Auto-generated from content if left empty"
               disabled={isSubmitting}
             />
             <div className="text-xs text-gray-500 mt-1">
-              {formData.excerpt.length}/200
+              {formData.excerpt.split(' ').filter(w => w).length} words • Auto-generated if empty
             </div>
           </div>
 

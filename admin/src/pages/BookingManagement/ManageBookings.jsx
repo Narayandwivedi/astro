@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import { AppContext } from '../../context/AppContext';
 
 const ManageBookings = () => {
@@ -74,14 +76,28 @@ const ManageBookings = () => {
         limit: filters.limit.toString()
       }).toString();
 
-      const response = await fetch(`${BACKEND_URL}/api/admin/bookings?${queryParams}`);
-      const data = await response.json();
+      const response = await axios.get(
+        `${BACKEND_URL}/api/admin/bookings?${queryParams}`,
+        { withCredentials: true }
+      );
 
-      if (data.success) {
-        setBookings(data.data || []);
+      if (response.data.success) {
+        setBookings(response.data.data || []);
       }
     } catch (error) {
       console.error('Error fetching bookings:', error);
+
+      let errorMessage = 'Failed to fetch bookings';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to fetch bookings';
+      }
+
+      toast.error(`Error fetching bookings: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -89,14 +105,17 @@ const ManageBookings = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/admin/bookings/stats`);
-      const data = await response.json();
+      const response = await axios.get(
+        `${BACKEND_URL}/api/admin/bookings/stats`,
+        { withCredentials: true }
+      );
 
-      if (data.success) {
-        setStats(data.data);
+      if (response.data.success) {
+        setStats(response.data.data);
       }
     } catch (error) {
       console.error('Error fetching stats:', error);
+      // Silent error for stats as it's not critical
     }
   };
 
@@ -113,27 +132,39 @@ const ManageBookings = () => {
     if (!selectedBooking) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/admin/bookings/${selectedBooking._id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateForm),
-      });
+      const response = await axios.put(
+        `${BACKEND_URL}/api/admin/bookings/${selectedBooking._id}/status`,
+        updateForm,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         setIsUpdateModalOpen(false);
         fetchBookings();
         fetchStats();
-        alert('Booking updated successfully!');
+        toast.success('Booking updated successfully!');
       } else {
-        alert('Failed to update booking: ' + data.message);
+        throw new Error(response.data.message || 'Failed to update booking');
       }
     } catch (error) {
       console.error('Error updating booking:', error);
-      alert('Error updating booking');
+
+      let errorMessage = 'Failed to update booking';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to update booking';
+      }
+
+      toast.error(`Error updating booking: ${errorMessage}`);
     }
   };
 
@@ -142,41 +173,67 @@ const ManageBookings = () => {
     if (!selectedBooking) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/admin/bookings/${selectedBooking._id}/communication`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(communicationForm),
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/api/admin/bookings/${selectedBooking._id}/communication`,
+        communicationForm,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         setIsCommunicationModalOpen(false);
         setCommunicationForm({ type: 'call', message: '', sentBy: 'admin' });
         // Refresh booking details
         fetchBookingDetails(selectedBooking._id);
-        alert('Communication added successfully!');
+        toast.success('Communication added successfully!');
       } else {
-        alert('Failed to add communication: ' + data.message);
+        throw new Error(response.data.message || 'Failed to add communication');
       }
     } catch (error) {
       console.error('Error adding communication:', error);
-      alert('Error adding communication');
+
+      let errorMessage = 'Failed to add communication';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to add communication';
+      }
+
+      toast.error(`Error adding communication: ${errorMessage}`);
     }
   };
 
   const fetchBookingDetails = async (bookingId) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/admin/bookings/${bookingId}`);
-      const data = await response.json();
+      const response = await axios.get(
+        `${BACKEND_URL}/api/admin/bookings/${bookingId}`,
+        { withCredentials: true }
+      );
 
-      if (data.success) {
-        setSelectedBooking(data.data);
+      if (response.data.success) {
+        setSelectedBooking(response.data.data);
       }
     } catch (error) {
       console.error('Error fetching booking details:', error);
+
+      let errorMessage = 'Failed to fetch booking details';
+      if (error.response) {
+        const errorData = error.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Failed to fetch booking details';
+      }
+
+      toast.error(`Error fetching booking details: ${errorMessage}`);
     }
   };
 

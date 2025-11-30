@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import { AppContext } from '../../context/AppContext';
 
 const ManageOrders = () => {
@@ -39,6 +41,8 @@ const ManageOrders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
+      setError(null);
+
       const params = new URLSearchParams({
         page: currentPage,
         limit: 20,
@@ -46,18 +50,32 @@ const ManageOrders = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`${BACKEND_URL}/api/admin/orders?${params}`);
-      const data = await response.json();
+      const response = await axios.get(
+        `${BACKEND_URL}/api/admin/orders?${params}`,
+        { withCredentials: true }
+      );
 
-      if (data.success) {
-        setOrders(data.data);
-        setTotalPages(data.pagination.pages);
+      if (response.data.success) {
+        setOrders(response.data.data);
+        setTotalPages(response.data.pagination.pages);
       } else {
-        throw new Error(data.message || 'Failed to fetch orders');
+        throw new Error(response.data.message || 'Failed to fetch orders');
       }
     } catch (err) {
-      setError(err.message);
       console.error('Error fetching orders:', err);
+
+      let errorMessage = 'Failed to fetch orders';
+      if (err.response) {
+        const errorData = err.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${err.response.status}`;
+      } else if (err.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = err.message || 'Failed to fetch orders';
+      }
+
+      setError(errorMessage);
+      toast.error(`Error fetching orders: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -67,29 +85,44 @@ const ManageOrders = () => {
   const updateOrderStatus = async (orderId, newStatus, adminNotes = '') => {
     try {
       setUpdatingStatus(true);
-      const response = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/api/admin/orders/${orderId}/status`,
+        {
           status: newStatus,
-          adminNotes 
-        }),
-      });
+          adminNotes
+        },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         // Refresh orders list
         fetchOrders();
         setShowOrderModal(false);
         setSelectedOrder(null);
+        toast.success('Order status updated successfully');
       } else {
-        throw new Error(data.message || 'Failed to update order status');
+        throw new Error(response.data.message || 'Failed to update order status');
       }
     } catch (err) {
-      alert('Error updating order status: ' + err.message);
+      console.error('Error updating order status:', err);
+
+      let errorMessage = 'Failed to update order status';
+      if (err.response) {
+        const errorData = err.response.data;
+        errorMessage = errorData.error || errorData.message || `Server error: ${err.response.status}`;
+      } else if (err.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = err.message || 'Failed to update order status';
+      }
+
+      toast.error(`Error updating order status: ${errorMessage}`);
     } finally {
       setUpdatingStatus(false);
     }
