@@ -190,8 +190,9 @@ const BlogDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="flex flex-col justify-center items-center py-20 px-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mb-4"></div>
+          <p className="text-gray-600 text-sm sm:text-base">Loading article...</p>
         </div>
       </div>
     );
@@ -201,17 +202,25 @@ const BlogDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="container mx-auto px-4 py-20 text-center">
-          <div className="text-gray-400 text-6xl mb-4">🔮</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {error || 'Article not found'}
-          </h1>
-          <p className="text-gray-600 mb-8">
-            The article you're looking for doesn't exist or has been removed.
-          </p>
-          <Link to="/blog" className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
-            Back to Blog
-          </Link>
+        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
+          <div className="max-w-md mx-auto">
+            <div className="text-gray-400 text-5xl sm:text-6xl mb-4">🔮</div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+              {error || 'Article not found'}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 leading-relaxed">
+              The article you're looking for doesn't exist or has been removed.
+            </p>
+            <Link
+              to="/blog"
+              className="inline-flex items-center bg-orange-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-orange-700 transition-all shadow-md hover:shadow-lg text-sm sm:text-base font-medium"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Blog
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -223,9 +232,10 @@ const BlogDetailPage = () => {
 
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-950 text-white">
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
           <div className="max-w-4xl mx-auto">
-            <nav className="mb-8">
+            {/* Breadcrumb - Hidden on mobile, visible on tablet+ */}
+            <nav className="mb-6 sm:mb-8 hidden sm:block">
               <div className="flex items-center space-x-2 text-sm text-gray-300">
                 <Link to="/" className="hover:text-yellow-400 transition-colors">Home</Link>
                 <span>/</span>
@@ -235,9 +245,17 @@ const BlogDetailPage = () => {
               </div>
             </nav>
 
-            <div className="text-center lg:text-left">
-              <div className="mb-6 flex items-center justify-between">
-                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold capitalize shadow-sm ${getCategoryColor(blog.category)}`}>
+            {/* Back button for mobile */}
+            <Link to="/blog" className="inline-flex items-center text-sm text-gray-300 hover:text-white mb-6 sm:hidden transition-colors">
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Blog
+            </Link>
+
+            <div className="text-left">
+              <div className="mb-4 sm:mb-6 flex items-center justify-between flex-wrap gap-3">
+                <span className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold capitalize shadow-sm ${getCategoryColor(blog.category)}`}>
                   {blog.category}
                 </span>
                 <ShareButton
@@ -247,37 +265,38 @@ const BlogDetailPage = () => {
                 />
               </div>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
                 {blog.title}
               </h1>
-              
-              <p className="text-lg lg:text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto lg:mx-0">
+
+              <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed">
                 {blog.excerpt}
               </p>
-              
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                <div className="flex items-center justify-center lg:justify-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+
+              {/* Author & Stats - Improved mobile layout */}
+              <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
                     {blog.author.charAt(0)}
                   </div>
-                  <div className="text-left">
-                    <div className="font-semibold text-white">By {blog.author}</div>
-                    <div className="text-sm text-gray-300">Astrology Expert</div>
+                  <div className="text-left min-w-0">
+                    <div className="font-semibold text-white text-sm sm:text-base">By {blog.author}</div>
+                    <div className="text-xs sm:text-sm text-gray-300">Astrology Expert</div>
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-3 gap-4 lg:gap-6 text-center lg:text-left">
+
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-6 text-center border-t border-white/10 pt-4">
                   <div>
-                    <div className="text-sm font-medium text-white">{formatDate(blog.publishedAt || blog.createdAt)}</div>
-                    <div className="text-xs text-gray-300">Published</div>
+                    <div className="text-xs sm:text-sm font-medium text-white mb-1">{formatDate(blog.publishedAt || blog.createdAt)}</div>
+                    <div className="text-[10px] sm:text-xs text-gray-300">Published</div>
+                  </div>
+                  <div className="border-l border-r border-white/10">
+                    <div className="text-xs sm:text-sm font-medium text-white mb-1">{blog.readTime || estimateReadTime(blog.content)} min</div>
+                    <div className="text-[10px] sm:text-xs text-gray-300">Read time</div>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-white">{blog.readTime || estimateReadTime(blog.content)} min</div>
-                    <div className="text-xs text-gray-300">Read time</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-white">{blog.views || 0}</div>
-                    <div className="text-xs text-gray-300">Views</div>
+                    <div className="text-xs sm:text-sm font-medium text-white mb-1">{blog.views || 0}</div>
+                    <div className="text-[10px] sm:text-xs text-gray-300">Views</div>
                   </div>
                 </div>
               </div>
@@ -288,37 +307,59 @@ const BlogDetailPage = () => {
 
       {/* Featured Image */}
       {blog.featuredImage && (
-        <div className="relative">
-          <div className="w-full h-64 md:h-96 lg:h-[32rem] bg-gray-200 overflow-hidden">
-            <img
-              src={getImageUrl(blog.featuredImage)}
-              alt={blog.featuredImageAlt || blog.title}
-              className="w-full h-full object-cover"
-              width="1200"
-              height="675"
-            />
+        <div className="relative -mt-8 sm:-mt-12 md:-mt-16 lg:-mt-20">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-5xl mx-auto">
+              <div className="relative rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl">
+                <div className="w-full h-56 sm:h-72 md:h-96 lg:h-[32rem] bg-gray-200">
+                  <img
+                    src={getImageUrl(blog.featuredImage)}
+                    alt={blog.featuredImageAlt || blog.title}
+                    className="w-full h-full object-cover"
+                    width="1200"
+                    height="675"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* Blog Content */}
       <div className="bg-white">
-        <div className="container mx-auto px-4 py-12 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-20">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col xl:flex-row gap-12 lg:gap-16">
+            <div className="flex flex-col xl:flex-row gap-8 sm:gap-12 lg:gap-16">
               <article className="xl:w-2/3">
-                <div 
-                  className="prose prose-lg lg:prose-xl max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-a:text-orange-600 hover:prose-a:text-orange-700"
+                <div
+                  className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl max-w-none
+                  prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8 first:prose-headings:mt-0
+                  prose-h2:text-xl sm:prose-h2:text-2xl lg:prose-h2:text-3xl
+                  prose-h3:text-lg sm:prose-h3:text-xl lg:prose-h3:text-2xl
+                  prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
+                  prose-strong:text-gray-900 prose-strong:font-semibold
+                  prose-a:text-orange-600 prose-a:no-underline hover:prose-a:text-orange-700 hover:prose-a:underline
+                  prose-ul:my-4 prose-ul:list-disc prose-ul:pl-5
+                  prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-5
+                  prose-li:text-gray-700 prose-li:mb-2
+                  prose-blockquote:border-l-4 prose-blockquote:border-orange-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
+                  prose-img:rounded-xl prose-img:shadow-md prose-img:my-6"
                   dangerouslySetInnerHTML={{ __html: blog.content }}
-                  style={{ lineHeight: '1.8' }}
+                  style={{ lineHeight: '1.75' }}
                 ></div>
 
                 {blog.tags && blog.tags.length > 0 && (
-                  <div className="mt-16 p-6 bg-gray-50 rounded-xl border border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Topics Covered</h3>
-                    <div className="flex flex-wrap gap-3">
+                  <div className="mt-10 sm:mt-12 lg:mt-16 p-4 sm:p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                      Topics Covered
+                    </h3>
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                       {blog.tags.map((tag, index) => (
-                        <span key={index} className="px-4 py-2 bg-white text-gray-700 text-sm rounded-full border border-gray-200">
+                        <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-gray-700 text-xs sm:text-sm rounded-full border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all">
                           #{tag}
                         </span>
                       ))}
@@ -328,11 +369,17 @@ const BlogDetailPage = () => {
               </article>
 
               <aside className="xl:w-1/3">
-                <div className="sticky top-8 space-y-8">
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Author</h3>
+                <div className="xl:sticky xl:top-8 space-y-6 sm:space-y-8">
+                  {/* Author Card - Hidden on mobile since it's in hero */}
+                  <div className="hidden sm:block bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                      Author
+                    </h3>
                     <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 shadow-lg">
                         {blog.author.charAt(0)}
                       </div>
                       <h4 className="font-semibold text-gray-900">{blog.author}</h4>
@@ -342,13 +389,20 @@ const BlogDetailPage = () => {
                   </div>
 
                   {relatedBlogs.length > 0 && (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-6">Related Articles</h3>
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-shadow">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                        </svg>
+                        Related Articles
+                      </h3>
                       <div className="space-y-4">
                         {relatedBlogs.map((relatedBlog) => (
-                          <div key={relatedBlog._id} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                            <Link to={`/blog/${relatedBlog.slug}`} className="block hover:text-orange-600 transition-colors">
-                              <h4 className="font-medium text-sm leading-tight mb-2">{relatedBlog.title}</h4>
+                          <div key={relatedBlog._id} className="group border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+                            <Link to={`/blog/${relatedBlog.slug}`} className="block">
+                              <h4 className="font-medium text-sm sm:text-base leading-tight mb-2 text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2">
+                                {relatedBlog.title}
+                              </h4>
                               <p className="text-xs text-gray-500">{formatDate(relatedBlog.publishedAt || relatedBlog.createdAt)}</p>
                             </Link>
                           </div>
@@ -357,15 +411,24 @@ const BlogDetailPage = () => {
                     </div>
                   )}
 
-                  {/* Call to Action */}
-                  <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-xl">
-                    <h3 className="text-lg font-semibold mb-3">Need Personal Consultation?</h3>
-                    <p className="text-sm mb-4 text-orange-100">Get personalized astrology guidance from our expert astrologer.</p>
-                    <Link 
-                      to="/contact" 
-                      className="inline-block bg-white text-orange-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
+                  {/* Call to Action - Improved mobile design */}
+                  <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white p-5 sm:p-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                    <div className="flex items-start mb-3">
+                      <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                      <div>
+                        <h3 className="text-base sm:text-lg font-semibold mb-2">Need Personal Consultation?</h3>
+                        <p className="text-xs sm:text-sm text-orange-50 leading-relaxed">
+                          Get personalized astrology guidance from our expert astrologer.
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to="/contact"
+                      className="block w-full text-center bg-white text-orange-600 px-4 py-2.5 sm:py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 hover:shadow-md transition-all transform hover:-translate-y-0.5"
                     >
-                      Book Consultation
+                      Book Consultation Now
                     </Link>
                   </div>
                 </div>

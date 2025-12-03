@@ -57,8 +57,19 @@ const RichTextEditor = ({ value, onChange, placeholder = "Start writing...", dis
 
   // Initialize editor with content
   useEffect(() => {
-    if (editorRef.current && value !== editorRef.current.innerHTML) {
-      editorRef.current.innerHTML = value || '';
+    if (editorRef.current) {
+      // Only update if the value is different from current content
+      // This prevents cursor jumping during typing
+      const currentHTML = editorRef.current.innerHTML;
+      const newValue = value || '';
+
+      // Normalize both strings for comparison (remove extra whitespace)
+      const normalizedCurrent = currentHTML.replace(/\s+/g, ' ').trim();
+      const normalizedNew = newValue.replace(/\s+/g, ' ').trim();
+
+      if (normalizedCurrent !== normalizedNew) {
+        editorRef.current.innerHTML = newValue;
+      }
     }
   }, [value]);
 

@@ -6,6 +6,8 @@ import BlogForm from './BlogForm';
 const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api.astrosatyaprakash.com';
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingBlog, setIsLoadingBlog] = useState(false);
+  const [fullBlogData, setFullBlogData] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -20,24 +22,52 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
     metaDescription: '',
   });
 
-  // Initialize form data when blog prop changes
+  // Fetch full blog data when modal opens
   useEffect(() => {
-    if (blog) {
+    const fetchFullBlog = async () => {
+      if (blog && blog._id && showModal) {
+        setIsLoadingBlog(true);
+        try {
+          const response = await axios.get(
+            `${BACKEND_URL}/api/blogs/${blog._id}`,
+            { withCredentials: true }
+          );
+
+          if (response.data.success) {
+            setFullBlogData(response.data.blog);
+          } else {
+            toast.error('Failed to load blog data');
+          }
+        } catch (error) {
+          console.error('Error fetching full blog:', error);
+          toast.error('Failed to load blog data');
+        } finally {
+          setIsLoadingBlog(false);
+        }
+      }
+    };
+
+    fetchFullBlog();
+  }, [blog, showModal, BACKEND_URL]);
+
+  // Initialize form data when full blog data is loaded
+  useEffect(() => {
+    if (fullBlogData) {
       setFormData({
-        title: blog.title || '',
-        content: blog.content || '',
-        excerpt: blog.excerpt || '',
-        author: blog.author || 'Astro Satya Admin',
-        category: blog.category || 'general',
-        tags: Array.isArray(blog.tags) ? blog.tags.join(', ') : (blog.tags || ''),
-        status: blog.status || 'draft',
-        featuredImage: blog.featuredImage || '',
-        featuredImageAlt: blog.featuredImageAlt || '',
-        metaTitle: blog.metaTitle || '',
-        metaDescription: blog.metaDescription || '',
+        title: fullBlogData.title || '',
+        content: fullBlogData.content || '',
+        excerpt: fullBlogData.excerpt || '',
+        author: fullBlogData.author || 'Astro Satya Admin',
+        category: fullBlogData.category || 'general',
+        tags: Array.isArray(fullBlogData.tags) ? fullBlogData.tags.join(', ') : (fullBlogData.tags || ''),
+        status: fullBlogData.status || 'draft',
+        featuredImage: fullBlogData.featuredImage || '',
+        featuredImageAlt: fullBlogData.featuredImageAlt || '',
+        metaTitle: fullBlogData.metaTitle || '',
+        metaDescription: fullBlogData.metaDescription || '',
       });
     }
-  }, [blog]);
+  }, [fullBlogData]);
 
   const resetForm = () => {
     setFormData({
@@ -53,6 +83,7 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
       metaTitle: '',
       metaDescription: '',
     });
+    setFullBlogData(null);
   };
 
   // Helper function to generate excerpt from content (max 180 words)
@@ -75,6 +106,12 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
 
   const handleSubmit = async () => {
     try {
+      // Ensure full blog data is loaded
+      if (!fullBlogData || !fullBlogData._id) {
+        toast.error('Blog data is still loading. Please wait.');
+        return;
+      }
+
       // Validation
       if (!formData.title.trim()) {
         toast.error('Title is required');
@@ -95,7 +132,7 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
       setIsSubmitting(true);
 
       const response = await axios.put(
-        `${BACKEND_URL}/api/blogs/${blog._id}`,
+        `${BACKEND_URL}/api/blogs/${fullBlogData._id}`,
         {
           ...formData,
           excerpt: excerptToSend,
@@ -166,14 +203,21 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
         </div>
 
         <div className="p-6">
-          <BlogForm
-            formData={formData}
-            setFormData={setFormData}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-            mode="edit"
-            isSubmitting={isSubmitting}
-          />
+          {isLoadingBlog ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mb-4"></div>
+              <p className="text-gray-600">Loading blog data...</p>
+            </div>
+          ) : (
+            <BlogForm
+              formData={formData}
+              setFormData={setFormData}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              mode="edit"
+              isSubmitting={isSubmitting}
+            />
+          )}
         </div>
       </div>
     </div>
