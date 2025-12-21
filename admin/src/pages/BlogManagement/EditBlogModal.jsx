@@ -10,6 +10,7 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
   const [fullBlogData, setFullBlogData] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     content: '',
     excerpt: '',
     author: '',
@@ -55,6 +56,7 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
     if (fullBlogData) {
       setFormData({
         title: fullBlogData.title || '',
+        slug: fullBlogData.slug || '',
         content: fullBlogData.content || '',
         excerpt: fullBlogData.excerpt || '',
         author: fullBlogData.author || 'Astro Satya Admin',
@@ -72,6 +74,7 @@ const EditBlogModal = ({ showModal, blog, onClose, onSuccess }) => {
   const resetForm = () => {
     setFormData({
       title: '',
+      slug: '',
       content: '',
       excerpt: '',
       author: '',

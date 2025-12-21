@@ -1,6 +1,8 @@
 const Blog = require("../models/Blog");
 const mongoose = require("mongoose");
 
+// ==================== HELPER FUNCTIONS ====================
+
 // Helper function to convert text to title case
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, (txt) => {
@@ -8,11 +10,65 @@ function toTitleCase(str) {
   });
 }
 
+// Generate a clean slug from title (uses full title)
+function generateSlug(title) {
+  if (!title || typeof title !== 'string') {
+    return '';
+  }
+
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, '') // Remove special chars
+    .replace(/\s+/g, '-') // Replace spaces with dashes
+    .replace(/-+/g, '-') // Replace multiple dashes with single dash
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
+}
+
+// Generate excerpt from content (max 180 words)
+function generateExcerpt(content, maxWords = 180) {
+  if (!content) return '';
+
+  const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  const words = plainText.split(' ');
+
+  if (words.length <= maxWords) {
+    return plainText;
+  }
+
+  return words.slice(0, maxWords).join(' ') + '...';
+}
+
+// Generate meta description (max 160 chars)
+function generateMetaDescription(text, maxChars = 160) {
+  if (!text) return '';
+
+  if (text.length <= maxChars) {
+    return text;
+  }
+
+  const truncated = text.substring(0, maxChars);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return truncated.substring(0, lastSpace > 0 ? lastSpace : maxChars) + '...';
+}
+
+// Calculate reading time based on content
+function calculateReadTime(content) {
+  if (!content) return 1;
+
+  const wordsPerMinute = 200;
+  const wordCount = content.split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute) || 1;
+}
+
+// ==================== CONTROLLER FUNCTIONS ====================
+
 // Create a new blog post
 const createBlog = async (req, res) => {
   try {
     const {
       title,
+      slug,
       content,
       excerpt,
       author,
@@ -47,36 +103,43 @@ const createBlog = async (req, res) => {
       });
     }
 
-    // Helper to generate excerpt (max 180 words)
-    const generateExcerpt = (content, maxWords = 180) => {
-      const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-      const words = plainText.split(' ');
+    // Process title and content
+    const cleanTitle = title.trim();
+    const cleanContent = content.trim();
 
-      if (words.length <= maxWords) {
-        return plainText;
-      }
-
-      return words.slice(0, maxWords).join(' ') + '...';
-    };
-
-    // Helper to generate meta description (max 160 chars)
-    const generateMetaDescription = (text, maxChars = 160) => {
-      if (text.length <= maxChars) {
-        return text;
-      }
-
-      const truncated = text.substring(0, maxChars);
-      const lastSpace = truncated.lastIndexOf(' ');
-      return truncated.substring(0, lastSpace > 0 ? lastSpace : maxChars) + '...';
-    };
-
-    // Auto-generate excerpt if not provided
-    let finalExcerpt = excerpt && excerpt.trim() ? excerpt.trim() : '';
-    if (!finalExcerpt) {
-      finalExcerpt = generateExcerpt(content);
+    // Handle slug - use manual slug if provided, otherwise auto-generate
+    let finalSlug;
+    if (slug && slug.trim()) {
+      // Manual slug provided - clean it
+      finalSlug = generateSlug(slug.trim());
+    } else {
+      // Auto-generate from title
+      finalSlug = generateSlug(cleanTitle);
     }
 
-    // Validate excerpt length if provided (max 2000 chars for ~180 words)
+    // Validate slug is not empty
+    if (!finalSlug) {
+      return res.status(400).json({
+        success: false,
+        message: "Slug cannot be empty. Please provide a valid title or slug.",
+      });
+    }
+
+    // Check if slug already exists
+    const existingBlog = await Blog.findOne({ slug: finalSlug });
+    if (existingBlog) {
+      return res.status(400).json({
+        success: false,
+        message: `A blog with slug "${finalSlug}" already exists. Please use a different slug.`,
+      });
+    }
+
+    // Auto-generate excerpt if not provided
+    const finalExcerpt = excerpt && excerpt.trim()
+      ? excerpt.trim()
+      : generateExcerpt(cleanContent);
+
+    // Validate excerpt length (max 2000 chars for ~180 words)
     if (finalExcerpt.length > 2000) {
       return res.status(400).json({
         success: false,
@@ -85,50 +148,21 @@ const createBlog = async (req, res) => {
     }
 
     // Auto-generate metaDescription if not provided (ensure max 160 chars)
-    let finalMetaDescription = metaDescription && metaDescription.trim() ? metaDescription.trim() : '';
-    if (!finalMetaDescription) {
-      finalMetaDescription = generateMetaDescription(finalExcerpt);
-    } else if (finalMetaDescription.length > 160) {
-      finalMetaDescription = generateMetaDescription(finalMetaDescription);
-    }
+    const finalMetaDescription = metaDescription && metaDescription.trim()
+      ? generateMetaDescription(metaDescription.trim())
+      : generateMetaDescription(finalExcerpt);
 
-    // Check if blog with same title exists
-    const existingBlog = await Blog.findOne({ 
-      title: { $regex: new RegExp(`^${title.trim()}$`, 'i') }
-    });
+    // Calculate reading time
+    const readTime = calculateReadTime(cleanContent);
 
-    if (existingBlog) {
-      return res.status(400).json({
-        success: false,
-        message: "A blog with this title already exists",
-      });
-    }
-
-    // Generate slug from title
-    const generateSlug = (title) => {
-      return title
-        .toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim('-');
-    };
-
-    const baseSlug = generateSlug(title.trim());
-    
-    // Ensure slug is unique
-    let slug = baseSlug;
-    let counter = 1;
-    while (await Blog.findOne({ slug })) {
-      slug = `${baseSlug}-${counter}`;
-      counter++;
-    }
+    // Set publishedAt if status is published
+    const publishedAt = status === 'published' ? new Date() : null;
 
     // Create new blog
     const newBlog = new Blog({
-      title: title.trim(),
-      slug: slug,
-      content: content.trim(),
+      title: cleanTitle,
+      slug: finalSlug,
+      content: cleanContent,
       excerpt: finalExcerpt,
       author: author || "Admin",
       category: category || "general",
@@ -136,8 +170,10 @@ const createBlog = async (req, res) => {
       featuredImage: featuredImage || "",
       featuredImageAlt: featuredImageAlt || "",
       status: status || "draft",
-      metaTitle: metaTitle || title.trim(),
+      metaTitle: metaTitle || cleanTitle,
       metaDescription: finalMetaDescription,
+      readTime: readTime,
+      publishedAt: publishedAt,
     });
 
     const savedBlog = await newBlog.save();
@@ -405,83 +441,95 @@ const updateBlog = async (req, res) => {
       });
     }
 
-    if (updateData.excerpt && updateData.excerpt.length > 200) {
+    if (updateData.excerpt && updateData.excerpt.length > 2000) {
       return res.status(400).json({
         success: false,
-        message: "Excerpt must be less than 200 characters",
+        message: "Excerpt must be less than 2000 characters",
       });
     }
 
-    // Check for duplicate title (excluding current blog)
+    // Handle title update
     if (updateData.title) {
-      const duplicateBlog = await Blog.findOne({
-        title: { $regex: new RegExp(`^${updateData.title.trim()}$`, 'i') },
+      updateData.title = updateData.title.trim();
+    }
+
+    // Handle slug update
+    if (updateData.slug !== undefined) {
+      // Manual slug update or modification
+      if (updateData.slug && updateData.slug.trim()) {
+        const newSlug = generateSlug(updateData.slug.trim());
+
+        // Check if slug already exists (excluding current blog)
+        const duplicateSlug = await Blog.findOne({
+          slug: newSlug,
+          _id: { $ne: id }
+        });
+
+        if (duplicateSlug) {
+          return res.status(400).json({
+            success: false,
+            message: `A blog with slug "${newSlug}" already exists. Please use a different slug.`,
+          });
+        }
+
+        updateData.slug = newSlug;
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Slug cannot be empty.",
+        });
+      }
+    } else if (updateData.title && !updateData.slug) {
+      // Title updated but slug not provided - auto-generate from new title
+      const newSlug = generateSlug(updateData.title);
+
+      // Check if slug already exists (excluding current blog)
+      const duplicateSlug = await Blog.findOne({
+        slug: newSlug,
         _id: { $ne: id }
       });
 
-      if (duplicateBlog) {
+      if (duplicateSlug) {
         return res.status(400).json({
           success: false,
-          message: "A blog with this title already exists",
+          message: `A blog with slug "${newSlug}" (auto-generated from title) already exists. Please manually set a different slug.`,
         });
       }
 
-      // Generate new slug if title is being updated
-      const generateSlug = (title) => {
-        return title
-          .toLowerCase()
-          .replace(/[^a-z0-9 -]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-')
-          .trim('-');
-      };
-
-      const baseSlug = generateSlug(updateData.title.trim());
-      
-      // Ensure slug is unique (excluding current blog)
-      let slug = baseSlug;
-      let counter = 1;
-      while (await Blog.findOne({ slug, _id: { $ne: id } })) {
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-      }
-      
-      updateData.slug = slug;
+      updateData.slug = newSlug;
     }
 
-    // Helper to generate excerpt (max 180 words)
-    const generateExcerpt = (content, maxWords = 180) => {
-      const plainText = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-      const words = plainText.split(' ');
+    // Update content
+    if (updateData.content) {
+      updateData.content = updateData.content.trim();
 
-      if (words.length <= maxWords) {
-        return plainText;
+      // Auto-generate excerpt if not provided
+      if (!updateData.excerpt || updateData.excerpt.trim() === '') {
+        updateData.excerpt = generateExcerpt(updateData.content);
       }
 
-      return words.slice(0, maxWords).join(' ') + '...';
-    };
-
-    // Helper to generate meta description (max 160 chars)
-    const generateMetaDescription = (text, maxChars = 160) => {
-      if (text.length <= maxChars) {
-        return text;
-      }
-
-      const truncated = text.substring(0, maxChars);
-      const lastSpace = truncated.lastIndexOf(' ');
-      return truncated.substring(0, lastSpace > 0 ? lastSpace : maxChars) + '...';
-    };
-
-    // Auto-generate excerpt if content is being updated and excerpt is empty
-    if (updateData.content && (!updateData.excerpt || updateData.excerpt.trim() === '')) {
-      updateData.excerpt = generateExcerpt(updateData.content);
+      // Calculate reading time
+      updateData.readTime = calculateReadTime(updateData.content);
     }
 
-    // Auto-generate or truncate metaDescription
-    if (updateData.excerpt && (!updateData.metaDescription || updateData.metaDescription.trim() === '')) {
-      updateData.metaDescription = generateMetaDescription(updateData.excerpt);
-    } else if (updateData.metaDescription && updateData.metaDescription.length > 160) {
-      updateData.metaDescription = generateMetaDescription(updateData.metaDescription);
+    // Handle excerpt
+    if (updateData.excerpt) {
+      updateData.excerpt = updateData.excerpt.trim();
+
+      // Auto-generate metaDescription if not provided
+      if (!updateData.metaDescription || updateData.metaDescription.trim() === '') {
+        updateData.metaDescription = generateMetaDescription(updateData.excerpt);
+      }
+    }
+
+    // Handle metaDescription
+    if (updateData.metaDescription) {
+      updateData.metaDescription = generateMetaDescription(updateData.metaDescription.trim());
+    }
+
+    // Set publishedAt when status changes to published
+    if (updateData.status === 'published' && !existingBlog.publishedAt) {
+      updateData.publishedAt = new Date();
     }
 
     // Update blog
@@ -658,6 +706,7 @@ const autoSaveBlog = async (req, res) => {
     const {
       blogId,
       title,
+      slug,
       content,
       excerpt,
       author,
@@ -669,26 +718,51 @@ const autoSaveBlog = async (req, res) => {
       metaDescription,
     } = req.body;
 
+    const blogTitle = title && title.trim() ? title.trim() : 'Untitled Draft';
+    const blogContent = content && content.trim() ? content.trim() : '';
+    const processedTags = Array.isArray(tags) ? tags : (tags ? tags.split(',').map(tag => tag.trim()) : []);
+
+    // Auto-generate excerpt if not provided
+    const finalExcerpt = excerpt && excerpt.trim()
+      ? excerpt.trim()
+      : (blogContent ? generateExcerpt(blogContent) : '');
+
+    // Auto-generate metaDescription
+    const finalMetaDescription = metaDescription && metaDescription.trim()
+      ? generateMetaDescription(metaDescription.trim())
+      : (finalExcerpt ? generateMetaDescription(finalExcerpt) : '');
+
+    // Calculate reading time
+    const readTime = blogContent ? calculateReadTime(blogContent) : 1;
+
     // If blogId exists, update existing draft
     if (blogId && mongoose.isValidObjectId(blogId)) {
+      const updateFields = {
+        title: blogTitle,
+        content: blogContent,
+        excerpt: finalExcerpt,
+        author: author || 'Admin',
+        category: category || 'general',
+        tags: processedTags,
+        featuredImage: featuredImage || '',
+        featuredImageAlt: featuredImageAlt || '',
+        metaTitle: metaTitle || blogTitle,
+        metaDescription: finalMetaDescription,
+        readTime: readTime,
+        status: 'draft', // Always save as draft for auto-save
+        autoSaved: true,
+        lastSaved: new Date(),
+        isDraft: true,
+      };
+
+      // Only update slug if provided
+      if (slug && slug.trim()) {
+        updateFields.slug = generateSlug(slug.trim());
+      }
+
       const updatedBlog = await Blog.findByIdAndUpdate(
         blogId,
-        {
-          title: title || 'Untitled Draft',
-          content: content || '',
-          excerpt: excerpt || '',
-          author: author || 'Admin',
-          category: category || 'general',
-          tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(tag => tag.trim()) : []),
-          featuredImage: featuredImage || '',
-          featuredImageAlt: featuredImageAlt || '',
-          metaTitle: metaTitle || '',
-          metaDescription: metaDescription || '',
-          status: 'draft', // Always save as draft for auto-save
-          autoSaved: true,
-          lastSaved: new Date(),
-          isDraft: true,
-        },
+        updateFields,
         { new: true, runValidators: false } // Skip validation for auto-save
       );
 
@@ -703,28 +777,29 @@ const autoSaveBlog = async (req, res) => {
         success: true,
         message: "Blog auto-saved successfully",
         blogId: updatedBlog._id,
+        slug: updatedBlog.slug,
         lastSaved: updatedBlog.lastSaved,
       });
     } else {
-      // Create new draft blog
-      const blogTitle = title || 'Untitled Draft';
+      // Create new draft blog with unique slug using timestamp
+      const baseSlug = slug && slug.trim()
+        ? generateSlug(slug.trim())
+        : generateSlug(blogTitle);
+      const uniqueSlug = baseSlug ? `${baseSlug}-draft-${Date.now()}` : `draft-${Date.now()}`;
+
       const newBlog = new Blog({
         title: blogTitle,
-        content: content || '',
-        excerpt: excerpt || '',
+        content: blogContent,
+        excerpt: finalExcerpt,
         author: author || 'Admin',
         category: category || 'general',
-        tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(tag => tag.trim()) : []),
+        tags: processedTags,
         featuredImage: featuredImage || '',
         featuredImageAlt: featuredImageAlt || '',
-        metaTitle: metaTitle || '',
-        metaDescription: metaDescription || '',
-        slug: blogTitle
-          .toLowerCase()
-          .replace(/[^a-z0-9 -]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-')
-          .trim('-') + '-' + Date.now(),
+        metaTitle: metaTitle || blogTitle,
+        metaDescription: finalMetaDescription,
+        slug: uniqueSlug,
+        readTime: readTime,
         status: 'draft',
         autoSaved: true,
         lastSaved: new Date(),
@@ -737,6 +812,7 @@ const autoSaveBlog = async (req, res) => {
         success: true,
         message: "New blog draft created and auto-saved",
         blogId: savedBlog._id,
+        slug: savedBlog.slug,
         lastSaved: savedBlog.lastSaved,
       });
     }
@@ -745,6 +821,39 @@ const autoSaveBlog = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error auto-saving blog",
+      error: error.message,
+    });
+  }
+};
+
+// Generate slug from title (utility endpoint)
+const generateSlugFromTitle = async (req, res) => {
+  try {
+    const { title } = req.body;
+
+    if (!title || typeof title !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: "Title is required",
+      });
+    }
+
+    const slug = generateSlug(title.trim());
+
+    // Check if slug already exists
+    const existingBlog = await Blog.findOne({ slug });
+
+    res.status(200).json({
+      success: true,
+      slug: slug,
+      exists: !!existingBlog,
+      message: existingBlog ? "This slug already exists" : "Slug is available",
+    });
+  } catch (error) {
+    console.error("Error generating slug:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error generating slug",
       error: error.message,
     });
   }
@@ -761,4 +870,5 @@ module.exports = {
   toggleBlogLike,
   getBlogStats,
   autoSaveBlog,
+  generateSlugFromTitle,
 };

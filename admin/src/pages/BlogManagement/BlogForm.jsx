@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import RichTextEditor from '../../components/RichTextEditor';
@@ -38,6 +38,76 @@ const BlogForm = ({
   const [imagePreview, setImagePreview] = useState(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
+  const [slugStatus, setSlugStatus] = useState({ checking: false, exists: false, message: '' });
+  const [isManualSlug, setIsManualSlug] = useState(false);
+  const slugCheckTimeout = useRef(null);
+
+  // Auto-generate slug from title
+  const generateSlugFromTitle = (title) => {
+    if (!title || typeof title !== 'string') return '';
+    return title
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9 -]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
+  // Check slug availability
+  const checkSlugAvailability = useCallback(async (slug) => {
+    if (!slug || slug.trim() === '') {
+      setSlugStatus({ checking: false, exists: false, message: '' });
+      return;
+    }
+
+    setSlugStatus({ checking: true, exists: false, message: 'Checking...' });
+
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/blog/generate-slug`,
+        { title: slug },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setSlugStatus({
+          checking: false,
+          exists: response.data.exists,
+          message: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking slug:', error);
+      setSlugStatus({ checking: false, exists: false, message: '' });
+    }
+  }, [BACKEND_URL]);
+
+  // Handle title change - auto-generate slug if not manually edited
+  useEffect(() => {
+    if (!isManualSlug && formData.title) {
+      const newSlug = generateSlugFromTitle(formData.title);
+      setFormData((prev) => ({ ...prev, slug: newSlug }));
+
+      // Debounce slug checking
+      if (slugCheckTimeout.current) {
+        clearTimeout(slugCheckTimeout.current);
+      }
+
+      slugCheckTimeout.current = setTimeout(() => {
+        checkSlugAvailability(newSlug);
+      }, 500);
+    }
+  }, [formData.title, isManualSlug, checkSlugAvailability, setFormData]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (slugCheckTimeout.current) {
+        clearTimeout(slugCheckTimeout.current);
+      }
+    };
+  }, []);
 
   const handleInputChange = useCallback((field, value) => {
     setFormData((prev) => ({
@@ -45,6 +115,21 @@ const BlogForm = ({
       [field]: value,
     }));
   }, [setFormData]);
+
+  const handleSlugChange = (value) => {
+    setIsManualSlug(true);
+    const cleanSlug = generateSlugFromTitle(value);
+    handleInputChange('slug', cleanSlug);
+
+    // Debounce slug checking
+    if (slugCheckTimeout.current) {
+      clearTimeout(slugCheckTimeout.current);
+    }
+
+    slugCheckTimeout.current = setTimeout(() => {
+      checkSlugAvailability(cleanSlug);
+    }, 500);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -173,6 +258,51 @@ const BlogForm = ({
               required
               disabled={isSubmitting}
             />
+          </div>
+
+          {/* Slug */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              URL Slug *
+              {!isManualSlug && (
+                <span className="ml-2 text-xs text-gray-500">(Auto-generated from title)</span>
+              )}
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={formData.slug || ''}
+                onChange={(e) => handleSlugChange(e.target.value)}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+                  slugStatus.exists && mode === 'add'
+                    ? 'border-red-500'
+                    : slugStatus.message && !slugStatus.exists
+                    ? 'border-green-500'
+                    : 'border-gray-300'
+                }`}
+                placeholder="blog-url-slug"
+                required
+                disabled={isSubmitting}
+              />
+              {slugStatus.checking && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-600"></div>
+                </div>
+              )}
+            </div>
+            <div className="mt-1">
+              {slugStatus.message && !slugStatus.checking && (
+                <p className={`text-xs ${slugStatus.exists && mode === 'add' ? 'text-red-600' : 'text-green-600'}`}>
+                  {slugStatus.exists && mode === 'add' ? '⚠ ' : '✓ '}{slugStatus.message}
+                  {mode === 'edit' && slugStatus.exists && (
+                    <span className="ml-1 text-gray-500">(Current blog)</span>
+                  )}
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                URL: {window.location.origin}/blog/{formData.slug || 'your-slug'}
+              </p>
+            </div>
           </div>
 
           {/* Content */}

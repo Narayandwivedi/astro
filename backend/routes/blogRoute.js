@@ -12,6 +12,7 @@ const {
   toggleBlogLike,
   getBlogStats,
   autoSaveBlog,
+  generateSlugFromTitle,
 } = require("../controllers/blogController");
 
 // Public routes (no authentication required)
@@ -25,6 +26,7 @@ router.get("/stats", getBlogStats); // Get blog statistics
 router.get("/:id", getBlogById); // Get single blog by ID (admin)
 router.post("/", createBlog); // Create new blog
 router.post("/auto-save", autoSaveBlog); // Auto-save blog draft
+router.post("/generate-slug", generateSlugFromTitle); // Generate slug from title
 router.put("/:id", updateBlog); // Update blog
 router.delete("/:id", deleteBlog); // Delete blog
 

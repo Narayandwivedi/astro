@@ -8,6 +8,7 @@ const AddBlogModal = ({ showModal, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     content: '',
     excerpt: '',
     author: 'Astro Satya Admin',
@@ -23,6 +24,7 @@ const AddBlogModal = ({ showModal, onClose, onSuccess }) => {
   const resetForm = () => {
     setFormData({
       title: '',
+      slug: '',
       content: '',
       excerpt: '',
       author: 'Astro Satya Admin',
