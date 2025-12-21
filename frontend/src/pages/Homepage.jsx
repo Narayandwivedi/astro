@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Hero from '../components/Hero'
 import Navigation from '../components/Navigation'
-import IntroBanner from '../components/IntroBanner'
 import ConsultationModal from '../components/ConsultationModal'
 import BookingModal from '../components/BookingModal'
 import { useCart } from '../context/CartContext'
@@ -168,7 +167,6 @@ const Homepage = () => {
 
     <div className="w-full">
       <Navigation />
-      <IntroBanner />
       <Hero onBookConsultation={handleBookConsultation} />
 
       {/* Get in Touch Section */}
