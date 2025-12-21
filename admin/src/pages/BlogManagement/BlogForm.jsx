@@ -42,16 +42,24 @@ const BlogForm = ({
   const [isManualSlug, setIsManualSlug] = useState(false);
   const slugCheckTimeout = useRef(null);
 
-  // Auto-generate slug from title
+  // Auto-generate slug from title (supports Unicode characters like Hindi, Arabic, etc.)
   const generateSlugFromTitle = (title) => {
     if (!title || typeof title !== 'string') return '';
-    return title
+
+    // Only lowercase ASCII characters to preserve Hindi/Devanagari script integrity
+    let slug = title
       .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9 -]/g, '')
+      // Only lowercase ASCII characters (a-z, A-Z), preserve Unicode characters as-is
+      .replace(/[A-Z]/g, char => char.toLowerCase())
+      // Keep Unicode letters, numbers, combining marks (essential for Hindi/Devanagari), spaces, and hyphens
+      // \p{L} = Unicode letters, \p{N} = Unicode numbers, \p{M} = Unicode marks (matras, diacritics)
+      // Remove only special symbols like !@#$%^&*()+={}[]|\\:;"'<>,.?/
+      .replace(/[^\p{L}\p{M}\p{N}\s-]/gu, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '');
+
+    return slug;
   };
 
   // Check slug availability
@@ -83,22 +91,12 @@ const BlogForm = ({
     }
   }, [BACKEND_URL]);
 
-  // Handle title change - auto-generate slug if not manually edited
+  // In edit mode, mark slug as manual to prevent overwriting
   useEffect(() => {
-    if (!isManualSlug && formData.title) {
-      const newSlug = generateSlugFromTitle(formData.title);
-      setFormData((prev) => ({ ...prev, slug: newSlug }));
-
-      // Debounce slug checking
-      if (slugCheckTimeout.current) {
-        clearTimeout(slugCheckTimeout.current);
-      }
-
-      slugCheckTimeout.current = setTimeout(() => {
-        checkSlugAvailability(newSlug);
-      }, 500);
+    if (mode === 'edit' && formData.slug) {
+      setIsManualSlug(true);
     }
-  }, [formData.title, isManualSlug, checkSlugAvailability, setFormData]);
+  }, [mode, formData.slug]);
 
   // Clean up timeout on unmount
   useEffect(() => {
@@ -115,6 +113,28 @@ const BlogForm = ({
       [field]: value,
     }));
   }, [setFormData]);
+
+  const handleTitleChange = (value) => {
+    // Auto-generate slug if not manually edited
+    if (!isManualSlug) {
+      const newSlug = generateSlugFromTitle(value);
+      setFormData((prev) => ({ ...prev, title: value, slug: newSlug }));
+
+      // Debounce slug checking
+      if (slugCheckTimeout.current) {
+        clearTimeout(slugCheckTimeout.current);
+      }
+
+      if (newSlug) {
+        slugCheckTimeout.current = setTimeout(() => {
+          checkSlugAvailability(newSlug);
+        }, 500);
+      }
+    } else {
+      // Just update title, keep slug as is
+      setFormData((prev) => ({ ...prev, title: value }));
+    }
+  };
 
   const handleSlugChange = (value) => {
     setIsManualSlug(true);
@@ -252,7 +272,7 @@ const BlogForm = ({
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
+              onChange={(e) => handleTitleChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               placeholder="Enter blog title"
               required
@@ -302,6 +322,11 @@ const BlogForm = ({
               <p className="text-xs text-gray-500 mt-1">
                 URL: {window.location.origin}/blog/{formData.slug || 'your-slug'}
               </p>
+              {formData.slug && /[^\u0000-\u007F]/.test(formData.slug) && (
+                <p className="text-xs text-blue-600 mt-1">
+                  ℹ️ Slug contains non-English characters. It will be URL-encoded when shared but works perfectly in modern browsers.
+                </p>
+              )}
             </div>
           </div>
 

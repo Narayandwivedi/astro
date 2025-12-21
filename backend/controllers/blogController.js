@@ -10,19 +10,27 @@ function toTitleCase(str) {
   });
 }
 
-// Generate a clean slug from title (uses full title)
+// Generate a clean slug from title (uses full title, supports Unicode)
 function generateSlug(title) {
   if (!title || typeof title !== 'string') {
     return '';
   }
 
-  return title
+  // Support Unicode characters (Hindi, Arabic, Chinese, etc.) along with English
+  // Note: We only lowercase ASCII characters to preserve Hindi/Devanagari script integrity
+  let slug = title
     .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '') // Remove special chars
+    // Only lowercase ASCII characters (a-z, A-Z), preserve Unicode characters as-is
+    .replace(/[A-Z]/g, char => char.toLowerCase())
+    // Keep Unicode letters, numbers, combining marks (essential for Hindi/Devanagari), spaces, and hyphens
+    // \p{L} = Unicode letters, \p{N} = Unicode numbers, \p{M} = Unicode marks (matras, diacritics)
+    // Remove only special symbols like !@#$%^&*()+={}[]|\\:;"'<>,.?/
+    .replace(/[^\p{L}\p{M}\p{N}\s-]/gu, '')
     .replace(/\s+/g, '-') // Replace spaces with dashes
     .replace(/-+/g, '-') // Replace multiple dashes with single dash
     .replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
+
+  return slug;
 }
 
 // Generate excerpt from content (max 180 words)
