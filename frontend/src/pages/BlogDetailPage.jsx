@@ -265,13 +265,9 @@ const BlogDetailPage = () => {
                 />
               </div>
 
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 leading-tight">
                 {blog.title}
               </h1>
-
-              <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed">
-                {blog.excerpt}
-              </p>
 
               {/* Author & Stats - Improved mobile layout */}
               <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
