@@ -238,7 +238,7 @@ const ShopPage = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 overflow-hidden">
+      <section className="relative pt-24 md:pt-24 pb-8 md:pb-12 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="w-full h-full cosmic-stars"></div>
@@ -247,24 +247,21 @@ const ShopPage = () => {
 
         <div className="container mx-auto px-4 lg:px-6 relative z-10">
           <div className="text-center max-w-5xl mx-auto">
-            <div className="inline-flex items-center bg-white/90 backdrop-blur-sm border border-orange-300 rounded-full px-6 py-2 mb-6 shadow-lg">
-              <span className="text-orange-600 text-sm font-semibold">🛍️ Authentic Spiritual Products</span>
-            </div>
-            <h1 className="text-3xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-              <span className="text-gray-800">Spiritual</span><br/>
+            <h1 className="text-2xl md:text-2xl lg:text-6xl font-bold  mt-2 lg:mt-4 mb-8 leading-tight">
+              <span className="text-gray-800">Spiritual </span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-600">Shop</span>
             </h1>
-            <p className="text-lg md:text-2xl text-gray-700 mb-6 font-medium">
+            <p className="text-xs md:text-lg text-gray-700  font-medium">
               आध्यात्मिक दुकान - Blessed by <strong>Acharya Satya Prakash Tripathi</strong>
             </p>
-            <p className="text-base text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
+            <p className="text-sm text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
               Discover our exclusive collection of <strong>authentic Rudraksha, precious gemstones, powerful yantras, and sacred spiritual items</strong>.
               Every product is personally energized and blessed with powerful mantras by expert astrologer Acharya Satya Prakash Tripathi for maximum spiritual benefits.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-row gap-4 justify-center">
               <a
                 href="#products"
-                className="bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-600 hover:from-orange-700 hover:via-yellow-700 hover:to-orange-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                className="bg-gradient-to-r from-orange-600 via-yellow-600 to-orange-600 hover:from-orange-700 hover:via-yellow-700 hover:to-orange-700 text-white font-bold text-sm md:text-base px-4 py-2 md:px-8 md:py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
               >
                 🛍️ Shop Now
               </a>
@@ -272,7 +269,7 @@ const ShopPage = () => {
                 href="https://wa.me/918839453431?text=Hi! I need help choosing spiritual products."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white hover:bg-gray-50 text-orange-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-orange-300 hover:border-orange-400 transform hover:-translate-y-1"
+                className="bg-white hover:bg-gray-50 text-orange-800 font-bold text-sm md:text-base px-4 py-2 md:px-8 md:py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-orange-300 hover:border-orange-400 transform hover:-translate-y-1"
               >
                 💬 Expert Guidance
               </a>
@@ -285,10 +282,10 @@ const ShopPage = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-4">
               Shop by Category
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className=" hidden lg:flex lg:justify-center text-lg text-gray-600">
               श्रेणी के अनुसार खरीदारी करें - Find What You Need
             </p>
           </div>
@@ -307,10 +304,10 @@ const ShopPage = () => {
                 className="group cursor-pointer transform hover:scale-105 transition-all duration-300"
               >
                 <div className={`bg-gradient-to-br ${category.color} rounded-2xl p-6 text-white text-center shadow-lg hover:shadow-xl transition-shadow`}>
-                  <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-2xl mb-3 group-hover:scale-110 transition-transform duration-300">
                     {category.icon}
                   </div>
-                  <h3 className="text-base font-bold mb-2">{category.name}</h3>
+                  <h3 className="text-sm font-bold mb-2">{category.name}</h3>
                   <div className="bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm font-medium">
                     Explore
                   </div>
@@ -578,7 +575,7 @@ const ShopPage = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="text-center mb-12">
-                      <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4">
+                      <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-4">
                         Why Buy from Astro Satya?
                       </h2>            <p className="text-lg text-gray-600">
               हमसे क्यों खरीदें - Your Trusted Spiritual Partner
@@ -593,32 +590,32 @@ const ShopPage = () => {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl text-green-600">✅</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">100% Authentic</h3>
-              <p className="text-gray-600">All products are genuine and certified for authenticity</p>
+              <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-2">100% Authentic</h3>
+              <p className="text-xs md:text-sm text-gray-600">All products are genuine and certified for authenticity</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl text-orange-600">🔮</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Energized & Blessed</h3>
-              <p className="text-gray-600">Products blessed with powerful mantras and rituals</p>
+              <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-2">Energized & Blessed</h3>
+              <p className="text-xs md:text-sm text-gray-600">Products blessed with powerful mantras and rituals</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl text-blue-600">🚚</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Free delivery across India with secure packaging</p>
+              <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-2">Free Shipping</h3>
+              <p className="text-xs md:text-sm text-gray-600">Free delivery across India with secure packaging</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl text-purple-600">💬</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Expert Guidance</h3>
-              <p className="text-gray-600">Personal consultation for product selection and usage</p>
+              <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-2">Expert Guidance</h3>
+              <p className="text-xs md:text-sm text-gray-600">Personal consultation for product selection and usage</p>
             </div>
           </div>
         </div>
@@ -627,10 +624,10 @@ const ShopPage = () => {
       {/* Contact Section */}
       <section className="py-16 bg-gradient-to-r from-orange-600 to-yellow-600">
         <div className="container mx-auto px-4 lg:px-6 text-center">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-6">
+          <h2 className="text-xl md:text-3xl font-bold text-white mb-6">
             Need Help Choosing Products?
           </h2>
-          <p className="text-lg text-orange-100 mb-8 max-w-3xl mx-auto">
+          <p className="text-base md:text-lg text-orange-100 mb-8 max-w-3xl mx-auto">
             Get personalized recommendations from Pandit Satya Prakash Tripathi 
             based on your birth chart and specific needs.
           </p>
@@ -639,13 +636,13 @@ const ShopPage = () => {
               href="https://wa.me/918839453431?text=Hi! I need help choosing the right spiritual products for me."
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white text-orange-600 font-semibold px-8 py-4 rounded-lg hover:bg-orange-50 transition-colors shadow-lg"
+              className="bg-white text-orange-600 font-semibold text-xs md:text-base px-3 py-1 md:px-8 md:py-4 rounded-lg hover:bg-orange-50 transition-colors shadow-lg whitespace-nowrap"
             >
               💬 WhatsApp Consultation
             </a>
             <a
               href="tel:+918839453431"
-              className="bg-orange-700 text-white font-semibold px-8 py-4 rounded-lg hover:bg-orange-800 transition-colors shadow-lg"
+              className="bg-orange-700 text-white font-semibold text-xs md:text-base px-3 py-1 md:px-8 md:py-4 rounded-lg hover:bg-orange-800 transition-colors shadow-lg whitespace-nowrap"
             >
               📞 Call: +91 8839453431
             </a>
