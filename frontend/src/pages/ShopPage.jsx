@@ -256,7 +256,6 @@ const ShopPage = () => {
             </p>
             <p className="text-sm text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
               Discover our exclusive collection of <strong>authentic Rudraksha, precious gemstones, powerful yantras, and sacred spiritual items</strong>.
-              Every product is personally energized and blessed with powerful mantras by expert astrologer Acharya Satya Prakash Tripathi for maximum spiritual benefits.
             </p>
             <div className="flex flex-row gap-4 justify-center">
               <a
@@ -279,7 +278,7 @@ const ShopPage = () => {
       </section>
 
       {/* Category Cards */}
-      <section className="py-16 bg-white">
+      <section className=" py-6 lg:py-16 bg-white">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="text-center mb-12">
             <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-4">
