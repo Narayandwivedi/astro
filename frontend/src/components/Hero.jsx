@@ -4,7 +4,7 @@ const Hero = ({ onBookConsultation }) => {
 
   return (
     <>
-    <section className="relative w-full min-h-fit pt-24 sm:pt-24 md:pt-20 lg:pt-28 pb-4 sm:pb-6 lg:pb-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-amber-900 overflow-hidden">
+    <section className="relative w-full min-h-fit pt-24 sm:pt-24 md:pt-20 lg:pt-36 pb-4 sm:pb-6 lg:pb-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-amber-900 overflow-hidden">
 
       {/* Astro Chart Background with Brown Overlay */}
       <div className="absolute inset-0 opacity-20">
@@ -39,8 +39,8 @@ const Hero = ({ onBookConsultation }) => {
         <div className="flex flex-col w-full lg:hidden">
           {/* Name - Centered */}
           <div className="text-center text-white fade-in-up">
-            <h1 className="text-xl sm:text-2xl font-bold mb-1 leading-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 font-serif block">
+            <h1 className="text-xl sm:text-2xl font-bold mb-1 leading-normal">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 font-serif block pb-1">
                 आचार्य सत्य प्रकाश त्रिपाठी
               </span>
               <span className="text-sm sm:text-base text-gray-300 font-light">
@@ -50,13 +50,18 @@ const Hero = ({ onBookConsultation }) => {
           </div>
 
           {/* Experience - Centered */}
-          <div className="flex items-center justify-center space-x-2 mb-2 fade-in-up-delay-1">
+          <div className="flex items-center justify-center space-x-2 mb-1 fade-in-up-delay-1">
             <span className="text-yellow-400 text-xs sm:text-sm glow-stars">★★★★★</span>
             <span className="text-gray-300 text-[10px] sm:text-xs">10+ Years Experience</span>
           </div>
 
+          {/* Description - Centered */}
+          <p className="text-[10px] sm:text-xs text-gray-300 text-center leading-relaxed mb-3 px-4 fade-in-up-delay-1">
+            जीवन की समस्याओं का समाधान पाएं।<br/>करियर, प्रेम, विवाह और व्यापार में मार्गदर्शन।
+          </p>
+
           {/* Buttons - Centered */}
-          <div className="flex flex-row gap-2 justify-center mb-6 fade-in-up-delay-2">
+          <div className="flex flex-row gap-2 justify-center mb-4 fade-in-up-delay-2">
             <button
               onClick={onBookConsultation}
               className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 text-xs text-center inline-flex items-center justify-center shadow-lg"
@@ -71,17 +76,10 @@ const Hero = ({ onBookConsultation }) => {
             </a>
           </div>
 
-          {/* Description + Photo Row */}
-          <div className="flex flex-row gap-3 items-center fade-in-up-delay-3">
-            {/* Description */}
-            <p className="text-[11px] sm:text-xs text-gray-300 leading-relaxed flex-1 text-left">
-              जीवन में आने वाली समस्याओं का समाधान पाएं।<br/>करियर, प्रेम, विवाह, व्यापार और स्वास्थ्य<br/>के लिए सटीक भविष्यवाणी।
-            </p>
-
-            {/* Photo */}
-            <div className="relative flex-shrink-0 flex items-center justify-center">
-              <div className="absolute w-32 h-32 sm:w-40 sm:h-40 border-2 border-yellow-400/30 rounded-full"></div>
-              <div className="absolute w-[120px] h-[120px] sm:w-[152px] sm:h-[152px] border-2 border-yellow-400/30 rounded-full"></div>
+          {/* Photo - Centered */}
+          <div className="flex justify-center fade-in-up-delay-3">
+            <div className="relative flex items-center justify-center">
+              <div className="absolute w-32 h-32 sm:w-40 sm:h-40 border-2 border-yellow-400/40 rounded-full"></div>
               <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 p-0.5 shadow-2xl relative z-10">
                 <div className="w-full h-full bg-white rounded-full p-0.5">
                   <img
@@ -99,8 +97,8 @@ const Hero = ({ onBookConsultation }) => {
         <div className="hidden lg:flex lg:flex-row gap-8 items-center w-full">
           {/* Left Content */}
           <div className="text-left text-white lg:flex-1 fade-in-up">
-            <h1 className="text-3xl font-bold mb-3 leading-tight">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 font-serif block">
+            <h1 className="text-3xl font-bold mb-3 leading-normal">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 font-serif block pb-1">
                 आचार्य सत्य प्रकाश त्रिपाठी
               </span>
               <span className="text-lg text-gray-300 font-light">
@@ -134,13 +132,10 @@ const Hero = ({ onBookConsultation }) => {
           </div>
 
           {/* Right Image */}
-          <div className="flex justify-end lg:flex-1 items-center">
+          <div className="flex justify-end lg:flex-1 items-center pt-8">
             <div className="relative flex items-center justify-center">
-              <div className="absolute w-56 h-56 border-2 border-yellow-400/30 rounded-full"></div>
-              <div className="absolute w-52 h-52 border-2 border-yellow-400/30 rounded-full"></div>
-              <div className="absolute -top-4 -right-4 w-10 h-10 decorative-dots opacity-30 rounded-full"></div>
-              <div className="absolute -bottom-3 -left-3 w-8 h-8 decorative-dots opacity-20 rounded-full"></div>
-              <div className="w-48 h-48 rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 p-1 shadow-2xl relative z-10">
+              <div className="absolute w-64 h-64 border-2 border-yellow-400/40 rounded-full"></div>
+              <div className="w-56 h-56 rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 p-1 shadow-2xl relative z-10">
                 <div className="w-full h-full bg-white rounded-full p-1">
                   <img
                     src="/satya2.webp"
