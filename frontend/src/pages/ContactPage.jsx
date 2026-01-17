@@ -190,7 +190,7 @@ const ContactPage = () => {
       </section>
 
       {/* Get in Touch Section */}
-      <section className="py-12 bg-gradient-to-br from-purple-50 via-indigo-50 to-amber-50 border-b border-purple-100 relative overflow-hidden">
+      <section className="py-8 md:py-12 bg-gradient-to-br from-purple-50 via-indigo-50 to-amber-50 border-b border-purple-100 relative overflow-hidden">
         {/* Cosmic stars background */}
         <div className="absolute inset-0 opacity-15">
           <div className="w-full h-full cosmic-stars"></div>
@@ -207,7 +207,7 @@ const ContactPage = () => {
           
           <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {/* Phone Contact */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-6 border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 md:p-6 border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full flex items-center justify-center shadow-md">
                   <span className="text-2xl text-amber-600">📞</span>
@@ -226,7 +226,7 @@ const ContactPage = () => {
             </div>
 
             {/* WhatsApp Contact */}
-            <div className="bg-green-50 rounded-lg p-6 border border-green-100">
+            <div className="bg-green-50 rounded-lg p-4 md:p-6 border border-green-100">
               <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                   <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
@@ -249,7 +249,7 @@ const ContactPage = () => {
             </div>
             
             {/* Email Contact */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-4 md:p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full flex items-center justify-center shadow-md">
                   <span className="text-2xl text-purple-600">📧</span>
@@ -277,14 +277,14 @@ const ContactPage = () => {
       </section>
 
       {/* Contact Form Section */}
-      <section className="py-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 relative overflow-hidden">
+      <section className="py-8 md:py-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 relative overflow-hidden">
         {/* Cosmic stars background */}
         <div className="absolute inset-0 opacity-10">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
         <div className="container mx-auto px-4 lg:px-6 relative z-10">
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border-2 border-purple-100 shadow-xl">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 border-2 border-purple-100 shadow-xl">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-4">Send us a Message</h2>
                 <p className="text-base text-purple-600">
@@ -396,7 +396,7 @@ const ContactPage = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-amber-900 relative overflow-hidden">
+      <section className="py-8 md:py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-amber-900 relative overflow-hidden">
         {/* Cosmic stars background */}
         <div className="absolute inset-0 opacity-25">
           <div className="w-full h-full cosmic-stars"></div>
