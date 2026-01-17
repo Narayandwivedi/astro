@@ -169,7 +169,7 @@ const Homepage = () => {
       <Navigation />
       <Hero onBookConsultation={handleBookConsultation} />
 
-      <section className="py-6 md:py-12 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 border-b border-purple-100 relative overflow-hidden">
+      <section className="pt-6 pb-3 md:pt-12 md:pb-12 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 border-b border-purple-100 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
