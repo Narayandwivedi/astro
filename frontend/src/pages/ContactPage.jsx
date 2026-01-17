@@ -147,34 +147,32 @@ const ContactPage = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 overflow-hidden">
+      <section className="relative pt-16 pb-6 md:pt-20 md:pb-10 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 overflow-hidden">
         {/* Cosmic stars background */}
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/5 via-purple-900/5 to-amber-900/5"></div>
 
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
+        <div className="container mx-auto px-4 lg:px-6 relative z-10 mt-8">
           <div className="text-center max-w-5xl mx-auto">
             <div className="inline-flex items-center bg-white/90 backdrop-blur-sm border border-purple-300 rounded-full px-6 py-2 mb-6 shadow-lg">
-              <span className="text-purple-600 text-sm font-semibold">📞 Expert Astrologer Contact</span>
+              <span className="text-purple-600 text-xs font-semibold">📞 Expert Astrologer Contact</span>
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+            <h1 className="text-xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
               <span className="text-gray-800">Contact</span><br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-600">Acharya Satya Prakash</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-700 mb-6 font-medium">
+            <p className="text-sm md:text-2xl text-gray-700 mb-6 font-medium">
               संपर्क करें - Connect with Expert <strong>Vedic Astrologer</strong>
             </p>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8">
-              Ready to transform your life with ancient Vedic wisdom? Connect with <strong>Acharya Satya Prakash Tripathi</strong>,
-              a renowned astrologer with 10+ years of experience. Get personalized astrological guidance and effective solutions
-              to all your life challenges through phone, WhatsApp, or email consultation.
+            <p className="text-xs text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6">
+              Connect with <strong>Acharya Satya Prakash Tripathi</strong> for personalized astrological guidance and effective solutions.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-row gap-2 justify-center">
               <a
                 href="tel:+918839453431"
-                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-600 hover:from-indigo-700 hover:via-purple-700 hover:to-amber-700 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-amber-600 hover:from-indigo-700 hover:via-purple-700 hover:to-amber-700 text-white font-bold px-4 py-2 text-xs rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 whitespace-nowrap"
               >
                 📞 Call: +91 8839453431
               </a>
@@ -182,7 +180,7 @@ const ContactPage = () => {
                 href="https://wa.me/918839453431?text=Hello%20Acharya%20Satya%20Prakash%20Tripathi,%0A%0AI%20need%20astrological%20guidance.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white hover:bg-gray-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-purple-300 hover:border-purple-400 transform hover:-translate-y-1"
+                className="bg-white hover:bg-gray-50 text-purple-800 font-bold px-4 py-2 text-xs rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-purple-300 hover:border-purple-400 transform hover:-translate-y-1 whitespace-nowrap"
               >
                 💬 WhatsApp Now
               </a>
@@ -199,10 +197,10 @@ const ContactPage = () => {
         </div>
         <div className="container mx-auto px-4 lg:px-6 relative z-10">
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-3">
+            <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-3">
               Get in Touch
             </h2>
-            <p className="text-purple-700 mb-6 font-medium">
+            <p className="text-base text-purple-700 mb-6 font-medium">
               संपर्क करें - Connect with Pandit Satya Prakash Tripathi
             </p>
           </div>
@@ -215,8 +213,8 @@ const ContactPage = () => {
                   <span className="text-2xl text-amber-600">📞</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-amber-800">Phone</h3>
-                  <p className="text-xl font-bold text-amber-600">+91 8839453431</p>
+                  <h3 className="text-base font-semibold text-amber-800">Phone</h3>
+                  <p className="text-lg font-bold text-amber-600">+91 8839453431</p>
                 </div>
                 <a 
                   href="tel:+918839453431"
@@ -236,8 +234,8 @@ const ContactPage = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800">WhatsApp</h3>
-                  <p className="text-xl font-bold text-green-600">+91 8839453431</p>
+                  <h3 className="text-base font-semibold text-gray-800">WhatsApp</h3>
+                  <p className="text-lg font-bold text-green-600">+91 8839453431</p>
                 </div>
                 <a 
                   href="https://wa.me/918839453431?text=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
@@ -257,7 +255,7 @@ const ContactPage = () => {
                   <span className="text-2xl text-purple-600">📧</span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-purple-800">Email</h3>
+                  <h3 className="text-base font-semibold text-purple-800">Email</h3>
                   <p className="text-sm font-semibold text-purple-600">satyaprakashtripathi7578@gmail.com</p>
                 </div>
                 <a 
@@ -271,7 +269,7 @@ const ContactPage = () => {
           </div>
           
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-500">
+            <p className="text-xs text-gray-500">
               Available: 9:00 AM - 8:00 PM (IST) | Response within 24 hours
             </p>
           </div>
@@ -288,8 +286,8 @@ const ContactPage = () => {
           <div className="max-w-2xl mx-auto">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border-2 border-purple-100 shadow-xl">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-4">Send us a Message</h2>
-                <p className="text-lg text-purple-600">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-4">Send us a Message</h2>
+                <p className="text-base text-purple-600">
                   Connect with renowned astrologer Pandit Satya Prakash Tripathi for expert guidance 
                   on all aspects of life through the ancient wisdom of Vedic astrology.
                 </p>
@@ -298,7 +296,7 @@ const ContactPage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-xs font-medium text-gray-700 mb-2">
                       Full Name *
                     </label>
                     <input
@@ -314,7 +312,7 @@ const ContactPage = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="phone" className="block text-xs font-medium text-gray-700 mb-2">
                       Phone Number *
                     </label>
                     <input
@@ -331,7 +329,7 @@ const ContactPage = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-2">
                     Email Address *
                   </label>
                   <input
@@ -347,7 +345,7 @@ const ContactPage = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="subject" className="block text-xs font-medium text-gray-700 mb-2">
                     Subject
                   </label>
                   <select
@@ -370,7 +368,7 @@ const ContactPage = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-xs font-medium text-gray-700 mb-2">
                     Message *
                   </label>
                   <textarea
@@ -404,10 +402,10 @@ const ContactPage = () => {
           <div className="w-full h-full cosmic-stars"></div>
         </div>
         <div className="container mx-auto px-4 lg:px-6 text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-6">
             Ready for Your Consultation?
           </h2>
-          <p className="text-xl text-purple-100 mb-8 max-w-3xl mx-auto">
+          <p className="text-lg text-purple-100 mb-8 max-w-3xl mx-auto">
             Don't wait for tomorrow's uncertainty. Get clarity today with expert astrological guidance 
             from Pandit Satya Prakash Tripathi.
           </p>
