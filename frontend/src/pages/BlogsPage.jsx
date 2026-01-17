@@ -252,41 +252,38 @@ const BlogsPage = () => {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
 
-        {/* Search and Filter Section */}
-        <div className="bg-white shadow-sm border-b pt-24">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-              {/* Search Bar */}
-              <form onSubmit={handleSearch} className="flex-1 max-w-md flex gap-2">
+        <div className="bg-white shadow-sm border-b pt-20 md:pt-24">
+          <div className="container mx-auto px-3 sm:px-4 py-4 md:py-6">
+            <div className="flex flex-col lg:flex-row gap-3 md:gap-4 items-start lg:items-center justify-between">
+              <form onSubmit={handleSearch} className="w-full lg:max-w-md flex gap-2">
                 <div className="relative flex-1">
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search articles..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full pl-9 pr-3 sm:pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
                 </div>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
+                  className="px-3 sm:px-4 md:px-6 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 >
                   Search
                 </button>
               </form>
 
-              {/* Category Filter */}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 md:gap-2 w-full lg:w-auto">
                 {categories.map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
+                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors capitalize ${
                       selectedCategory === category
                         ? 'bg-orange-600 text-white'
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -300,40 +297,39 @@ const BlogsPage = () => {
           </div>
         </div>
 
-        {/* Blog Grid */}
-        <section id="articles" className="container mx-auto px-4 py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent mb-4">
+        <section id="articles" className="container mx-auto px-3 sm:px-4 py-6 md:py-8">
+          <div className="text-center mb-4 md:mb-6 lg:mb-8">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent mb-2 md:mb-4">
               Astrology Blog
             </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
               Expert insights by <strong>Acharya Satya Prakash Tripathi</strong>
             </p>
           </div>
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
-              <p className="mt-4 text-gray-600">Loading blogs...</p>
+            <div className="flex justify-center items-center py-12 md:py-20">
+              <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-orange-600"></div>
+              <p className="mt-4 ml-4 text-sm md:text-base text-gray-600">Loading blogs...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-20">
-              <div className="text-red-400 text-6xl mb-4">⚠️</div>
-              <h3 className="text-2xl font-semibold text-gray-700 mb-2">Error Loading Blogs</h3>
-              <p className="text-gray-500 mb-4">{error}</p>
+            <div className="text-center py-12 md:py-20">
+              <div className="text-red-400 text-4xl md:text-6xl mb-3 md:mb-4">⚠️</div>
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-700 mb-2">Error Loading Blogs</h3>
+              <p className="text-sm md:text-base text-gray-500 mb-4">{error}</p>
               <button
                 onClick={fetchBlogs}
-                className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+                className="bg-orange-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-orange-700 transition-colors"
               >
                 Try Again
               </button>
             </div>
           ) : filteredBlogs.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-gray-400 text-6xl mb-4">🔮</div>
-              <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+            <div className="text-center py-12 md:py-20">
+              <div className="text-gray-400 text-4xl md:text-6xl mb-3 md:mb-4">🔮</div>
+              <h3 className="text-lg md:text-2xl font-semibold text-gray-700 mb-2">
                 {blogs.length === 0 ? 'No blogs available' : 'No articles found'}
               </h3>
-              <p className="text-gray-500">
+              <p className="text-sm md:text-base text-gray-500">
                 {blogs.length === 0
                   ? 'Check back later for new content.'
                   : 'Try adjusting your search or filter criteria.'
@@ -341,7 +337,7 @@ const BlogsPage = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {filteredBlogs.map((blog) => (
                 <Link 
                   key={blog._id} 
@@ -349,8 +345,7 @@ const BlogsPage = () => {
                   className="block"
                 >
                   <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer">
-                    {/* Blog Image */}
-                    <div className="h-56 lg:h-64 bg-gradient-to-br from-indigo-100 to-purple-100" style={{ aspectRatio: '16/9' }}>
+                    <div className="h-40 sm:h-48 md:h-56 lg:h-64 bg-gradient-to-br from-indigo-100 to-purple-100" style={{ aspectRatio: '16/9' }}>
                       {blog.featuredImage ? (
                         <img
                           src={getImageURL(blog.featuredImage)}
@@ -364,41 +359,36 @@ const BlogsPage = () => {
                       ) : null}
                       <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center" style={{ display: blog.featuredImage ? 'none' : 'flex' }}>
                         <div className="text-center">
-                          <div className="text-4xl mb-2">🔮</div>
-                          <p className="text-indigo-700 font-medium text-sm">Astrology Insights</p>
+                          <div className="text-3xl sm:text-4xl mb-1 md:mb-2">🔮</div>
+                          <p className="text-indigo-700 font-medium text-xs sm:text-sm">Astrology Insights</p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Blog Content */}
-                    <div className="p-6">
-                      {/* Category Badge */}
-                      <div className="mb-3">
-                        <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full capitalize border ${getCategoryColor(blog.category)}`}>
+                    <div className="p-3 sm:p-4 md:p-6">
+                      <div className="mb-2 md:mb-3">
+                        <span className={`inline-block px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-full capitalize border ${getCategoryColor(blog.category)}`}>
                           {blog.category}
                         </span>
                       </div>
 
-                      {/* Blog Title */}
-                      <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 hover:text-orange-600 transition-colors">
+                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 mb-2 md:mb-3 line-clamp-2 hover:text-orange-600 transition-colors">
                         {blog.title}
                       </h2>
 
-                      {/* Blog Excerpt */}
-                      <p className="text-gray-600 mb-4 line-clamp-3">
+                      <p className="text-gray-600 mb-2 md:mb-4 text-xs sm:text-sm line-clamp-2 md:line-clamp-3">
                         {blog.excerpt}
                       </p>
 
-                      {/* Blog Meta */}
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <div className="flex items-center space-x-4">
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
+                        <div className="flex items-center space-x-2 sm:space-x-4">
                           <span className="flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             {formatDate(blog.publishedAt || blog.createdAt)}
                           </span>
-                          <span className="flex items-center">
+                          <span className="hidden sm:flex items-center">
                             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -406,8 +396,8 @@ const BlogsPage = () => {
                             {blog.views || 0}
                           </span>
                         </div>
-                        <span className="text-orange-600 font-medium">
-                          Read More →
+                        <span className="text-orange-600 font-medium text-xs sm:text-sm">
+                          Read →
                         </span>
                       </div>
                     </div>
@@ -418,29 +408,28 @@ const BlogsPage = () => {
           )}
         </section>
 
-        {/* Call to Action Section */}
-        <section className="py-16 bg-gradient-to-br from-purple-900 via-indigo-900 to-amber-900 relative overflow-hidden">
+        <section className="py-8 md:py-12 lg:py-16 bg-gradient-to-br from-purple-900 via-indigo-900 to-amber-900 relative overflow-hidden">
           <div className="absolute inset-0 opacity-25">
             <div className="w-full h-full cosmic-stars"></div>
           </div>
-          <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="container mx-auto px-3 sm:px-4 text-center relative z-10">
             <div className="max-w-4xl mx-auto">
-              <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              <h3 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-3 md:mb-4 lg:mb-6">
                 Need Personalized Astrological Guidance?
               </h3>
-              <p className="text-xl text-purple-200 mb-8 leading-relaxed">
-                Get expert consultation from <strong>Acharya Satya Prakash Tripathi</strong>. Discover personalized solutions for your life challenges through authentic Vedic astrology.
+              <p className="text-sm md:text-base lg:text-xl text-purple-200 mb-4 md:mb-6 lg:mb-8 leading-relaxed">
+                Get expert consultation from <strong>Acharya Satya Prakash Tripathi</strong>. Discover personalized solutions for your life challenges.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 justify-center">
                 <a
                   href="/services"
-                  className="bg-white hover:bg-purple-50 text-purple-800 font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="bg-white hover:bg-purple-50 text-purple-800 font-bold px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm md:text-base rounded-lg md:rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 md:hover:-translate-y-1"
                 >
-                  🕰 Book Consultation Now
+                  🕰 Book Consultation
                 </a>
                 <a
                   href="/contact"
-                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:via-orange-600 hover:to-amber-600 text-white font-bold px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 text-sm md:text-base rounded-lg md:rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 md:hover:-translate-y-1"
                 >
                   📞 Contact Expert
                 </a>

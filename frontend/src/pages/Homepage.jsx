@@ -169,69 +169,69 @@ const Homepage = () => {
       <Navigation />
       <Hero onBookConsultation={handleBookConsultation} />
 
-      {/* Get in Touch Section */}
-      <section className="py-12 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 border-b border-purple-100 relative overflow-hidden">
-        {/* Cosmic stars background */}
+      <section className="py-6 md:py-12 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 border-b border-purple-100 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-3">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+          <div className="text-center mb-4 md:mb-8">
+            <h2 className="text-lg md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-2 md:mb-3">
               Get in Touch
             </h2>
-            <p className="text-purple-700 mb-6 font-medium">
+            <p className="text-xs sm:text-sm md:text-base text-purple-700 font-medium">
               संपर्क करें - Connect with Pandit Satya Prakash Tripathi
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Phone Contact */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-6 border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full flex items-center justify-center shadow-md">
-                    <span className="text-2xl text-orange-600">📞</span>
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto">
+            <a href="tel:+918839453431" className="group">
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-3 md:p-6 border-2 border-amber-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="flex items-center justify-between gap-2 md:gap-4">
+                  <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+                    <div className="w-8 h-8 md:w-12 md:h-12 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-lg md:text-2xl text-orange-600">📞</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm md:text-lg font-semibold text-amber-800">Phone</h3>
+                      <p className="text-sm md:text-xl font-bold text-orange-600 truncate">+91 8839453431</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-amber-800">Phone</h3>
-                    <p className="text-xl font-bold text-orange-600">+91 8839453431</p>
-                  </div>
-                </div>
-                <a 
-                  href="tel:+918839453431"
-                  className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-center"
-                >
-                  Call Now
-                </a>
-              </div>
-            </div>
-            
-            {/* Email Contact */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div className="flex items-center gap-4 min-w-0 flex-1">
-                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full flex items-center justify-center shadow-md">
-                    <span className="text-2xl text-purple-600">📧</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-lg font-semibold text-purple-800">Email</h3>
-                    <p className="text-xs font-semibold text-purple-600 whitespace-nowrap">satyaprakashtripathi7578@gmail.com</p>
+                  <div className="w-7 h-7 md:w-auto md:h-auto bg-gradient-to-r from-amber-600 to-orange-600 rounded-full flex items-center justify-center shadow-md group-hover:from-amber-700 group-hover:to-orange-700 transition-all flex-shrink-0">
+                    <svg className="w-4 h-4 md:hidden text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    <span className="hidden md:inline text-white font-semibold px-4 py-2">Call Now</span>
                   </div>
                 </div>
-                <a 
-                  href="mailto:satyaprakashtripathi7578@gmail.com?subject=Consultation%20Inquiry&body=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you."
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-center whitespace-nowrap"
-                >
-                  Email Now
-                </a>
               </div>
-            </div>
+            </a>
+             
+            <a href="mailto:satyaprakashtripathi7578@gmail.com?subject=Consultation%20Inquiry&body=Hello%20Pandit%20Satya%20Prakash%20Tripathi,%0A%0AI%20would%20like%20to%20schedule%20a%20consultation.%20Please%20let%20me%20know%20your%20availability.%0A%0AThank%20you." className="group">
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-3 md:p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="flex items-center justify-between gap-2 md:gap-4">
+                  <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+                    <div className="w-8 h-8 md:w-12 md:h-12 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-lg md:text-2xl text-purple-600">📧</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm md:text-lg font-semibold text-purple-800">Email</h3>
+                      <p className="text-xs md:text-sm font-semibold text-purple-600 truncate">satyaprakashtripathi7578@gmail.com</p>
+                    </div>
+                  </div>
+                  <div className="w-7 h-7 md:w-auto md:h-auto bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center shadow-md group-hover:from-indigo-700 group-hover:to-purple-700 transition-all flex-shrink-0">
+                    <svg className="w-4 h-4 md:hidden text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    <span className="hidden md:inline text-white font-semibold px-4 py-2 whitespace-nowrap">Email Now</span>
+                  </div>
+                </div>
+              </div>
+            </a>
           </div>
           
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-500">
-              Available: 9:00 AM - 8:00 PM (IST) | Response within 24 hours
+          <div className="text-center mt-3 md:mt-6">
+            <p className="text-[10px] sm:text-xs md:text-sm text-gray-500">
+              Available: 9:00 AM - 8:00 PM (IST)
             </p>
           </div>
         </div>
