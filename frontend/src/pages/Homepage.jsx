@@ -33,6 +33,8 @@ const Homepage = () => {
   const [selectedService, setSelectedService] = useState(null);
   const [showBookingToast, setShowBookingToast] = useState(false);
   const [bookedServiceName, setBookedServiceName] = useState('');
+  const [isProductCarouselPaused, setIsProductCarouselPaused] = useState(false);
+  const [isServiceCarouselPaused, setIsServiceCarouselPaused] = useState(false);
 
   const handleBookConsultation = () => {
     setIsConsultationModalOpen(true);
@@ -116,6 +118,52 @@ const Homepage = () => {
 
     fetchProducts();
   }, []);
+
+  // Auto-slide product carousel (mobile only)
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    const interval = setInterval(() => {
+      if (!isProductCarouselPaused && window.innerWidth < 768) {
+        const container = document.querySelector('.hide-scrollbar');
+        if (container) {
+          const cardWidth = container.querySelector('.flex-shrink-0')?.offsetWidth || 0;
+          const scrollAmount = cardWidth * 2;
+          
+          if (container.scrollLeft + container.offsetWidth >= container.scrollWidth - 10) {
+            container.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          }
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [products.length, isProductCarouselPaused]);
+
+  // Auto-slide service carousel (mobile only)
+  useEffect(() => {
+    if (services.length === 0) return;
+
+    const interval = setInterval(() => {
+      if (!isServiceCarouselPaused && window.innerWidth < 768) {
+        const container = document.querySelector('.services-carousel');
+        if (container) {
+          const cardWidth = container.querySelector('.flex-shrink-0')?.offsetWidth || 0;
+          const scrollAmount = cardWidth * 2;
+          
+          if (container.scrollLeft + container.offsetWidth >= container.scrollWidth - 10) {
+            container.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          }
+        }
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [services.length, isServiceCarouselPaused]);
 
   return (
     <>
@@ -237,293 +285,400 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Our Services Section */}
-      <section className="py-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 relative overflow-hidden">
-        {/* Cosmic stars background */}
+      <section className="pt-8 pb-6 md:pt-16 md:pb-16 bg-gradient-to-br from-indigo-50 via-purple-50 to-amber-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-15">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-300/50 rounded-full px-6 py-2 mb-6">
-              <span className="text-amber-700 text-sm font-semibold">🕉️ Our Premium Services</span>
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+          <div className="text-center mb-6 md:mb-12">
+            <div className="inline-flex items-center bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-300/50 rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-3 md:mb-6">
+              <span className="text-amber-700 text-xs sm:text-sm font-semibold">🕉️ Our Premium Services</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-900 via-purple-800 to-amber-800 bg-clip-text text-transparent mb-4">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-indigo-900 via-purple-800 to-amber-800 bg-clip-text text-transparent mb-2 md:mb-4">
               Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-600 to-amber-600">Services</span>
             </h2>
-            <p className="text-lg text-purple-800 max-w-2xl mx-auto font-medium">
+            <p className="text-sm md:text-lg text-purple-800 max-w-2xl mx-auto font-medium">
               हमारी सेवाएं - जीवन की हर समस्या का समाधान
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="relative">
             {servicesLoading ? (
-              // Loading skeleton
-              Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-xl p-6 animate-pulse">
-                  <div className="h-4 bg-gray-300 rounded mb-4"></div>
-                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-300 rounded mb-4"></div>
-                  <div className="h-8 bg-gray-300 rounded"></div>
-                </div>
-              ))
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 lg:gap-6 xl:gap-8">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-3 md:p-6 animate-pulse">
+                    <div className="h-3 bg-gray-300 rounded mb-2 md:mb-4"></div>
+                    <div className="h-2 bg-gray-300 rounded mb-1 md:mb-2"></div>
+                    <div className="h-2 bg-gray-300 rounded mb-2 md:mb-4"></div>
+                    <div className="h-6 md:h-8 bg-gray-300 rounded"></div>
+                  </div>
+                ))}
+              </div>
             ) : servicesError ? (
-              // Error state
-              <div className="col-span-full text-center py-8">
-                <div className="text-red-500 text-lg font-semibold">{servicesError}</div>
-                <p className="text-gray-600 mt-2">Please try refreshing the page</p>
+              <div className="col-span-full text-center py-6 md:py-8">
+                <div className="text-red-500 text-sm md:text-lg font-semibold">{servicesError}</div>
+                <p className="text-gray-600 text-xs md:text-sm mt-2">Please try refreshing the page</p>
               </div>
             ) : services.length === 0 ? (
-              // No services state
-              <div className="col-span-full text-center py-8">
-                <div className="text-gray-500 text-lg font-semibold">No services available</div>
-                <p className="text-gray-400 mt-2">Services will appear here once they are added</p>
+              <div className="col-span-full text-center py-6 md:py-8">
+                <div className="text-gray-500 text-sm md:text-lg font-semibold">No services available</div>
+                <p className="text-gray-400 text-xs md:text-sm mt-2">Services will appear here once they are added</p>
               </div>
             ) : (
-              // Services list
-              services.map((service) => (
-              <div key={service._id} className="group relative bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-2xl hover:shadow-xl md:hover:shadow-3xl transition-all duration-300 md:duration-500 overflow-hidden border border-purple-100 hover:border-purple-300 transform hover:-translate-y-1 md:hover:-translate-y-3 hover:scale-[1.01] md:hover:scale-[1.02] cursor-pointer"
-                onClick={() => navigate(`/services/${service._id}`)}
-              >
-                
-                {/* Cosmic Background Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-indigo-50/30 to-amber-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 md:duration-500"></div>
-                
-                {/* Read More Arrow */}
-                <div className="absolute top-3 md:top-4 right-3 md:right-4 z-20 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
-                  <div className="w-6 h-6 md:w-8 md:h-8 bg-white rounded-full flex items-center justify-center border-2 border-gray-300 shadow-lg">
-                    <svg className="w-3 h-3 md:w-4 md:h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-                
-                {/* Service Header - Mobile Optimized */}
-                <div className="relative p-3 md:p-4 text-center">
-                  {/* Icon with Glow Effect */}
-                  <div className="relative inline-flex items-center justify-center mb-3 md:mb-4">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-amber-400 rounded-full blur-md md:blur-lg opacity-20 md:opacity-30 group-hover:opacity-40 md:group-hover:opacity-50 transition-opacity duration-300"></div>
-                    <div className="relative w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-lg md:shadow-xl border-2 border-gray-300">
-                      <span className="text-lg md:text-2xl filter drop-shadow-lg">{service.icon}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Service Title - Mobile Optimized */}
-                  <h3 className="text-sm md:text-lg font-bold bg-gradient-to-r from-purple-800 via-indigo-700 to-amber-700 bg-clip-text text-transparent mb-1 md:mb-2 group-hover:from-purple-600 group-hover:via-indigo-600 group-hover:to-amber-600 transition-all duration-300 leading-tight">
-                    {service.titleEn}
-                  </h3>
-                  <p className="text-purple-600 text-xs md:text-sm font-medium mb-3">{service.titleHi}</p>
-                </div>
-
-                {/* Pricing Section - Mobile Optimized */}
-                <div className="px-3 md:px-4 mb-3 md:mb-4">
-                  <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-amber-50 rounded-xl md:rounded-2xl p-3 md:p-4 border border-purple-100 shadow-inner">
-                    {/* Mobile: Stacked Layout, Desktop: Three columns */}
-                    <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between">
-                      {/* Price - Prominent on mobile */}
-                      <div className="text-center md:flex-1">
-                        <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Price</p>
-                        <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
-                          ₹{service.price}
-                        </span>
-                      </div>
-                      
-                      {/* Mobile: Horizontal divider, Desktop: Vertical */}
-                      <div className="h-px md:h-12 md:w-px bg-gradient-to-r md:bg-gradient-to-b from-transparent via-purple-200 to-transparent md:mx-4"></div>
-                      
-                      {/* Duration only on mobile, Duration & Status on desktop */}
-                      <div className="flex justify-center md:justify-between md:flex-1">
-                        <div className="text-center flex-1 md:flex-none">
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Duration</p>
-                          <span className="text-xs md:text-sm font-semibold text-gray-700">{service.duration}</span>
+              <div className="relative">
+                <div 
+                  onMouseEnter={() => setIsServiceCarouselPaused(true)}
+                  onMouseLeave={() => setIsServiceCarouselPaused(false)}>
+                  <div className="flex md:hidden overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scroll-smooth services-carousel" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {services.map((service) => (
+                      <div key={service._id} className="group relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-purple-100 hover:border-purple-300 transform hover:-translate-y-1 cursor-pointer block flex-shrink-0 w-[calc(50%-6px)] snap-start"
+                        onClick={() => navigate(`/services/${service._id}`)}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-indigo-50/30 to-amber-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <div className="relative p-3 md:p-4 text-center">
+                          <div className="relative inline-flex items-center justify-center mb-3">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-amber-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
+                            <div className="relative w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-gray-300">
+                              <span className="text-lg md:text-2xl filter drop-shadow-lg">{service.icon}</span>
+                            </div>
+                          </div>
+                          
+                          <h3 className="text-sm font-bold bg-gradient-to-r from-purple-800 via-indigo-700 to-amber-700 bg-clip-text text-transparent mb-1 md:mb-2 group-hover:from-purple-600 group-hover:via-indigo-600 group-hover:to-amber-600 transition-all duration-300 leading-tight">
+                            {service.titleEn}
+                          </h3>
+                          <p className="text-purple-600 text-xs md:text-sm font-medium mb-3 hidden sm:block">{service.titleHi}</p>
                         </div>
-                        
-                        {/* Desktop divider */}
-                        <div className="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-4"></div>
-                        
-                        {/* Status - Desktop only */}
-                        <div className="hidden md:block text-center flex-1">
-                          <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Status</p>
-                          <div className="flex items-center justify-center">
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
-                            <span className="text-xs font-bold text-emerald-600">
-                              {service.isActive ? 'Available' : 'Not Available'}
-                            </span>
+
+                        <div className="px-3 md:px-4 mb-3">
+                          <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-amber-50 rounded-xl p-3 border border-purple-100 shadow-inner">
+                            <div className="flex flex-col space-y-3">
+                              <div className="text-center">
+                                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Price</p>
+                                <span className="text-lg font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
+                                  ₹{service.price}
+                                </span>
+                              </div>
+                              <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent"></div>
+                              <div className="flex justify-center">
+                                <div className="text-center">
+                                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Duration</p>
+                                  <span className="text-xs font-semibold text-gray-700">{service.duration}</span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
+
+                        <div className="px-3 md:px-4 pb-3 md:pb-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleBookService(service);
+                            }}
+                            disabled={!service.isActive}
+                            className="w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 hover:from-purple-800 hover:via-indigo-700 hover:to-amber-700 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border border-white/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs md:text-sm"
+                          >
+                            <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                            <span className="relative z-10 flex items-center justify-center">
+                              <span className="mr-2 text-sm md:text-base">📅</span>
+                              <span className="font-semibold tracking-wide">
+                                {service.isActive ? 'Book Now' : 'Unavailable'}
+                              </span>
+                            </span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    ))}
+                  </div>
+
+                  <div className="hidden md:grid md:grid-cols-5 gap-4 lg:gap-6 xl:gap-8">
+                    {services.slice(0, 5).map((service) => (
+                      <div key={service._id} className="group relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-purple-100 hover:border-purple-300 transform hover:-translate-y-1 cursor-pointer block"
+                        onClick={() => navigate(`/services/${service._id}`)}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-indigo-50/30 to-amber-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <div className="relative p-3 md:p-4 text-center">
+                          <div className="relative inline-flex items-center justify-center mb-3 md:mb-4">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-amber-400 rounded-full blur-md md:blur-lg opacity-20 md:opacity-30 group-hover:opacity-40 md:group-hover:opacity-50 transition-opacity duration-300"></div>
+                            <div className="relative w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-lg md:shadow-xl border-2 border-gray-300">
+                              <span className="text-lg md:text-2xl filter drop-shadow-lg">{service.icon}</span>
+                            </div>
+                          </div>
+                          
+                          <h3 className="text-sm md:text-lg font-bold bg-gradient-to-r from-purple-800 via-indigo-700 to-amber-700 bg-clip-text text-transparent mb-1 md:mb-2 group-hover:from-purple-600 group-hover:via-indigo-600 group-hover:to-amber-600 transition-all duration-300 leading-tight">
+                            {service.titleEn}
+                          </h3>
+                          <p className="text-purple-600 text-xs md:text-sm font-medium mb-3">{service.titleHi}</p>
+                        </div>
+
+                        <div className="px-3 md:px-4 mb-3 md:mb-4">
+                          <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-amber-50 rounded-xl md:rounded-2xl p-3 md:p-4 border border-purple-100 shadow-inner">
+                            <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between">
+                              <div className="text-center md:flex-1">
+                                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Price</p>
+                                <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
+                                  ₹{service.price}
+                                </span>
+                              </div>
+                              
+                              <div className="h-px md:h-12 md:w-px bg-gradient-to-r md:bg-gradient-to-b from-transparent via-purple-200 to-transparent md:mx-4"></div>
+                              
+                              <div className="flex justify-center md:justify-between md:flex-1">
+                                <div className="text-center flex-1 md:flex-none">
+                                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Duration</p>
+                                  <span className="text-xs md:text-sm font-semibold text-gray-700">{service.duration}</span>
+                                </div>
+                                
+                                <div className="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-4"></div>
+                                
+                                <div className="hidden md:block text-center flex-1">
+                                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Status</p>
+                                  <div className="flex items-center justify-center">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+                                    <span className="text-xs font-bold text-emerald-600">
+                                      {service.isActive ? 'Available' : 'Not Available'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="px-3 md:px-4 pb-3 md:pb-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleBookService(service);
+                            }}
+                            disabled={!service.isActive}
+                            className="w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 hover:from-purple-800 hover:via-indigo-700 hover:to-amber-700 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border border-white/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs md:text-sm"
+                          >
+                            <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                            <span className="relative z-10 flex items-center justify-center">
+                              <span className="mr-2 text-sm md:text-base">📅</span>
+                              <span className="text-sm md:text-base font-semibold tracking-wide">
+                                {service.isActive ? 'Book Now' : 'Unavailable'}
+                              </span>
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
-                {/* Bottom Section - Mobile: Button only, Desktop: Review + Button */}
-                <div className="px-3 md:px-4 pb-3 md:pb-4">
-
-                  {/* Book Now Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleBookService(service);
-                    }}
-                    disabled={!service.isActive}
-                    className="w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 hover:from-purple-800 hover:via-indigo-700 hover:to-amber-700 text-white font-bold py-3 px-4 md:px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border border-white/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                    <span className="relative z-10 flex items-center justify-center">
-                      <span className="mr-2 md:mr-3 text-base md:text-xl">📅</span>
-                      <span className="text-sm md:text-base font-semibold tracking-wide">
-                        {service.isActive ? 'Book Now' : 'Unavailable'}
-                      </span>
-                    </span>
-                  </button>
-                </div>
               </div>
-              ))
             )}
-          </div>
 
-          <div className="text-center mt-12">
-            <Link 
-              to="/services"
-              onClick={() => window.scrollTo(0, 0)}
-              className="inline-block bg-purple-700 hover:bg-purple-800 text-white font-bold px-10 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-purple-500/60"
-            >
-              View All Services
-            </Link>
+            <div className="text-center mt-6 md:mt-12">
+              <Link 
+                to="/services"
+                onClick={() => window.scrollTo(0, 0)}
+                className="inline-block bg-purple-700 hover:bg-purple-800 text-white font-bold px-6 md:px-10 py-2.5 md:py-4 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-purple-500/60 text-xs sm:text-sm md:text-base"
+              >
+                View All Services
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Our Shop Section */}
-      <section className="py-16 bg-gradient-to-br from-purple-50 via-indigo-50 to-amber-50 relative overflow-hidden">
-        {/* Cosmic stars background */}
+      <section className="py-8 md:py-16 bg-gradient-to-br from-purple-50 via-indigo-50 to-amber-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-15">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-amber-500/20 backdrop-blur-sm border border-purple-300/50 rounded-full px-6 py-2 mb-6">
-              <span className="text-purple-700 text-sm font-semibold">🛍️ Our Sacred Shop</span>
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+          <div className="text-center mb-6 md:mb-12">
+            <div className="inline-flex items-center bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-amber-500/20 backdrop-blur-sm border border-purple-300/50 rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-3 md:mb-6">
+              <span className="text-purple-700 text-xs sm:text-sm font-semibold">🛍️ Our Sacred Shop</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-900 via-indigo-800 to-amber-800 bg-clip-text text-transparent mb-4">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-900 via-indigo-800 to-amber-800 bg-clip-text text-transparent mb-2 md:mb-4">
               Sacred <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600">Products</span>
             </h2>
-            <p className="text-lg text-purple-800 max-w-2xl mx-auto font-medium">
-              पवित्र उत्पाद - Authentic Spiritual Items for Your Well-being
+            <p className="text-sm md:text-lg text-purple-800 max-w-2xl mx-auto font-medium">
+              पवित्र उत्पाद - Authentic Spiritual Items
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {productsLoading ? (
-              // Loading skeleton
-              Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-xl p-6 animate-pulse">
-                  <div className="h-4 bg-gray-300 rounded mb-4"></div>
-                  <div className="h-3 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-300 rounded mb-4"></div>
-                  <div className="h-8 bg-gray-300 rounded"></div>
-                </div>
-              ))
-            ) : productsError ? (
-              // Error state
-              <div className="col-span-full text-center py-8">
-                <div className="text-red-500 text-lg font-semibold">{productsError}</div>
-                <p className="text-gray-600 mt-2">Please try refreshing the page</p>
-              </div>
-            ) : products.length === 0 ? (
-              // No products state
-              <div className="col-span-full text-center py-8">
-                <div className="text-gray-500 text-lg font-semibold">No products available</div>
-                <p className="text-gray-400 mt-2">Products will appear here once they are added</p>
-              </div>
-            ) : (
-              // Products list
-              products.map((product) => (
+           <div className="relative">
+             {productsLoading ? (
+               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 lg:gap-6 xl:gap-8">
+                 {Array.from({ length: 6 }).map((_, index) => (
+                   <div key={index} className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-3 md:p-6 animate-pulse">
+                     <div className="h-3 bg-gray-300 rounded mb-2 md:mb-4"></div>
+                     <div className="h-2 bg-gray-300 rounded mb-1 md:mb-2"></div>
+                     <div className="h-2 bg-gray-300 rounded mb-2 md:mb-4"></div>
+                     <div className="h-6 md:h-8 bg-gray-300 rounded"></div>
+                   </div>
+                 ))}
+               </div>
+             ) : productsError ? (
+               <div className="col-span-full text-center py-6 md:py-8">
+                 <div className="text-red-500 text-sm md:text-lg font-semibold">{productsError}</div>
+                 <p className="text-gray-600 text-xs md:text-sm mt-2">Please try refreshing the page</p>
+               </div>
+             ) : products.length === 0 ? (
+               <div className="col-span-full text-center py-6 md:py-8">
+                 <div className="text-gray-500 text-sm md:text-lg font-semibold">No products available</div>
+                 <p className="text-gray-400 text-xs md:text-sm mt-2">Products will appear here once they are added</p>
+               </div>
+             ) : (
+               <div className="relative">
+                 <div 
+                   onMouseEnter={() => setIsProductCarouselPaused(true)}
+                   onMouseLeave={() => setIsProductCarouselPaused(false)}>
+                   <div className="flex md:hidden overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scroll-smooth hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                     {products.map((product) => (
+                       <Link 
+                         key={product._id} 
+                         to={`/shop/product/${product._id}`}
+                         onClick={() => window.scrollTo(0, 0)}
+                         className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange-300 transform hover:-translate-y-1 cursor-pointer block flex-shrink-0 w-[calc(50%-6px)] snap-start"
+                       >
+                         {product.images && product.images.length > 0 && (
+                           <div className="h-32 sm:h-40 overflow-hidden bg-gray-50 relative flex items-center justify-center p-2 md:p-4">
+                             <img 
+                               src={getImageURL(product.images[0])}
+                               alt={product.name}
+                               className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                               onError={(e) => {
+                                 e.target.onerror = null;
+                                 e.target.style.display = 'none';
+                                 e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><span class="text-2xl md:text-4xl">🔸</span></div>';
+                               }}
+                             />
+                           </div>
+                         )}
+
+                         <div className="p-2 md:p-3">
+                           <div className="mb-1 md:mb-2">
+                             <h3 className="text-gray-800 font-medium text-xs sm:text-sm line-clamp-2 leading-tight">{product.name}</h3>
+                             {product.nameHi && (
+                               <p className="text-gray-600 text-[10px] sm:text-xs mt-0.5 md:mt-1 hidden sm:block">{product.nameHi}</p>
+                             )}
+                           </div>
+
+                           <div className="flex items-center gap-1 md:gap-2 mb-1.5 md:mb-3">
+                             <span className="text-sm md:text-lg font-bold text-purple-600">₹{product.price}</span>
+                             {product.originalPrice && product.originalPrice > product.price && (
+                               <span className="text-xs md:text-sm text-gray-500 line-through hidden sm:block">₹{product.originalPrice}</span>
+                             )}
+                           </div>
+
+                           {product.inStock ? (
+                             <div className="flex gap-1.5 md:gap-2">
+                               <button
+                                 onClick={(e) => handleAddToCart(product, e)}
+                                 className="flex-1 border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-semibold py-1.5 md:py-2 px-1.5 md:px-3 rounded-lg transition-all duration-300 text-[10px] sm:text-xs md:text-sm flex items-center justify-center"
+                               >
+                                 <span className="mr-0.5 md:mr-1 text-[10px] sm:text-sm md:text-base">🛒</span>
+                                 <span className="hidden sm:inline">Add</span>
+                               </button>
+                               <button
+                                 onClick={(e) => handleBuyNow(product, e)}
+                                 className="flex-1 bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-700 hover:to-amber-700 text-white font-semibold py-1.5 md:py-2 px-1.5 md:px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-[10px] sm:text-xs md:text-sm flex items-center justify-center"
+                               >
+                                 <span className="mr-0.5 md:mr-1 text-[10px] sm:text-sm md:text-base">⚡</span>
+                                 <span className="hidden sm:inline">Buy</span>
+                               </button>
+                             </div>
+                           ) : (
+                             <button
+                               disabled
+                               className="w-full bg-gray-400 text-white font-semibold py-1.5 md:py-2 px-1.5 md:px-3 rounded-lg cursor-not-allowed opacity-60 text-[10px] sm:text-xs md:text-sm flex items-center justify-center"
+                             >
+                               <span className="mr-0.5 md:mr-1 text-[10px] sm:text-sm md:text-base">❌</span>
+                               <span className="hidden sm:inline">Out of Stock</span>
+                             </button>
+                           )}
+                         </div>
+                       </Link>
+                     ))}
+                   </div>
+
+                   <div className="hidden md:grid md:grid-cols-5 gap-4 lg:gap-6 xl:gap-8">
+                     {products.slice(0, 5).map((product) => (
+                       <Link 
+                         key={product._id} 
+                         to={`/shop/product/${product._id}`}
+                         onClick={() => window.scrollTo(0, 0)}
+                         className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange-300 transform hover:-translate-y-1 cursor-pointer block"
+                       >
+                         {product.images && product.images.length > 0 && (
+                           <div className="h-48 lg:h-56 xl:h-72 overflow-hidden bg-gray-50 relative flex items-center justify-center p-2 md:p-4">
+                             <img 
+                               src={getImageURL(product.images[0])}
+                               alt={product.name}
+                               className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                               onError={(e) => {
+                                 e.target.onerror = null;
+                                 e.target.style.display = 'none';
+                                 e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><span class="text-2xl md:text-4xl">🔸</span></div>';
+                               }}
+                             />
+                           </div>
+                         )}
+
+                         <div className="p-3">
+                           <div className="mb-2">
+                             <h3 className="text-gray-800 font-medium text-sm md:text-base line-clamp-2 leading-tight">{product.name}</h3>
+                             {product.nameHi && (
+                               <p className="text-gray-600 text-xs md:text-sm mt-1 hidden sm:block">{product.nameHi}</p>
+                             )}
+                           </div>
+
+                           <div className="flex items-center gap-2 mb-3">
+                             <span className="text-lg lg:text-xl xl:text-2xl font-bold text-purple-600">₹{product.price}</span>
+                             {product.originalPrice && product.originalPrice > product.price && (
+                               <span className="text-xs md:text-sm text-gray-500 line-through hidden sm:block">₹{product.originalPrice}</span>
+                             )}
+                           </div>
+
+                           {product.inStock ? (
+                             <div className="flex gap-2">
+                               <button
+                                 onClick={(e) => handleAddToCart(product, e)}
+                                 className="flex-1 border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 text-xs md:text-sm flex items-center justify-center"
+                               >
+                                 <span className="mr-1 text-sm md:text-base">🛒</span>
+                                 <span>Add</span>
+                               </button>
+                               <button
+                                 onClick={(e) => handleBuyNow(product, e)}
+                                 className="flex-1 bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-700 hover:to-amber-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-xs md:text-sm flex items-center justify-center"
+                               >
+                                 <span className="mr-1 text-sm md:text-base">⚡</span>
+                                 <span>Buy</span>
+                               </button>
+                             </div>
+                           ) : (
+                             <button
+                               disabled
+                               className="w-full bg-gray-400 text-white font-semibold py-2 px-3 rounded-lg cursor-not-allowed opacity-60 text-xs md:text-sm flex items-center justify-center"
+                             >
+                               <span className="mr-1 text-sm md:text-base">❌</span>
+                               <span>Out of Stock</span>
+                             </button>
+                           )}
+                         </div>
+                       </Link>
+                     ))}
+                   </div>
+                 </div>
+               </div>
+             )}
+
+            <div className="text-center mt-6 md:mt-12">
               <Link 
-                key={product._id} 
-                to={`/shop/product/${product._id}`}
+                to="/shop"
                 onClick={() => window.scrollTo(0, 0)}
-                className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange-300 transform hover:-translate-y-1 cursor-pointer block"
+                className="inline-block bg-purple-700 hover:bg-purple-800 text-white font-bold px-6 md:px-10 py-2.5 md:py-4 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-purple-500/60 text-xs sm:text-sm md:text-base"
               >
-                
-                {/* Product Image - Clean Image Only */}
-                {product.images && product.images.length > 0 && (
-                  <div className="h-48 sm:h-56 md:h-64 overflow-hidden bg-gray-50 relative flex items-center justify-center p-4">
-                    <img 
-                      src={getImageURL(product.images[0])}
-                      alt={product.name}
-                      className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400"><span class="text-4xl">🔸</span></div>';
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Product Info - Amazon Style */}
-                <div className="p-3">
-                  {/* Product Name */}
-                  <div className="mb-2">
-                    <h3 className="text-gray-800 font-medium text-sm sm:text-base line-clamp-2 leading-tight">{product.name}</h3>
-                    {product.nameHi && (
-                      <p className="text-gray-600 text-xs mt-1">{product.nameHi}</p>
-                    )}
-                  </div>
-
-                  {/* Price */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg sm:text-xl font-bold text-purple-600">₹{product.price}</span>
-                    {product.originalPrice && product.originalPrice > product.price && (
-                      <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-                    )}
-                  </div>
-
-                  {/* Action Buttons */}
-                  {product.inStock ? (
-                    <div className="flex gap-2">
-                      {/* Add to Cart Button */}
-                      <button
-                        onClick={(e) => handleAddToCart(product, e)}
-                        className="flex-1 border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 text-sm flex items-center justify-center"
-                      >
-                        <span className="mr-1">🛒</span>
-                        <span>Add to Cart</span>
-                      </button>
-
-                      {/* Buy Now Button */}
-                      <button
-                        onClick={(e) => handleBuyNow(product, e)}
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-amber-600 hover:from-purple-700 hover:to-amber-700 text-white font-semibold py-2 px-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-sm flex items-center justify-center"
-                      >
-                        <span className="mr-1">⚡</span>
-                        <span>Buy</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      disabled
-                      className="w-full bg-gray-400 text-white font-semibold py-2 px-3 rounded-lg cursor-not-allowed opacity-60 text-sm flex items-center justify-center"
-                    >
-                      <span className="mr-1">❌</span>
-                      <span>Out of Stock</span>
-                    </button>
-                  )}
-                </div>
+                View All Products
               </Link>
-            ))
-            )}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link 
-              to="/shop"
-              onClick={() => window.scrollTo(0, 0)}
-              className="inline-block bg-purple-700 hover:bg-purple-800 text-white font-bold px-10 py-4 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-purple-500/60"
-            >
-              View All Products
-            </Link>
+            </div>
           </div>
         </div>
       </section>
