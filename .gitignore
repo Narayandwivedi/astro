@@ -73,3 +73,6 @@ Desktop.ini
 
 # Images
 img/
+
+# Uploaded media
+backend/uploads/
