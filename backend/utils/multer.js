@@ -6,6 +6,7 @@ const fs = require('fs');
 const uploadsDir = path.join(__dirname, '../uploads');
 const productImagesDir = path.join(uploadsDir, 'products');
 const serviceImagesDir = path.join(uploadsDir, 'services');
+const blogImagesDir = path.join(uploadsDir, 'blogs');
 
 const createDirectories = () => {
   if (!fs.existsSync(uploadsDir)) {
@@ -18,6 +19,10 @@ const createDirectories = () => {
   
   if (!fs.existsSync(serviceImagesDir)) {
     fs.mkdirSync(serviceImagesDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(blogImagesDir)) {
+    fs.mkdirSync(blogImagesDir, { recursive: true });
   }
 };
 
@@ -46,6 +51,19 @@ const serviceStorage = multer.diskStorage({
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const extension = path.extname(file.originalname);
     const filename = 'service-' + uniqueSuffix + extension;
+    cb(null, filename);
+  }
+});
+
+// Storage configuration for blogs
+const blogStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, blogImagesDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const extension = path.extname(file.originalname);
+    const filename = 'blog-' + uniqueSuffix + extension;
     cb(null, filename);
   }
 });
@@ -103,17 +121,29 @@ const serviceUpload = multer({
   fileFilter: imageFilter
 });
 
+// Multer configuration for blogs
+const blogUpload = multer({
+  storage: blogStorage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB for blog content images
+  },
+  fileFilter: imageFilter
+});
+
 // Upload middleware functions
 const uploadSingleProduct = productUpload.single('image');
 const uploadMultipleProducts = productUpload.array('images', 5);
 const uploadSingleService = serviceUpload.single('image');
 const uploadMultipleServices = serviceUpload.array('images', 5);
+const uploadSingleBlog = blogUpload.single('image');
 
 module.exports = {
   uploadSingleProduct,
   uploadMultipleProducts,
   uploadSingleService,
   uploadMultipleServices,
+  uploadSingleBlog,
   productImagesDir,
-  serviceImagesDir
+  serviceImagesDir,
+  blogImagesDir
 };

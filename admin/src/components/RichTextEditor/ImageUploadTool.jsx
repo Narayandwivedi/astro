@@ -35,7 +35,7 @@ const ImageUploadTool = ({ BACKEND_URL, executeCommand, disabled }) => {
 
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/api/upload/image`,
+        `${BACKEND_URL}/api/upload/blog/image`,
         formData,
         {
           withCredentials: true,

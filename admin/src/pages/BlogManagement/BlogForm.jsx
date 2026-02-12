@@ -73,7 +73,7 @@ const BlogForm = ({
 
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/api/blog/generate-slug`,
+        `${BACKEND_URL}/api/blogs/generate-slug`,
         { title: slug },
         { withCredentials: true }
       );
@@ -178,7 +178,7 @@ const BlogForm = ({
       formDataUpload.append('category', 'blog');
 
       const response = await axios.post(
-        `${BACKEND_URL}/api/upload/image`,
+        `${BACKEND_URL}/api/upload/blog/image`,
         formDataUpload,
         {
           withCredentials: true,
@@ -520,27 +520,6 @@ const BlogForm = ({
                 </p>
               </div>
             )}
-          </div>
-
-          {/* Manual URL Input (Optional) */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Or enter image URL manually (optional)
-            </label>
-            <input
-              type="url"
-              value={formData.featuredImage}
-              onChange={(e) => {
-                handleInputChange('featuredImage', e.target.value);
-                setImagePreview(null); // Clear preview to use the URL
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-              placeholder="https://example.com/image.jpg"
-              disabled={isSubmitting}
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              This will override any uploaded image
-            </p>
           </div>
 
           {/* Image Alt Tag */}

@@ -7,8 +7,10 @@ const {
   uploadMultipleProducts,
   uploadSingleService,
   uploadMultipleServices,
+  uploadSingleBlog,
   productImagesDir,
-  serviceImagesDir
+  serviceImagesDir,
+  blogImagesDir
 } = require('../utils/multer');
 
 // Image processing configuration for ecommerce products
@@ -18,6 +20,13 @@ const PRODUCT_IMAGE_CONFIG = {
   quality: 85,       // Good quality with reasonable file size
   format: 'webp',    // Modern format with better compression
   enableProcessing: true   // Enable Sharp processing for WebP conversion
+};
+
+const BLOG_IMAGE_CONFIG = {
+  width: 1200,
+  height: 675,
+  quality: 84,
+  format: 'webp'
 };
 
 // Helper function to process and convert image to WebP
@@ -106,6 +115,19 @@ const processImage = async (inputPath, outputPath) => {
     
     return false;
   }
+};
+
+const processImageToWebp = async (inputPath, outputPath, config) => {
+  await sharp(inputPath)
+    .resize(config.width, config.height, {
+      fit: 'cover',
+      position: 'center'
+    })
+    .webp({
+      quality: config.quality,
+      effort: 4
+    })
+    .toFile(outputPath);
 };
 
 // Upload single product image
@@ -271,6 +293,78 @@ const uploadProductImage = (req, res) => {
       return res.status(500).json({
         success: false,
         message: 'Failed to process uploaded image'
+      });
+    }
+  });
+};
+
+// Upload single blog image (dedicated endpoint)
+const uploadBlogImage = (req, res) => {
+  uploadSingleBlog(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false,
+          message: 'File too large. Maximum size is 10MB.'
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: 'Upload error: ' + err.message
+      });
+    } else if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    const inputPath = req.file.path;
+    const baseName = path.parse(req.file.filename).name;
+    const outputFilename = `${baseName}.webp`;
+    const outputPath = path.join(blogImagesDir, outputFilename);
+
+    try {
+      await processImageToWebp(inputPath, outputPath, BLOG_IMAGE_CONFIG);
+
+      if (fs.existsSync(inputPath)) {
+        fs.unlinkSync(inputPath);
+      }
+
+      const stats = fs.statSync(outputPath);
+      const imagePath = `images/blogs/${outputFilename}`;
+
+      return res.status(200).json({
+        success: true,
+        message: 'Blog image uploaded successfully',
+        imagePath,
+        data: {
+          url: imagePath,
+          filename: outputFilename,
+          originalName: req.file.originalname,
+          size: stats.size,
+          dimensions: `${BLOG_IMAGE_CONFIG.width}x${BLOG_IMAGE_CONFIG.height}`,
+          format: 'webp',
+          uploadedAt: new Date()
+        }
+      });
+    } catch (processingError) {
+      console.error('Blog image processing error:', processingError);
+
+      if (fs.existsSync(outputPath)) {
+        fs.unlinkSync(outputPath);
+      }
+
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to process uploaded blog image'
       });
     }
   });
@@ -449,6 +543,7 @@ const getImageInfo = (req, res) => {
 module.exports = {
   uploadProductImage,
   uploadProductImages,
+  uploadBlogImage,
   deleteProductImage,
   getImageInfo
 };
