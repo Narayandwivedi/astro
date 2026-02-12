@@ -69,6 +69,78 @@ function calculateReadTime(content) {
   return Math.ceil(wordCount / wordsPerMinute) || 1;
 }
 
+function humanizeFieldName(field) {
+  const map = {
+    metaTitle: "Meta title",
+    metaDescription: "Meta description",
+    featuredImageAlt: "Featured image alt text",
+    title: "Title",
+    content: "Content",
+    excerpt: "Excerpt",
+    slug: "Slug",
+    category: "Category",
+    status: "Status",
+  };
+
+  if (map[field]) return map[field];
+  return field.charAt(0).toUpperCase() + field.slice(1);
+}
+
+function getFriendlyBlogError(error, fallbackMessage) {
+  if (error && error.name === "ValidationError" && error.errors) {
+    const firstKey = Object.keys(error.errors)[0];
+    const validationErr = error.errors[firstKey];
+    const field = humanizeFieldName(validationErr.path || firstKey);
+
+    if (validationErr.kind === "maxlength") {
+      return {
+        status: 400,
+        message: `${field} length is greater than ${validationErr.properties.maxlength} characters, which is not allowed.`,
+      };
+    }
+
+    if (validationErr.kind === "minlength") {
+      return {
+        status: 400,
+        message: `${field} must be at least ${validationErr.properties.minlength} characters.`,
+      };
+    }
+
+    if (validationErr.kind === "required") {
+      return {
+        status: 400,
+        message: `${field} is required.`,
+      };
+    }
+
+    if (validationErr.kind === "enum") {
+      return {
+        status: 400,
+        message: `${field} has an invalid value. Please select a valid option.`,
+      };
+    }
+
+    return {
+      status: 400,
+      message: validationErr.message || `${field} is invalid.`,
+    };
+  }
+
+  if (error && error.code === 11000) {
+    const duplicateField = Object.keys(error.keyPattern || {})[0] || "field";
+    const field = humanizeFieldName(duplicateField);
+    return {
+      status: 400,
+      message: `${field} already exists. Please use a different value.`,
+    };
+  }
+
+  return {
+    status: 500,
+    message: fallbackMessage,
+  };
+}
+
 // ==================== CONTROLLER FUNCTIONS ====================
 
 // Create a new blog post
@@ -193,10 +265,14 @@ const createBlog = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating blog:", error);
-    res.status(500).json({
+    const friendlyError = getFriendlyBlogError(
+      error,
+      "Unable to create blog right now. Please try again."
+    );
+
+    res.status(friendlyError.status).json({
       success: false,
-      message: "Error creating blog",
-      error: error.message,
+      message: friendlyError.message,
     });
   }
 };
@@ -554,10 +630,14 @@ const updateBlog = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating blog:", error);
-    res.status(500).json({
+    const friendlyError = getFriendlyBlogError(
+      error,
+      "Unable to update blog right now. Please try again."
+    );
+
+    res.status(friendlyError.status).json({
       success: false,
-      message: "Error updating blog",
-      error: error.message,
+      message: friendlyError.message,
     });
   }
 };
@@ -826,10 +906,14 @@ const autoSaveBlog = async (req, res) => {
     }
   } catch (error) {
     console.error("Error auto-saving blog:", error);
-    res.status(500).json({
+    const friendlyError = getFriendlyBlogError(
+      error,
+      "Unable to auto-save blog right now. Please try again."
+    );
+
+    res.status(friendlyError.status).json({
       success: false,
-      message: "Error auto-saving blog",
-      error: error.message,
+      message: friendlyError.message,
     });
   }
 };

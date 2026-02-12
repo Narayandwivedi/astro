@@ -329,7 +329,11 @@ const uploadBlogImage = (req, res) => {
     const inputPath = req.file.path;
     const baseName = path.parse(req.file.filename).name;
     const outputFilename = `${baseName}.webp`;
-    const outputPath = path.join(blogImagesDir, outputFilename);
+    const finalOutputPath = path.join(blogImagesDir, outputFilename);
+    const needsTempOutput = path.resolve(inputPath) === path.resolve(finalOutputPath);
+    const outputPath = needsTempOutput
+      ? path.join(blogImagesDir, `${baseName}-temp-${Date.now()}.webp`)
+      : finalOutputPath;
 
     try {
       await processImageToWebp(inputPath, outputPath, BLOG_IMAGE_CONFIG);
@@ -338,7 +342,11 @@ const uploadBlogImage = (req, res) => {
         fs.unlinkSync(inputPath);
       }
 
-      const stats = fs.statSync(outputPath);
+      if (needsTempOutput) {
+        fs.renameSync(outputPath, finalOutputPath);
+      }
+
+      const stats = fs.statSync(finalOutputPath);
       const imagePath = `images/blogs/${outputFilename}`;
 
       return res.status(200).json({
