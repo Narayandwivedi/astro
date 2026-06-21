@@ -24,10 +24,13 @@ const Homepage = () => {
   }, []);
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [blogsLoading, setBlogsLoading] = useState(true);
   const [servicesError, setServicesError] = useState(null);
   const [productsError, setProductsError] = useState(null);
+  const [blogsError, setBlogsError] = useState(null);
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -117,6 +120,30 @@ const Homepage = () => {
     };
 
     fetchProducts();
+  }, []);
+
+  // Fetch latest blogs
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setBlogsLoading(true);
+        const response = await fetch(`${BACKEND_URL}/api/blogs/published?limit=4`);
+        const data = await response.json();
+
+        if (data.success) {
+          setBlogs(data.blogs);
+        } else {
+          setBlogsError('Failed to fetch blogs');
+        }
+      } catch (err) {
+        console.error('Error fetching blogs:', err);
+        setBlogsError('Failed to load blogs');
+      } finally {
+        setBlogsLoading(false);
+      }
+    };
+
+    fetchBlogs();
   }, []);
 
   // Auto-slide product carousel (mobile only)
@@ -481,6 +508,97 @@ const Homepage = () => {
                 View All Services
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Blogs Section */}
+      <section className="py-8 md:py-16 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-15">
+          <div className="w-full h-full cosmic-stars"></div>
+        </div>
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+          <div className="text-center mb-6 md:mb-12">
+            <div className="inline-flex items-center bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-300/50 rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-3 md:mb-6">
+              <span className="text-amber-700 text-xs sm:text-sm font-semibold">📖 Latest Articles</span>
+            </div>
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-amber-900 via-orange-800 to-yellow-800 bg-clip-text text-transparent mb-2 md:mb-4">
+              Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-700 via-orange-600 to-yellow-600">Blogs</span>
+            </h2>
+            <p className="text-sm md:text-lg text-amber-800 max-w-2xl mx-auto font-medium">
+              हमारे ब्लॉग - ज्ञान और जानकारी
+            </p>
+          </div>
+
+          {blogsLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-xl shadow-xl p-4 animate-pulse">
+                  <div className="h-32 bg-gray-300 rounded-lg mb-3"></div>
+                  <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-300 rounded mb-1"></div>
+                  <div className="h-3 bg-gray-300 rounded w-2/3"></div>
+                </div>
+              ))}
+            </div>
+          ) : blogsError ? (
+            <div className="text-center py-6">
+              <p className="text-red-500 text-sm font-semibold">{blogsError}</p>
+            </div>
+          ) : blogs.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-gray-500 text-sm font-semibold">No blogs available</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+              {blogs.map((blog) => (
+                <Link
+                  key={blog._id}
+                  to={`/blog/${blog.slug}`}
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-amber-100 hover:border-amber-300 transform hover:-translate-y-1"
+                >
+                  <div className="h-28 sm:h-32 md:h-40 bg-gradient-to-br from-amber-100 to-orange-100 overflow-hidden">
+                    {blog.featuredImage ? (
+                      <img
+                        src={getImageURL(blog.featuredImage)}
+                        alt={blog.featuredImageAlt || blog.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center" style={{ display: blog.featuredImage ? 'none' : 'flex' }}>
+                      <span className="text-2xl md:text-3xl">📖</span>
+                    </div>
+                  </div>
+                  <div className="p-3 md:p-4">
+                    <h3 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 mb-1 md:mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
+                      {blog.title}
+                    </h3>
+                    <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 line-clamp-2">
+                      {blog.excerpt}
+                    </p>
+                    <div className="mt-2 md:mt-3 flex items-center justify-between text-[10px] sm:text-xs text-gray-500">
+                      <span>{new Date(blog.publishedAt || blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      <span className="text-orange-600 font-medium group-hover:underline">Read →</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          <div className="text-center mt-6 md:mt-12">
+            <Link
+              to="/blogs"
+              onClick={() => window.scrollTo(0, 0)}
+              className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 md:px-10 py-2.5 md:py-4 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-orange-500/60 text-xs sm:text-sm md:text-base"
+            >
+              See All Blogs
+            </Link>
           </div>
         </div>
       </section>
