@@ -593,7 +593,7 @@ const Homepage = () => {
 
           <div className="text-center mt-6 md:mt-12">
             <Link
-              to="/blogs"
+              to="/blog"
               onClick={() => window.scrollTo(0, 0)}
               className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 md:px-10 py-2.5 md:py-4 rounded-lg md:rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-orange-500/60 text-xs sm:text-sm md:text-base"
             >
