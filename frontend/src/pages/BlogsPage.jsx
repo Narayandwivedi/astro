@@ -253,84 +253,80 @@ const BlogsPage = () => {
       <div className="min-h-screen bg-gray-50">
         <Navigation />
 
-        <div className="bg-white shadow-sm border-b pt-20 md:pt-24">
-          <div className="container mx-auto px-3 sm:px-4 py-4 md:py-6">
-            <div className="flex flex-col lg:flex-row gap-3 md:gap-4 items-start lg:items-center justify-between">
-              <form onSubmit={handleSearch} className="w-full lg:max-w-md flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search articles..."
-                    className="w-full pl-9 pr-3 sm:pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  className="px-3 sm:px-4 md:px-6 py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                >
-                  Search
-                </button>
-              </form>
-
-              <div className="flex flex-wrap gap-1.5 md:gap-2 w-full lg:w-auto">
+        {/* Page Header & Filters */}
+        <div className="bg-white border-b pt-24 pb-8 sm:pt-32 sm:pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+                Astrology <span className="text-orange-600">Insights</span>
+              </h1>
+              <p className="text-lg text-gray-600">
+                Explore our latest articles, guides, and spiritual wisdom to navigate your life's journey.
+              </p>
+            </div>
+            
+            {/* Search and Categories Bar */}
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between bg-gray-50 p-2 sm:p-3 rounded-2xl border border-gray-100">
+              <div className="w-full lg:w-auto flex flex-wrap gap-1.5 sm:gap-2 justify-center lg:justify-start">
                 {categories.map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors capitalize ${
+                    className={`px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-semibold transition-all capitalize ${
                       selectedCategory === category
-                        ? 'bg-orange-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-orange-600 text-white shadow-md'
+                        : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
                     }`}
                   >
                     {category}
                   </button>
                 ))}
               </div>
+
+              <form onSubmit={handleSearch} className="w-full lg:w-96 flex relative">
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search articles..."
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
 
-        <section id="articles" className="container mx-auto px-3 sm:px-4 py-6 md:py-8">
-          <div className="text-center mb-4 md:mb-6 lg:mb-8">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent mb-2 md:mb-4">
-              Astrology Blog
-            </h1>
-            <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
-              Expert insights by <strong>Acharya Satya Prakash Tripathi</strong>
-            </p>
-          </div>
+        <section id="articles" className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
           {loading ? (
-            <div className="flex justify-center items-center py-12 md:py-20">
-              <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 border-orange-600"></div>
-              <p className="mt-4 ml-4 text-sm md:text-base text-gray-600">Loading blogs...</p>
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
             </div>
           ) : error ? (
-            <div className="text-center py-12 md:py-20">
-              <div className="text-red-400 text-4xl md:text-6xl mb-3 md:mb-4">⚠️</div>
-              <h3 className="text-lg md:text-2xl font-semibold text-gray-700 mb-2">Error Loading Blogs</h3>
-              <p className="text-sm md:text-base text-gray-500 mb-4">{error}</p>
+            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm max-w-2xl mx-auto">
+              <div className="text-red-400 text-5xl mb-4">⚠️</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Blogs</h3>
+              <p className="text-gray-600 mb-6">{error}</p>
               <button
                 onClick={fetchBlogs}
-                className="bg-orange-600 text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-orange-700 transition-colors"
+                className="bg-orange-600 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-orange-700 transition-colors shadow-sm"
               >
                 Try Again
               </button>
             </div>
           ) : filteredBlogs.length === 0 ? (
-            <div className="text-center py-12 md:py-20">
-              <div className="text-gray-400 text-4xl md:text-6xl mb-3 md:mb-4">🔮</div>
-              <h3 className="text-lg md:text-2xl font-semibold text-gray-700 mb-2">
-                {blogs.length === 0 ? 'No blogs available' : 'No articles found'}
+            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm max-w-2xl mx-auto">
+              <div className="text-gray-400 text-5xl mb-4">📝</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {blogs.length === 0 ? 'No articles yet' : 'No articles found'}
               </h3>
-              <p className="text-sm md:text-base text-gray-500">
+              <p className="text-gray-600">
                 {blogs.length === 0
                   ? 'Check back later for new content.'
                   : 'Try adjusting your search or filter criteria.'
@@ -338,68 +334,77 @@ const BlogsPage = () => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
               {filteredBlogs.map((blog) => (
                 <Link 
                   key={blog._id} 
                   to={`/blog/${blog.slug}`}
-                  className="block"
+                  className="block group h-full"
                 >
-                  <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer">
-                    <div className="h-40 sm:h-48 md:h-56 lg:h-64 bg-gradient-to-br from-indigo-100 to-purple-100" style={{ aspectRatio: '16/9' }}>
+                  <article className="bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
+                    {/* Image Area */}
+                    <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
                       {blog.featuredImage ? (
                         <img
                           src={getImageURL(blog.featuredImage)}
                           alt={blog.featuredImageAlt || blog.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
                           }}
                         />
                       ) : null}
-                      <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center" style={{ display: blog.featuredImage ? 'none' : 'flex' }}>
-                        <div className="text-center">
-                          <div className="text-3xl sm:text-4xl mb-1 md:mb-2">🔮</div>
-                          <p className="text-indigo-700 font-medium text-xs sm:text-sm">Astrology Insights</p>
-                        </div>
+                      <div className="w-full h-full flex items-center justify-center bg-orange-50" style={{ display: blog.featuredImage ? 'none' : 'flex' }}>
+                        <span className="text-2xl sm:text-4xl">✨</span>
                       </div>
-                    </div>
-
-                    <div className="p-3 sm:p-4 md:p-6">
-                      <div className="mb-2 md:mb-3">
-                        <span className={`inline-block px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-full capitalize border ${getCategoryColor(blog.category)}`}>
+                      
+                      {/* Floating Category Badge */}
+                      <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+                        <span className="bg-white/95 backdrop-blur text-gray-900 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wide shadow-sm">
                           {blog.category}
                         </span>
                       </div>
+                    </div>
 
-                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 mb-2 md:mb-3 line-clamp-2 hover:text-orange-600 transition-colors">
+                    {/* Content Area */}
+                    <div className="p-3 sm:p-5 flex flex-col flex-1">
+                      <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-500 mb-2 font-medium">
+                        <span className="flex items-center gap-1">
+                          <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <time dateTime={blog.publishedAt || blog.createdAt}>
+                            {formatDate(blog.publishedAt || blog.createdAt)}
+                          </time>
+                        </span>
+                      </div>
+
+                      <h2 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors leading-snug">
                         {blog.title}
                       </h2>
 
-                      <p className="text-gray-600 mb-2 md:mb-4 text-xs sm:text-sm line-clamp-2 md:line-clamp-3">
+                      <p className="text-gray-600 text-[11px] sm:text-sm mb-3 sm:mb-4 line-clamp-2 flex-1 leading-relaxed">
                         {blog.excerpt}
                       </p>
 
-                      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
-                        <div className="flex items-center space-x-2 sm:space-x-4">
-                          <span className="flex items-center">
+                      <div className="pt-2 sm:pt-3 border-t border-gray-100 mt-auto flex items-center justify-between">
+                        <span className="font-semibold text-orange-600 text-[11px] sm:text-sm flex items-center gap-1 group-hover:gap-1.5 transition-all">
+                          Read 
+                          <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                          </svg>
+                        </span>
+                        
+                        {blog.views > 0 && (
+                          <span className="flex items-center text-gray-400 text-[10px] sm:text-xs font-medium">
                             <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {formatDate(blog.publishedAt || blog.createdAt)}
-                          </span>
-                          <span className="hidden sm:flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            {blog.views || 0}
+                            {blog.views}
                           </span>
-                        </div>
-                        <span className="text-orange-600 font-medium text-xs sm:text-sm">
-                          Read →
-                        </span>
+                        )}
                       </div>
                     </div>
                   </article>
