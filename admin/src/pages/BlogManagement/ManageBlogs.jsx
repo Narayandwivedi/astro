@@ -195,6 +195,7 @@ const ManageBlogs = () => {
       case 'astrology': return 'bg-blue-100 text-blue-800';
       case 'spirituality': return 'bg-purple-100 text-purple-800';
       case 'wellness': return 'bg-orange-100 text-orange-800';
+      case 'vastu': return 'bg-green-100 text-green-800';
       case 'general': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -213,7 +214,7 @@ const ManageBlogs = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="text-sm font-medium text-gray-500">Total Blogs</div>
           <div className="text-2xl font-bold text-gray-900">{stats.totalBlogs || 0}</div>
@@ -268,6 +269,7 @@ const ManageBlogs = () => {
               <option value="">All Categories</option>
               <option value="astrology">Astrology</option>
               <option value="spirituality">Spirituality</option>
+              <option value="vastu">Vastu</option>
               <option value="wellness">Wellness</option>
               <option value="general">General</option>
             </select>

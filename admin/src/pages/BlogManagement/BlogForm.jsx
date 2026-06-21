@@ -8,6 +8,7 @@ const BLOG_CATEGORIES = [
   { value: 'general', label: 'General' },
   { value: 'astrology', label: 'Astrology' },
   { value: 'spirituality', label: 'Spirituality' },
+  { value: 'vastu', label: 'Vastu' },
   { value: 'wellness', label: 'Wellness' },
 ];
 

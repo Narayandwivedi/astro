@@ -8,7 +8,7 @@ const BlogsPage = () => {
 
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [categories] = useState(['all', 'astrology', 'horoscope', 'spirituality', 'meditation', 'remedies', 'general']);
+  const [categories] = useState(['all', 'astrology', 'horoscope', 'spirituality', 'meditation', 'remedies', 'vastu', 'general']);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredBlogs, setFilteredBlogs] = useState([]);
@@ -104,6 +104,7 @@ const BlogsPage = () => {
       case 'spirituality': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
       case 'meditation': return 'bg-green-100 text-green-800 border-green-200';
       case 'remedies': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'vastu': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
