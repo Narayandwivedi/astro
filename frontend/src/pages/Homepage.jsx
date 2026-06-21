@@ -79,7 +79,7 @@ const Homepage = () => {
     const fetchServices = async () => {
       try {
         setServicesLoading(true);
-        const response = await fetch(`${BACKEND_URL}/api/services/popular?limit=6`);
+        const response = await fetch(`${BACKEND_URL}/api/services/popular?limit=4`);
         const data = await response.json();
         
         if (data.success) {
