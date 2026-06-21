@@ -42,7 +42,7 @@ const Navigation = () => {
   }, [showUserMenu]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white py-4 shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white py-2 shadow-lg">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex items-center">
           

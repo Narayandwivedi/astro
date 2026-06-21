@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
-import ShareButton from '../components/ShareButton';
+import { TopShareBar } from '../components/TopShareBar';
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -22,7 +22,7 @@ const BlogDetailPage = () => {
         if (data.success) {
           setBlog(data.blog);
           // Fetch related blogs
-          fetchRelatedBlogs(data.blog.category);
+          fetchRelatedBlogs();
         } else {
           setError(data.message || 'Blog not found');
         }
@@ -34,12 +34,12 @@ const BlogDetailPage = () => {
       }
     };
 
-    const fetchRelatedBlogs = async (category) => {
+    const fetchRelatedBlogs = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/blogs/published?category=${category}&limit=3`);
+        const response = await fetch(`${BACKEND_URL}/api/blogs/published?limit=8`);
         const data = await response.json();
         if (data.success) {
-          setRelatedBlogs(data.blogs.filter(b => b.slug !== slug));
+          setRelatedBlogs(data.blogs.filter(b => b.slug !== slug).slice(0, 8));
         }
       } catch (err) {
         console.error('Error fetching related blogs:', err);
@@ -186,7 +186,7 @@ const BlogDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-100">
         <Navigation />
-        <div className="px-3 py-6 sm:px-6 sm:py-10">
+        <div className="px-3 pt-24 pb-6 sm:px-6 sm:pt-28 sm:pb-10">
           <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 animate-pulse">
               <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
@@ -208,7 +208,7 @@ const BlogDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-100">
         <Navigation />
-        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
+        <div className="container mx-auto px-4 sm:px-6 pt-32 pb-12 sm:pt-40 sm:pb-20 text-center">
           <div className="max-w-md mx-auto">
             <div className="text-gray-400 text-5xl sm:text-6xl mb-4">🔮</div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
@@ -236,7 +236,7 @@ const BlogDetailPage = () => {
     <div className="min-h-screen bg-gray-100">
       <Navigation />
 
-      <main className="flex-1 px-3 py-6 sm:px-6 sm:py-10">
+      <main className="flex-1 px-3 pt-24 pb-6 sm:px-6 sm:pt-32 sm:pb-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.7fr)_360px] gap-8 items-start">
 
@@ -266,20 +266,11 @@ const BlogDetailPage = () => {
                   <span className="text-gray-800 font-medium truncate max-w-[180px] sm:max-w-xs">{blog.title}</span>
                 </nav>
 
-                {/* Category badge + share */}
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <span className="inline-flex items-center rounded-full bg-red-50 text-red-700 px-3 py-1 text-xs font-semibold capitalize">
+                {/* Meta row */}
+                <div className="mt-4 flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500">
+                  <span className="inline-flex items-center rounded-full bg-red-50 text-red-700 px-3 py-1 font-semibold capitalize">
                     {blog.category}
                   </span>
-                  <ShareButton
-                    url={window.location.href}
-                    title={blog.title}
-                    description={blog.excerpt}
-                  />
-                </div>
-
-                {/* Meta row */}
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500">
                   <time dateTime={blog.publishedAt || blog.createdAt}>{formatDate(blog.publishedAt || blog.createdAt)}</time>
                   {blog.author ? <span>By {blog.author}</span> : null}
                   <span>{blog.readTime || estimateReadTime(blog.content)} min read</span>
@@ -290,6 +281,14 @@ const BlogDetailPage = () => {
                 <h1 className="mt-4 text-xl sm:text-3xl font-bold tracking-tight text-gray-900 leading-tight">
                   {blog.title}
                 </h1>
+                
+                {/* Share */}
+                <div className="mt-4">
+                  <TopShareBar
+                    url={window.location.href}
+                    title={blog.title}
+                  />
+                </div>
               </div>
 
               <div className="px-5 sm:px-8 pb-8">
