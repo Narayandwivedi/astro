@@ -248,7 +248,7 @@ const Homepage = () => {
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+        <div className="container mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 relative z-10">
           <div className="text-center mb-4 md:mb-8">
             <h2 className="text-lg md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-700 to-amber-700 bg-clip-text text-transparent mb-2 md:mb-3">
               Get in Touch
@@ -316,7 +316,7 @@ const Homepage = () => {
         <div className="absolute inset-0 opacity-15">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+        <div className="container mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 relative z-10">
           <div className="text-center mb-6 md:mb-12">
             <div className="inline-flex items-center bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-300/50 rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-3 md:mb-6">
               <span className="text-amber-700 text-xs sm:text-sm font-semibold">🕉️ Our Premium Services</span>
@@ -352,150 +352,71 @@ const Homepage = () => {
                 <p className="text-gray-400 text-xs md:text-sm mt-2">Services will appear here once they are added</p>
               </div>
             ) : (
-              <div className="relative">
-                <div 
-                  onMouseEnter={() => setIsServiceCarouselPaused(true)}
-                  onMouseLeave={() => setIsServiceCarouselPaused(false)}>
-                  <div className="flex md:hidden overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scroll-smooth services-carousel" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {services.map((service) => (
-                      <div key={service._id} className="group relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-purple-100 hover:border-purple-300 transform hover:-translate-y-1 cursor-pointer block flex-shrink-0 w-[calc(50%-6px)] snap-start"
-                        onClick={() => navigate(`/services/${service._id}`)}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-indigo-50/30 to-amber-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        
-                        <div className="relative p-3 md:p-4 text-center">
-                          <div className="relative inline-flex items-center justify-center mb-3">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-amber-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
-                            <div className="relative w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-gray-300">
-                              <span className="text-lg md:text-2xl filter drop-shadow-lg">{service.icon}</span>
-                            </div>
-                          </div>
-                          
-                          <h3 className="text-sm font-bold bg-gradient-to-r from-purple-800 via-indigo-700 to-amber-700 bg-clip-text text-transparent mb-1 md:mb-2 group-hover:from-purple-600 group-hover:via-indigo-600 group-hover:to-amber-600 transition-all duration-300 leading-tight">
-                            {service.titleEn}
-                          </h3>
-                          <p className="text-purple-600 text-xs md:text-sm font-medium mb-3 hidden sm:block">{service.titleHi}</p>
-                        </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                {services.map((service) => (
+                  <div 
+                    key={service._id} 
+                    className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-orange-200 transform hover:-translate-y-1 cursor-pointer flex flex-col h-full overflow-hidden"
+                    onClick={() => navigate(`/services/${service._id}`)}
+                  >
+                    <div className="p-4 sm:p-6 flex-1 flex flex-col items-center text-center">
+                      {/* Icon */}
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-orange-100 transition-colors shadow-sm border border-orange-100">
+                        <span className="text-2xl sm:text-3xl">{service.icon}</span>
+                      </div>
+                      
+                      {/* Title */}
+                      <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-orange-600 transition-colors leading-tight line-clamp-2">
+                        {service.titleEn}
+                      </h3>
+                      <p className="text-gray-500 text-xs sm:text-sm font-medium mb-4 sm:mb-6 line-clamp-1">
+                        {service.titleHi}
+                      </p>
 
-                        <div className="px-3 md:px-4 mb-3">
-                          <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-amber-50 rounded-xl p-3 border border-purple-100 shadow-inner">
-                            <div className="flex flex-col space-y-3">
-                              <div className="text-center">
-                                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Price</p>
-                                <span className="text-lg font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
-                                  ₹{service.price}
-                                </span>
-                              </div>
-                              <div className="h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent"></div>
-                              <div className="flex justify-center">
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Duration</p>
-                                  <span className="text-xs font-semibold text-gray-700">{service.duration}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="w-full h-px bg-gray-100 mb-6 mt-auto"></div>
 
-                        <div className="px-3 md:px-4 pb-3 md:pb-4">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleBookService(service);
-                            }}
-                            disabled={!service.isActive}
-                            className="w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 hover:from-purple-800 hover:via-indigo-700 hover:to-amber-700 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border border-white/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs md:text-sm"
-                          >
-                            <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span className="relative z-10 flex items-center justify-center">
-                              <span className="mr-2 text-sm md:text-base">📅</span>
-                              <span className="font-semibold tracking-wide">
-                                {service.isActive ? 'Book Now' : 'Unavailable'}
-                              </span>
-                            </span>
-                          </button>
+                      {/* Details */}
+                      <div className="w-full flex justify-between items-center mb-2 px-1 sm:px-3">
+                        <div className="text-left flex-1">
+                          <p className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider font-semibold mb-0.5 sm:mb-1">Price</p>
+                          <span className="text-sm sm:text-lg font-bold text-gray-900">₹{service.price}</span>
+                        </div>
+                        <div className="h-8 sm:h-10 w-px bg-gray-200 mx-2"></div>
+                        <div className="text-right flex-1">
+                          <p className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider font-semibold mb-0.5 sm:mb-1">Duration</p>
+                          <span className="text-xs sm:text-sm font-semibold text-gray-700">{service.duration}</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
 
-                  <div className="hidden md:grid md:grid-cols-5 gap-4 lg:gap-6 xl:gap-8">
-                    {services.slice(0, 5).map((service) => (
-                      <div key={service._id} className="group relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-purple-100 hover:border-purple-300 transform hover:-translate-y-1 cursor-pointer block"
-                        onClick={() => navigate(`/services/${service._id}`)}
+                    {/* Action Button */}
+                    <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBookService(service);
+                        }}
+                        disabled={!service.isActive}
+                        className={`w-full py-2 sm:py-3 px-2 sm:px-4 rounded-xl font-bold text-[11px] sm:text-sm transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 ${
+                          service.isActive 
+                            ? 'bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white border border-orange-100 group-hover:border-transparent' 
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }`}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-indigo-50/30 to-amber-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        
-                        <div className="relative p-3 md:p-4 text-center">
-                          <div className="relative inline-flex items-center justify-center mb-3 md:mb-4">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-amber-400 rounded-full blur-md md:blur-lg opacity-20 md:opacity-30 group-hover:opacity-40 md:group-hover:opacity-50 transition-opacity duration-300"></div>
-                            <div className="relative w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-lg md:shadow-xl border-2 border-gray-300">
-                              <span className="text-lg md:text-2xl filter drop-shadow-lg">{service.icon}</span>
-                            </div>
-                          </div>
-                          
-                          <h3 className="text-sm md:text-lg font-bold bg-gradient-to-r from-purple-800 via-indigo-700 to-amber-700 bg-clip-text text-transparent mb-1 md:mb-2 group-hover:from-purple-600 group-hover:via-indigo-600 group-hover:to-amber-600 transition-all duration-300 leading-tight">
-                            {service.titleEn}
-                          </h3>
-                          <p className="text-purple-600 text-xs md:text-sm font-medium mb-3">{service.titleHi}</p>
-                        </div>
-
-                        <div className="px-3 md:px-4 mb-3 md:mb-4">
-                          <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-amber-50 rounded-xl md:rounded-2xl p-3 md:p-4 border border-purple-100 shadow-inner">
-                            <div className="flex flex-col space-y-3 md:space-y-0 md:flex-row md:items-center md:justify-between">
-                              <div className="text-center md:flex-1">
-                                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Price</p>
-                                <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
-                                  ₹{service.price}
-                                </span>
-                              </div>
-                              
-                              <div className="h-px md:h-12 md:w-px bg-gradient-to-r md:bg-gradient-to-b from-transparent via-purple-200 to-transparent md:mx-4"></div>
-                              
-                              <div className="flex justify-center md:justify-between md:flex-1">
-                                <div className="text-center flex-1 md:flex-none">
-                                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Duration</p>
-                                  <span className="text-xs md:text-sm font-semibold text-gray-700">{service.duration}</span>
-                                </div>
-                                
-                                <div className="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-purple-200 to-transparent mx-4"></div>
-                                
-                                <div className="hidden md:block text-center flex-1">
-                                  <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold mb-1">Status</p>
-                                  <div className="flex items-center justify-center">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
-                                    <span className="text-xs font-bold text-emerald-600">
-                                      {service.isActive ? 'Available' : 'Not Available'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="px-3 md:px-4 pb-3 md:pb-4">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleBookService(service);
-                            }}
-                            disabled={!service.isActive}
-                            className="w-full bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 hover:from-purple-800 hover:via-indigo-700 hover:to-amber-700 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group border border-white/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs md:text-sm"
-                          >
-                            <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span className="relative z-10 flex items-center justify-center">
-                              <span className="mr-2 text-sm md:text-base">📅</span>
-                              <span className="text-sm md:text-base font-semibold tracking-wide">
-                                {service.isActive ? 'Book Now' : 'Unavailable'}
-                              </span>
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                        {service.isActive ? (
+                          <>
+                            <span className="truncate">Book Now</span>
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </>
+                        ) : (
+                          'Currently Unavailable'
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             )}
 
@@ -517,7 +438,7 @@ const Homepage = () => {
         <div className="absolute inset-0 opacity-15">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+        <div className="container mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 relative z-10">
           <div className="text-center mb-6 md:mb-12">
             <div className="inline-flex items-center bg-gradient-to-r from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-amber-300/50 rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-3 md:mb-6">
               <span className="text-amber-700 text-xs sm:text-sm font-semibold">📖 Latest Articles</span>
@@ -607,7 +528,7 @@ const Homepage = () => {
         <div className="absolute inset-0 opacity-15">
           <div className="w-full h-full cosmic-stars"></div>
         </div>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+        <div className="container mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 relative z-10">
           <div className="text-center mb-6 md:mb-12">
             <div className="inline-flex items-center bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-amber-500/20 backdrop-blur-sm border border-purple-300/50 rounded-full px-4 sm:px-6 py-1.5 sm:py-2 mb-3 md:mb-6">
               <span className="text-purple-700 text-xs sm:text-sm font-semibold">🛍️ Our Sacred Shop</span>
