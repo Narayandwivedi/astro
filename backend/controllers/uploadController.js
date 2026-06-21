@@ -25,8 +25,8 @@ const PRODUCT_IMAGE_CONFIG = {
 const BLOG_IMAGE_CONFIG = {
   width: 1200,
   height: 675,
-  quality: 84,
-  format: 'webp'
+  quality: 80,
+  format: 'avif'
 };
 
 // Helper function to process and convert image to WebP
@@ -117,13 +117,13 @@ const processImage = async (inputPath, outputPath) => {
   }
 };
 
-const processImageToWebp = async (inputPath, outputPath, config) => {
+const processImageToAvif = async (inputPath, outputPath, config) => {
   await sharp(inputPath)
     .resize(config.width, config.height, {
       fit: 'cover',
       position: 'center'
     })
-    .webp({
+    .avif({
       quality: config.quality,
       effort: 4
     })
@@ -328,15 +328,15 @@ const uploadBlogImage = (req, res) => {
 
     const inputPath = req.file.path;
     const baseName = path.parse(req.file.filename).name;
-    const outputFilename = `${baseName}.webp`;
+    const outputFilename = `${baseName}.avif`;
     const finalOutputPath = path.join(blogImagesDir, outputFilename);
     const needsTempOutput = path.resolve(inputPath) === path.resolve(finalOutputPath);
     const outputPath = needsTempOutput
-      ? path.join(blogImagesDir, `${baseName}-temp-${Date.now()}.webp`)
+      ? path.join(blogImagesDir, `${baseName}-temp-${Date.now()}.avif`)
       : finalOutputPath;
 
     try {
-      await processImageToWebp(inputPath, outputPath, BLOG_IMAGE_CONFIG);
+      await processImageToAvif(inputPath, outputPath, BLOG_IMAGE_CONFIG);
 
       if (fs.existsSync(inputPath)) {
         fs.unlinkSync(inputPath);
@@ -359,7 +359,7 @@ const uploadBlogImage = (req, res) => {
           originalName: req.file.originalname,
           size: stats.size,
           dimensions: `${BLOG_IMAGE_CONFIG.width}x${BLOG_IMAGE_CONFIG.height}`,
-          format: 'webp',
+          format: 'avif',
           uploadedAt: new Date()
         }
       });

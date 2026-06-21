@@ -76,13 +76,14 @@ const imageFilter = (req, file, cb) => {
     size: file.size
   });
 
-  const allowedExtensions = /\.(jpeg|jpg|png|gif|webp)$/i;
+  const allowedExtensions = /\.(jpeg|jpg|png|gif|webp|avif)$/i;
   const allowedMimeTypes = [
     'image/jpeg',
     'image/jpg', 
     'image/png',
     'image/gif',
-    'image/webp'
+    'image/webp',
+    'image/avif'
   ];
 
   const extname = allowedExtensions.test(file.originalname.toLowerCase());
